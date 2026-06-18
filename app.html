@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Out of Stock - app (desktop)</title>
+<style>
+:root{ --ink:#1A1A1A; --muted:#6B7280; --accent:#1A6DFF; --bg:#FFFFFF; --surface:#F9FAFB; --border:#E5E7EB; --accent-soft:#EAF1FF; }
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:var(--ink); font-size:15px; line-height:1.6; background:var(--surface);}
+button{font-family:inherit; cursor:pointer;}
+a{color:var(--accent); text-decoration:none;}
+.app{display:flex; min-height:100vh;}
+
+.sidebar{width:240px; flex:0 0 240px; background:var(--bg); border-right:1px solid var(--border); display:flex; flex-direction:column; position:sticky; top:0; height:100vh;}
+.brand{padding:20px 20px 14px; display:flex; align-items:center; gap:10px;}
+.brand .mark{width:30px; height:30px; border-radius:8px; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px;}
+.brand b{font-weight:600; letter-spacing:-0.01em;}
+.brand span{display:block; font-size:11px; color:var(--muted); font-weight:500; letter-spacing:0.04em; text-transform:uppercase;}
+.switch{margin:0 12px 12px; border:1px solid var(--border); border-radius:8px; padding:9px 12px; display:flex; align-items:center; justify-content:space-between; font-size:13.5px; font-weight:500;}
+.switch small{display:block; color:var(--muted); font-size:11px; font-weight:400;}
+.nav{padding:6px 12px; flex:1;}
+.nav a{display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:8px; color:var(--ink); font-size:14.5px; font-weight:500; margin-bottom:2px; position:relative;}
+.nav a .ic{color:var(--muted); display:flex;}
+.nav a.on{background:var(--accent-soft); color:var(--accent);}
+.nav a.on .ic{color:var(--accent);}
+.nav a:hover:not(.on){background:var(--surface);}
+.nav .badge{position:absolute; right:12px; top:50%; transform:translateY(-50%); background:var(--accent); color:#fff; font-size:11px; font-weight:600; border-radius:999px; padding:1px 7px;}
+.navlink{display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:8px; color:var(--muted); font-size:13.5px; font-weight:500;}
+.navlink:hover{background:var(--surface);}
+.coach{padding:14px 16px; border-top:1px solid var(--border); display:flex; align-items:center; gap:10px;}
+.coach .av{width:34px; height:34px; border-radius:999px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted);}
+.coach b{font-weight:600; font-size:13.5px; display:block; line-height:1.3;}
+.coach span{font-size:12px; color:var(--muted);}
+
+.main{flex:1; min-width:0;}
+.topbar{height:60px; border-bottom:1px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:space-between; padding:0 28px; position:sticky; top:0; z-index:5;}
+.topbar h1{font-size:18px; font-weight:600; letter-spacing:-0.01em; margin:0;}
+.topbar .actions{display:flex; align-items:center; gap:10px;}
+.tbtn{border:1px solid var(--border); background:var(--bg); border-radius:8px; padding:8px 14px; font-size:13.5px; font-weight:500; color:var(--ink); display:inline-flex; align-items:center; gap:8px;}
+.tbtn.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.tbtn.primary{background:var(--accent); color:#fff; border:none;}
+.dot{width:7px; height:7px; border-radius:999px; background:var(--muted);}
+.tbtn.on .dot{background:var(--accent);}
+
+.content{padding:28px;}
+.view{display:none;} .view.on{display:block;}
+.phead{margin-bottom:20px;}
+.phead h2{font-size:24px; font-weight:600; letter-spacing:-0.02em; margin:0 0 2px;}
+.phead p{color:var(--muted); margin:0; font-size:14px;}
+
+.note{display:none; border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; background:var(--bg); padding:11px 14px; margin:0 0 16px; font-size:13px; color:var(--muted); max-width:680px;}
+.note b{color:var(--accent); font-weight:600;}
+.notes-on .note{display:block;}
+
+.cols{display:flex; gap:24px; align-items:flex-start;}
+.feedcol{flex:1; max-width:600px;}
+.rail{flex:0 0 300px; position:sticky; top:88px;}
+
+.card{background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:18px;}
+.card + .card{margin-top:14px;}
+.card h3{font-size:14px; font-weight:600; margin:0 0 12px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted);}
+
+.post{border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:14px; background:var(--bg);}
+.post .ph{display:flex; gap:12px; align-items:flex-start;}
+.post .av{width:42px; height:42px; border-radius:999px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); font-weight:600; flex:0 0 auto;}
+.post .who{flex:1; min-width:0;}
+.post .who .l1{font-size:15px; line-height:1.4;}
+.post .who .l1 b{font-weight:600;}
+.post .who .l2{color:var(--muted); font-size:13px;}
+.post .time{color:var(--muted); font-size:12.5px; flex:0 0 auto;}
+.post .thumb{display:flex; gap:12px; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:11px; margin-top:12px; cursor:pointer;}
+.post .thumb .meta b{font-weight:600; font-size:14.5px; display:block;}
+.post .thumb .meta span{color:var(--muted); font-size:13px;}
+.post .foot{display:flex; gap:20px; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);}
+.post .foot button{background:none; border:none; color:var(--muted); font-size:13.5px; font-weight:500; display:inline-flex; align-items:center; gap:7px; padding:0;}
+.post .foot button.liked{color:var(--accent);}
+
+.searchrow{display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap;}
+.search{display:flex; align-items:center; gap:9px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:9px 13px; min-width:280px; color:var(--muted); flex:1; max-width:420px;}
+.search input{border:none; background:none; outline:none; font:inherit; color:var(--ink); flex:1;}
+.chip{border:1px solid var(--border); background:var(--bg); border-radius:999px; padding:7px 13px; font-size:13px; font-weight:500; color:var(--ink);}
+.chip.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.chips{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:18px;}
+
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(212px,1fr)); gap:16px; max-width:980px;}
+.mcard{border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--bg); cursor:pointer; transition:border-color .15s;}
+.mcard:hover{border-color:var(--accent);}
+.mcard .thumb{height:128px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted);}
+.mcard .body{padding:13px 14px;}
+.mcard .body b{font-weight:600; font-size:14.5px;}
+.mcard .body .sub{color:var(--muted); font-size:12.5px; margin-top:1px;}
+.mcard .body .row{display:flex; align-items:center; justify-content:space-between; margin-top:9px;}
+
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; padding:3px 9px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--muted);}
+.pill.acc{color:var(--accent); border-color:#CFE0FF; background:var(--accent-soft);}
+.pill.ok{color:#0F7A3D; border-color:#CDEBD8; background:#F1FBF5;}
+.pill.warn{color:#A85A00; border-color:#F3E2C6; background:#FCF6EC;}
+.pill .d{width:6px; height:6px; border-radius:999px;}
+
+.qa{display:flex; flex-direction:column; gap:8px;}
+.qa button{display:flex; align-items:center; gap:11px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px; text-align:left; color:var(--ink); font-size:14.5px; font-weight:500;}
+.qa button .ic{width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+
+.list .row{display:flex; align-items:center; gap:13px; padding:13px 0; border-bottom:1px solid var(--border); cursor:pointer;}
+.list .row:last-child{border-bottom:none;}
+.list .row:hover{background:var(--surface);}
+.tile{width:42px; height:42px; border-radius:9px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); flex:0 0 auto;}
+.list .row .meta{flex:1;} .list .row .meta b{font-weight:600; font-size:14.5px; display:block;} .list .row .meta span{color:var(--muted); font-size:13px;}
+
+/* form */
+.field-label{font-size:13px; font-weight:600; margin:16px 0 6px; display:block;}
+.input,.textarea,select.input{width:100%; border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:14px; font-family:inherit; color:var(--ink); outline:none; background:var(--bg);}
+.textarea{min-height:80px; resize:none;}
+.input:focus,.textarea:focus{border-color:var(--accent);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;}
+.btn.sec{background:var(--bg);color:var(--ink);border:1px solid var(--border);font-weight:500;}
+.btn.ghost{background:none;border:none;color:var(--accent);font-weight:600;padding:8px 0;}
+.sw{width:42px; height:25px; border-radius:999px; background:var(--border); position:relative; border:none; flex:0 0 auto;}
+.sw.on{background:var(--accent);}
+.sw .k{position:absolute; top:3px; left:3px; width:19px; height:19px; border-radius:999px; background:#fff; transition:left .15s;}
+.sw.on .k{left:20px;}
+.lab{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; padding:3px 9px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:var(--surface);}
+.lab.acc{color:var(--accent); border-color:#CFE0FF; background:var(--accent-soft);}
+
+/* drawer */
+.overlay{position:fixed; inset:0; background:rgba(26,26,26,0.22); opacity:0; pointer-events:none; transition:opacity .2s; z-index:20;}
+.overlay.on{opacity:1; pointer-events:auto;}
+.drawer{position:fixed; top:0; right:0; height:100vh; width:440px; max-width:94vw; background:var(--bg); border-left:1px solid var(--border); transform:translateX(100%); transition:transform .22s ease; z-index:21; display:flex; flex-direction:column;}
+.drawer.on{transform:none;}
+.dhead{display:flex; align-items:center; justify-content:space-between; padding:16px 22px; border-bottom:1px solid var(--border);}
+.dhead h3{margin:0; font-size:16px; font-weight:600;}
+.dbody{padding:22px; overflow-y:auto; flex:1;}
+.dfoot{padding:16px 22px; border-top:1px solid var(--border); display:flex; gap:8px;}
+.iconx{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--ink);}
+.bigtile{height:180px; border-radius:12px; background:var(--surface); border:1px solid var(--border); display:flex; flex-direction:column; gap:8px; align-items:center; justify-content:center; color:var(--muted);}
+.muted{color:var(--muted);}
+.section-title{font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin:24px 0 12px;}
+
+@media(max-width:1080px){ .rail{display:none;} }
+@media(max-width:720px){ .sidebar{display:none;} }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="mark">O</div><div><b>Out of Stock</b><span>Verenigingen</span></div></div>
+    <div class="switch"><div><b>Chiro Heverlee</b><small>Deelnetwerk Leuven</small></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="muted"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg></div>
+    <nav class="nav">
+      <a class="on" data-view="start" onclick="show('start',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>Start</a>
+      <a data-view="ontdek" onclick="show('ontdek',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></span>Ontdek</a>
+      <a data-view="aanbieden" onclick="show('aanbieden',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg></span>Aanbieden</a>
+      <a data-view="meldingen" onclick="show('meldingen',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>Meldingen<span class="badge">1</span></a>
+      <div style="margin:10px 4px; border-top:1px solid var(--border);"></div>
+      <a class="navlink" href="inventaris.html"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/></svg></span>Materiaalbeheer →</a>
+    </nav>
+    <div class="coach"><div class="av"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div><div><b>Lien Vermeulen</b><span>Materiaalmeester</span></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Start</h1>
+      <div class="actions">
+        <button class="tbtn" id="notesBtn" onclick="toggleNotes()"><span class="dot"></span> Ontwerpnotities</button>
+        <a class="tbtn" href="index.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg> Mobiel</a>
+        <a class="tbtn" href="beheer.html">Coach-dashboard</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- START (feed) -->
+      <section class="view on" id="start">
+        <div class="note">Dezelfde verenigingen-app, maar op een groot scherm. Sommige verenigingen werken liever vanaf een laptop in het lokaal. De feed maakt activiteit zichtbaar, links de navigatie in plaats van een onderbalk.</div>
+        <div class="cols">
+          <div class="feedcol">
+            <div class="phead"><h2>Hallo Lien</h2><p>Activiteit in je netwerk</p></div>
+            <div id="feedList"></div>
+          </div>
+          <div class="rail">
+            <div class="card">
+              <div style="display:flex; gap:10px; align-items:flex-start;"><span class="lab acc" style="margin-top:2px;">juli</span><div><b style="font-weight:600;">Jullie kamp komt eraan</b><div class="muted" style="font-size:13px; margin-top:6px;">Vorig jaar leenden jullie 4 partytenten. Nu al reserveren?</div><button class="btn ghost" onclick="openItem('partytent')">Bekijk tenten →</button></div></div>
+            </div>
+            <div class="card">
+              <h3>Snel</h3>
+              <div class="qa">
+                <button onclick="show('ontdek')"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></span>Iets zoeken</button>
+                <button onclick="show('aanbieden')"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg></span>Iets aanbieden</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Onze kast</h3>
+              <div class="muted" style="font-size:13.5px;">34 stuks · 22 open voor delen · 2 aan vervanging toe</div>
+              <a href="inventaris.html" class="btn ghost" style="display:inline-block; margin-top:6px;">Beheer de inventaris →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ONTDEK -->
+      <section class="view" id="ontdek">
+        <div class="phead"><h2>Ontdek</h2><p>Beschikbaar materiaal in je buurt</p></div>
+        <div class="note">Op desktop tonen we het aanbod als een ruim raster met foto's, makkelijker te overzien dan een lijst op de telefoon. Lokaal eerst, ruimer aanbod als fallback. Zoeken en de noden-ingang bestaan naast elkaar.</div>
+        <div class="searchrow">
+          <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><input id="ontdekSearch" placeholder="Zoek naar materiaal..." oninput="renderGrid()"></div>
+          <button class="tbtn" onclick="alert('Noden-ingang: beschrijf je activiteit (bv. eetfestijn voor 80), dan stellen we het materiaal voor.')">Of beschrijf je activiteit</button>
+        </div>
+        <div class="chips" id="ontdekCats"></div>
+        <div class="grid" id="grid"></div>
+      </section>
+
+      <!-- AANBIEDEN -->
+      <section class="view" id="aanbieden">
+        <div class="phead"><h2>Aanbieden</h2><p>Deel materiaal met je netwerk</p></div>
+        <div class="note">Simpel zelf toevoegen, AI schaaft optioneel je tekstje bij. De lijst "wat kan je zoal uitlenen" geeft inspiratie, want vaak denken verenigingen er niet aan wat ze allemaal kunnen delen.</div>
+        <div class="cols" style="align-items:flex-start;">
+          <div style="flex:1; max-width:520px;">
+            <div class="card">
+              <span class="field-label" style="margin-top:0;">Naam</span>
+              <input class="input" id="addName" placeholder="bv. partytent, frietketel, aanhangwagen" oninput="checkAdd()">
+              <span class="field-label">Categorie</span>
+              <select class="input" id="addCat"><option>Tenten</option><option>Tafels &amp; stoelen</option><option>Keuken</option><option>Geluid</option><option>Spel</option><option>Gereedschap</option><option>Vervoer</option></select>
+              <span class="field-label">Beschrijving (optioneel)</span>
+              <textarea class="textarea" id="addDesc" placeholder="Korte omschrijving. Hoeft niet perfect."></textarea>
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;"><button class="btn ghost" onclick="aiPolish()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="margin-right:3px;"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3Z"/></svg>Verbeter de tekst</button><span id="aiTag" class="lab acc" style="display:none;">bijgeschaafd</span></div>
+              <div class="drow" style="display:flex; align-items:center; justify-content:space-between; padding:14px 0 4px; margin-top:6px;"><div><b style="font-weight:600;">Open voor delen</b></div><button class="sw on" id="addOpen" onclick="this.classList.toggle('on')"><span class="k"></span></button></div>
+              <button class="btn" id="addBtn" style="width:100%; margin-top:14px;" disabled onclick="alert('In de kast gezet en zichtbaar voor je deelnetwerk.'); document.getElementById('addName').value=''; checkAdd();">Zet in de kast</button>
+            </div>
+          </div>
+          <div style="flex:0 0 320px;">
+            <div class="card">
+              <h3>Wat kan je zoal uitlenen?</h3>
+              <div class="list" id="triggerList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MELDINGEN -->
+      <section class="view" id="meldingen">
+        <div class="phead"><h2>Meldingen</h2><p>Waar de twee kanten van een lening samenkomen</p></div>
+        <div class="note">Inkomende aanvragen voor jullie materiaal, bevestigingen van je eigen aanvragen, terugbreng-herinneringen en reacties op vragen. Zo blijft de communicatie in de app.</div>
+        <div class="card" style="max-width:680px; padding:6px 18px;">
+          <div class="list">
+            <div class="row" onclick="alert('Inkomende aanvraag: Sportkring wil 12 klaptafels lenen van 20-22 juni. Bevestigen of weigeren.')"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9h18M5 9v10M19 9v10M3 9l2-4h14l2 4"/></svg></span><span class="meta"><b>Sportkring Heverlee wil iets lenen</b><span>12 klaptafels · 20-22 juni</span></span><span class="pill acc">actie</span></div>
+            <div class="row" onclick="openItem('frietketel')"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m5 12 4 4 10-10"/></svg></span><span class="meta"><b>KSA Wijgmaal bevestigde je aanvraag</b><span>frietketel · spreek het ophalen af</span></span></div>
+            <div class="row" onclick="alert('Herinnering: breng de frietketel terug tegen maandag 16 juni.')"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="meta"><b>Breng de frietketel terug</b><span>tegen maandag 16 juni</span></span></div>
+            <div class="row" onclick="alert('Scouts Heverlee zoekt een partytent voor 14 juni. Jullie hebben er 4. Reageren?')"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z"/></svg></span><span class="meta"><b>Scouts Heverlee zoekt een partytent</b><span>jullie hebben er 4 · reageren?</span></span></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="itemDrawer">
+  <div class="dhead"><h3 id="idTitle">Materiaal</h3><button class="iconx" onclick="closeDrawer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="dbody" id="idBody"></div>
+  <div class="dfoot" id="idFoot"></div>
+</aside>
+
+<script>
+function ic(name,sz){
+  var s=sz||18;
+  var p={ tent:'<path d="M12 4 3 20h18L12 4Z"/><path d="M12 9v11"/>', table:'<path d="M3 9h18M5 9v10M19 9v10M3 9l2-4h14l2 4"/>', chair:'<path d="M6 11V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6M6 11h12l-1 5M6 11l1 5M7 16v4M17 16v4"/>', fryer:'<path d="M4 9h16l-1.2 9.5a2 2 0 0 1-2 1.5H7.2a2 2 0 0 1-2-1.5L4 9Z"/><path d="M3 9h18"/>', fridge:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M6 10h12M9 5v2"/>', speaker:'<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="14" r="3.5"/>', pallet:'<path d="M3 7h18M3 12h18M3 17h18M6 7v10M12 7v10M18 7v10"/>', box:'<path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/>' }[name]||'';
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+}
+var ITEMS={
+  frietketel:{name:'Frietketel (dubbel)',cat:'Keuken',ver:'KSA Wijgmaal',dist:'1,2 km',icon:'fryer',lent:7,status:'vrij',st:'ok',desc:'Dubbele elektrische friteuse, 2 × 8 liter. Aansluiting 400V nodig.',care:['Zet de thermostaat niet hoger dan 180°C. Een verkeerd gezette knop lijkt op een defect, maar is het meestal niet.','Controleer of je locatie een krachtstroomaansluiting (400V) heeft.'],trust:'Geleend door 3 verenigingen · altijd op tijd terug'},
+  partytent:{name:'Partytent 3×6 m',cat:'Tenten',ver:'Scouts Heverlee',dist:'0,8 km',icon:'tent',lent:12,status:'vrij',st:'ok',desc:'Partytent 3 op 6 meter met stalen frame. Inclusief haringen en spanbanden.',care:['Maak de tent droog op voor je ze terugbrengt, anders schimmelt het doek.'],trust:'Geleend door 7 verenigingen'},
+  tafels:{name:'10 klaptafels',cat:'Tafels & stoelen',ver:'KLJ Korbeek-Lo',dist:'2,1 km',icon:'table',lent:9,status:'vanaf 14 jun',st:'warn',desc:'Tien stevige klaptafels van 180 × 70 cm. Inklapbaar.',care:['Klap ze volledig dicht voor transport.'],trust:'Geleend door 5 verenigingen'},
+  stoelen:{name:'80 stoelen',cat:'Tafels & stoelen',ver:'KLJ Korbeek-Lo',dist:'2,1 km',icon:'chair',lent:6,status:'vrij',st:'ok',desc:'Tachtig stapelbare stoelen op rolwagens per 20.',care:['Vervoer met de rolwagens, niet los.'],trust:'Geleend door 5 verenigingen'},
+  geluid:{name:'Geluidsset',cat:'Geluid',ver:'Sportkring Heverlee',dist:'1,5 km',icon:'speaker',lent:5,status:'vrij',st:'ok',desc:'Twee speakers van 300W met statieven, mengpaneel en twee microfoons.',care:['Draai het volume op nul voor je aan- of uitschakelt.'],trust:'Geleend door 4 verenigingen'},
+  koelkast:{name:'Koelkast',cat:'Keuken',ver:'Chiro Kessel-Lo',dist:'3,4 km',icon:'fridge',lent:2,status:'vrij',st:'ok',desc:'Horeca-koelkast van 300 liter, op wieltjes.',care:['Laat na transport een uur staan voor je inschakelt.'],trust:'Geleend door 2 verenigingen'}
+};
+var GRIDIDS=['frietketel','partytent','tafels','stoelen','geluid','koelkast'];
+var CATS=['Alles','Tenten','Tafels & stoelen','Keuken','Geluid'];
+var FEED=[
+  {who:'KSA Wijgmaal',ini:'K',text:'bood een frietketel (dubbel) aan',sub:'Keuken · 1,2 km',time:'2 u',item:'frietketel',likes:4},
+  {who:'Scouts Heverlee',ini:'S',text:'zoekt een extra partytent voor 14 juni',sub:'voor een ledenweekend',time:'5 u',vraag:true,likes:1},
+  {who:'Chiro Heverlee',ini:'C',text:'leende 80 stoelen van KLJ Korbeek-Lo',sub:'afgerond, netjes terug',time:'gisteren',item:'stoelen',likes:6},
+  {who:'Scouts Heverlee',ini:'S',text:'heeft 8 houten paletten over',sub:'weg voor 30 juni · 3 geïnteresseerd',time:'gisteren',rest:true,likes:3},
+  {who:'Sportkring Heverlee',ini:'S',text:'stelde een geluidsset open',sub:'Geluid · 1,5 km',time:'2 dagen',item:'geluid',likes:2}
+];
+var TRIGGERS=[['Partytent','Tenten'],['Frietketel','Keuken'],['Klaptafels en stoelen','Tafels & stoelen'],['Geluidsinstallatie','Geluid'],['Springkasteel','Spel'],['Aanhangwagen','Vervoer'],['BBQ','Keuken'],['Gereedschap','Gereedschap']];
+var catFilter='Alles';
+
+function renderFeed(){
+  document.getElementById('feedList').innerHTML=FEED.map(function(f){
+    var thumb='';
+    if(f.item){var it=ITEMS[f.item]; thumb='<div class="thumb" onclick="event.stopPropagation(); openItem(\''+f.item+'\')"><span class="tile">'+ic(it.icon)+'</span><span class="meta"><b>'+it.name+'</b><span>'+it.ver+' · '+it.dist+'</span></span></div>';}
+    if(f.rest){thumb='<div class="thumb" onclick="event.stopPropagation(); alert(\'Reststroom: 8 houten paletten van Scouts Heverlee, weg voor 30 juni. Toon interesse.\')"><span class="tile">'+ic('pallet')+'</span><span class="meta"><b>8 houten paletten</b><span>reststroom · tuinmeubels</span></span><span class="lab">30 jun</span></div>';}
+    var act=f.vraag?'Reageer':(f.rest?'Bekijk':'Vraag aan');
+    var clk=f.item?("openItem('"+f.item+"')"):(f.vraag?"alert('Scouts Heverlee zoekt een partytent. Reageer dat jullie er 4 hebben.')":"alert('Reststroom van Scouts Heverlee.')");
+    return '<div class="post"><div class="ph"><span class="av">'+f.ini+'</span><span class="who"><div class="l1"><b>'+f.who+'</b> '+f.text+'</div><div class="l2">'+f.sub+'</div></span><span class="time">'+f.time+'</span></div>'+thumb+
+    '<div class="foot"><button onclick="likePost(this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.5-7 9-7 9Z"/></svg><span>'+f.likes+'</span></button><button onclick="'+clk+'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z"/></svg>'+act+'</button></div></div>';
+  }).join('');
+}
+function likePost(b){var s=b.querySelector('span'); var l=b.classList.toggle('liked'); s.textContent=parseInt(s.textContent)+(l?1:-1);}
+function renderCats(){ document.getElementById('ontdekCats').innerHTML=CATS.map(function(c){return '<button class="chip'+(c===catFilter?' on':'')+'" onclick="setCat(\''+c+'\')">'+c+'</button>';}).join(''); }
+function setCat(c){ catFilter=c; renderCats(); renderGrid(); }
+function renderGrid(){
+  var q=(document.getElementById('ontdekSearch').value||'').toLowerCase();
+  var html='';
+  GRIDIDS.forEach(function(id){
+    var it=ITEMS[id];
+    if(catFilter!=='Alles' && it.cat!==catFilter) return;
+    if(q && (it.name+' '+it.cat+' '+it.ver).toLowerCase().indexOf(q)<0) return;
+    html+='<div class="mcard" onclick="openItem(\''+id+'\')"><div class="thumb">'+ic(it.icon,40)+'</div><div class="body"><b>'+it.name+'</b><div class="sub">'+it.ver+' · '+it.dist+'</div><div class="row"><span class="pill '+(it.st==='ok'?'ok':'warn')+'">'+it.status+'</span><span class="muted" style="font-size:12px;">'+it.lent+'× geleend</span></div></div></div>';
+  });
+  document.getElementById('grid').innerHTML=html||'<div class="muted" style="padding:20px;">Niets gevonden in de buurt. <a onclick="alert(\'Ruimer aanbod: buiten je gemeente, uitleendiensten en de deelkaart van WijDelen.\')">Toon ruimer aanbod</a></div>';
+}
+function renderTriggers(){ document.getElementById('triggerList').innerHTML=TRIGGERS.map(function(t){ return '<div class="row" onclick="prefillAdd(\''+t[0]+'\',\''+t[1]+'\')"><span class="meta"><b>'+t[0]+'</b><span>'+t[1]+'</span></span><span class="lab acc">+ toevoegen</span></div>'; }).join(''); }
+function prefillAdd(name,cat){ show('aanbieden'); document.getElementById('addName').value=name; var sel=document.getElementById('addCat'); for(var i=0;i<sel.options.length;i++){ if(sel.options[i].text.replace('&amp;','&')===cat) sel.selectedIndex=i; } checkAdd(); document.getElementById('addName').focus(); }
+function checkAdd(){ document.getElementById('addBtn').disabled=!document.getElementById('addName').value.trim(); }
+function aiPolish(){ var ta=document.getElementById('addDesc'); var t=ta.value.trim(); var name=document.getElementById('addName').value.trim()||'Dit materiaal'; ta.value = t ? (t.charAt(0).toUpperCase()+t.slice(1)+(/[.!?]$/.test(t)?'':'.')+' In goede staat. Ophalen en terugbrengen in onderling overleg.') : (name+' in goede staat, met de nodige toebehoren. Ophalen en terugbrengen in onderling overleg.'); document.getElementById('aiTag').style.display='inline-flex'; }
+
+function openItem(id){
+  var it=ITEMS[id];
+  document.getElementById('idTitle').textContent=it.name;
+  var care=it.care.map(function(c){return '<p style="margin:6px 0 0;">'+c+'</p>';}).join('');
+  document.getElementById('idBody').innerHTML=
+    '<div class="bigtile">'+ic(it.icon,40)+'<span class="muted" style="font-size:12px;">foto van het materiaal</span></div>'+
+    '<div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px;"><div><div style="font-size:18px; font-weight:600;">'+it.name+'</div><div class="muted" style="font-size:13.5px;">'+it.ver+' · '+it.dist+'</div></div><span class="pill '+(it.st==='ok'?'ok':'warn')+'">'+it.status+'</span></div>'+
+    '<span class="field-label">Beschikbaarheid</span><div class="card" style="background:var(--surface); padding:13px 14px;"><b style="font-weight:600;">Meestal vrij</b><div class="muted" style="font-size:13px; margin-top:4px;">Geen vaste kalender. Je vraagt de periode aan die je nodig hebt, '+it.ver+' bevestigt.</div></div>'+
+    '<span class="field-label">Beschrijving</span><p style="margin:0;">'+it.desc+'</p>'+
+    '<div class="card" style="background:var(--surface); margin-top:14px; padding:13px 14px;"><b style="font-weight:600; display:flex; gap:8px; align-items:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>Goed om te weten</b>'+care+'</div>'+
+    '<div style="display:flex; gap:11px; align-items:center; margin-top:16px;"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><b style="font-weight:600;">Vlot geleend</b><div class="muted" style="font-size:13px;">'+it.trust+'</div></div></div>';
+  document.getElementById('idFoot').innerHTML='<button class="btn sec" style="flex:1" onclick="closeDrawer()">Sluiten</button><button class="btn" style="flex:2" onclick="borrowStep(\''+id+'\')">Vraag te leen bij '+it.ver+'</button>';
+  openDrawer();
+}
+function borrowStep(id){
+  var it=ITEMS[id];
+  document.getElementById('idTitle').textContent='Leningaanvraag';
+  document.getElementById('idBody').innerHTML=
+    '<div style="display:flex; gap:11px; align-items:center;"><span class="tile">'+ic(it.icon)+'</span><div><b style="font-weight:600;">'+it.name+'</b><div class="muted" style="font-size:13px;">'+it.ver+' · contact: Tom</div></div></div>'+
+    '<span class="field-label">Welke periode heb je het nodig?</span><div class="card" style="padding:4px 14px;"><div class="drow" style="display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border);"><b style="font-weight:600;">Van</b><span class="pill">za 14 juni</span></div><div class="drow" style="display:flex; justify-content:space-between; align-items:center; padding:11px 0;"><b style="font-weight:600;">Tot</b><span class="pill">ma 16 juni</span></div></div>'+
+    '<span class="field-label">Ophalen en terugbrengen</span><div class="chips"><span class="chip on">\'s avonds</span><span class="chip">overdag</span><span class="chip">in overleg</span></div>'+
+    '<p class="muted" style="font-size:13px; margin-top:14px;">'+it.ver+' krijgt je aanvraag en bevestigt. Niets is meteen definitief.</p>';
+  document.getElementById('idFoot').innerHTML='<button class="btn sec" style="flex:1" onclick="openItem(\''+id+'\')">Terug</button><button class="btn" style="flex:2" onclick="borrowSent(\''+id+'\')">Stuur aanvraag</button>';
+}
+function borrowSent(id){
+  var it=ITEMS[id];
+  document.getElementById('idTitle').textContent='Verstuurd';
+  document.getElementById('idBody').innerHTML='<div style="text-align:center; padding:30px 0;"><div class="tile" style="width:64px; height:64px; border-radius:999px; margin:0 auto; background:var(--accent-soft); color:var(--accent);"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z"/></svg></div><div style="font-size:18px; font-weight:600; margin-top:16px;">Aanvraag verstuurd</div><p class="muted" style="font-size:13.5px; max-width:300px; margin:6px auto 0;">'+it.ver+' krijgt een seintje en bevestigt. Je ziet het bij je meldingen.</p></div>';
+  document.getElementById('idFoot').innerHTML='<button class="btn" style="flex:1" onclick="closeDrawer()">Klaar</button>';
+}
+function openDrawer(){ document.getElementById('overlay').classList.add('on'); document.getElementById('itemDrawer').classList.add('on'); }
+function closeDrawer(){ document.getElementById('overlay').classList.remove('on'); document.getElementById('itemDrawer').classList.remove('on'); }
+
+function show(id, el){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('on',v.id===id);});
+  document.querySelectorAll('.nav a[data-view]').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-view')===id);});
+  var titles={start:'Start',ontdek:'Ontdek',aanbieden:'Aanbieden',meldingen:'Meldingen'};
+  document.getElementById('pageTitle').textContent=titles[id]||''; window.scrollTo(0,0);
+}
+function toggleNotes(){ var on=document.body.classList.toggle('notes-on'); document.getElementById('notesBtn').classList.toggle('on',on); }
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeDrawer(); });
+renderFeed(); renderCats(); renderGrid(); renderTriggers();
+</script>
+<script>
+window.CM_CONFIG = {
+  projectName: 'Out of Stock',
+  storagePrefix: 'oos_',
+  apiEndpoint: null,
+  pageNames: { 'index.html':'Mobiele app','app.html':'Desktop-app','inventaris.html':'Inventaris-dashboard','beheer.html':'Coach-dashboard' },
+  screenNames: {
+    'home':'Start (feed)','zoeken':'Zoeken','nood':'Noden-ingang','suggesties':'Suggesties','etalage':'Etalage','ruimer':'Ruimer aanbod','fiche':'Materiaalfiche','vraag':'Vraag','aanvraag':'Leningaanvraag','aanvraagverzonden':'Aanvraag verstuurd','ophalen':'Ophalen','bevestiging':'Bevestiging','meldingen':'Meldingen','aanvraaginbox':'Inkomende aanvraag','terugbrengen':'Terugbrengen','reststroomdetail':'Reststroom detail','aanbieden':'Aanbieden','reststromen':'Reststromen','kast':'Onze kast','mijnactiviteit':'Mijn activiteit','mijnitem':'Eigen materiaal','lening':'Jouw lening','profiel':'Profiel',
+    'start':'Start (feed)','ontdek':'Ontdek',
+    'inventaris':'Inventaris','uitgeleend':'Uitgeleend','aanvragen':'Aanvragen',
+    'overzicht':'Overzicht','verenigingen':'Verenigingen','materiaal':'Materiaal','transacties':'Transacties','rapport':'Rapport gemeente'
+  }
+};
+</script>
+<script src="comments.js"></script>
+</body>
+</html>

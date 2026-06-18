@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Out of Stock - inventaris</title>
+<style>
+:root{ --ink:#1A1A1A; --muted:#6B7280; --accent:#1A6DFF; --bg:#FFFFFF; --surface:#F9FAFB; --border:#E5E7EB; --accent-soft:#EAF1FF; }
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:var(--ink); font-size:15px; line-height:1.6; background:var(--surface);}
+button{font-family:inherit; cursor:pointer;}
+a{color:var(--accent); text-decoration:none;}
+.app{display:flex; min-height:100vh;}
+
+.sidebar{width:248px; flex:0 0 248px; background:var(--bg); border-right:1px solid var(--border); display:flex; flex-direction:column; position:sticky; top:0; height:100vh;}
+.brand{padding:20px 20px 14px; display:flex; align-items:center; gap:10px;}
+.brand .mark{width:30px; height:30px; border-radius:8px; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px;}
+.brand b{font-weight:600; letter-spacing:-0.01em;}
+.brand span{display:block; font-size:11px; color:var(--muted); font-weight:500; letter-spacing:0.04em; text-transform:uppercase;}
+.switch{margin:0 12px 12px; border:1px solid var(--border); border-radius:8px; padding:9px 12px; display:flex; align-items:center; justify-content:space-between; font-size:13.5px; font-weight:500;}
+.switch small{display:block; color:var(--muted); font-size:11px; font-weight:400;}
+.nav{padding:6px 12px; flex:1;}
+.nav a{display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:8px; color:var(--ink); font-size:14.5px; font-weight:500; margin-bottom:2px;}
+.nav a .ic{color:var(--muted); display:flex;}
+.nav a.on{background:var(--accent-soft); color:var(--accent);}
+.nav a.on .ic{color:var(--accent);}
+.nav a:hover:not(.on){background:var(--surface);}
+.coach{padding:14px 16px; border-top:1px solid var(--border); display:flex; align-items:center; gap:10px;}
+.coach .av{width:34px; height:34px; border-radius:999px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted);}
+.coach b{font-weight:600; font-size:13.5px; display:block; line-height:1.3;}
+.coach span{font-size:12px; color:var(--muted);}
+
+.main{flex:1; min-width:0;}
+.topbar{height:60px; border-bottom:1px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:space-between; padding:0 28px; position:sticky; top:0; z-index:5;}
+.topbar h1{font-size:18px; font-weight:600; letter-spacing:-0.01em; margin:0;}
+.topbar .actions{display:flex; align-items:center; gap:10px;}
+.tbtn{border:1px solid var(--border); background:var(--bg); border-radius:8px; padding:8px 14px; font-size:13.5px; font-weight:500; color:var(--ink); display:inline-flex; align-items:center; gap:8px;}
+.tbtn.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.tbtn.primary{background:var(--accent); color:#fff; border:none;}
+.tbtn.sm{padding:6px 11px; font-size:12.5px;}
+.dot{width:7px; height:7px; border-radius:999px; background:var(--muted);}
+.tbtn.on .dot{background:var(--accent);}
+
+.content{padding:28px; max-width:1180px;}
+.view{display:none;} .view.on{display:block;}
+.phead{margin-bottom:20px;}
+.phead h2{font-size:24px; font-weight:600; letter-spacing:-0.02em; margin:0 0 2px;}
+.phead p{color:var(--muted); margin:0; font-size:14px;}
+
+.note{display:none; border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; background:var(--bg); padding:11px 14px; margin:0 0 16px; font-size:13px; color:var(--muted);}
+.note b{color:var(--accent); font-weight:600;}
+.notes-on .note{display:block;}
+
+.kpis{display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:18px;}
+.kpi{background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:16px;}
+.kpi .l{font-size:12.5px; color:var(--muted); font-weight:500;}
+.kpi .n{font-size:26px; font-weight:600; letter-spacing:-0.02em; margin:6px 0 2px;}
+.kpi .d{font-size:12.5px; color:var(--muted);}
+
+.toolbar{display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.search{display:flex; align-items:center; gap:9px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:8px 12px; min-width:230px; color:var(--muted);}
+.search input{border:none; background:none; outline:none; font:inherit; color:var(--ink); flex:1;}
+.filters{display:flex; gap:6px; flex-wrap:wrap;}
+.chip{border:1px solid var(--border); background:var(--bg); border-radius:999px; padding:7px 13px; font-size:13px; font-weight:500; color:var(--ink);}
+.chip.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.spacer{flex:1;}
+
+.tablecard{background:var(--bg); border:1px solid var(--border); border-radius:12px; overflow:hidden;}
+table{width:100%; border-collapse:collapse;}
+thead th{text-align:left; font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; padding:12px 16px; background:var(--surface); border-bottom:1px solid var(--border);}
+tbody td{padding:12px 16px; border-bottom:1px solid var(--border); font-size:14px; vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr.clickable:hover{background:var(--surface); cursor:pointer;}
+td b{font-weight:600;}
+td .sub{color:var(--muted); font-size:12.5px;}
+.num{text-align:right; font-variant-numeric:tabular-nums;}
+.tcell{display:flex; align-items:center; gap:11px;}
+.tile{width:34px; height:34px; border-radius:8px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); flex:0 0 auto;}
+
+.pill{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:500; padding:3px 9px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--muted);}
+.pill.acc{color:var(--accent); border-color:#CFE0FF; background:var(--accent-soft);}
+.pill.ok{color:#0F7A3D; border-color:#CDEBD8; background:#F1FBF5;}
+.pill.warn{color:#A85A00; border-color:#F3E2C6; background:#FCF6EC;}
+.pill .d{width:6px; height:6px; border-radius:999px;}
+
+.section-title{font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin:24px 0 12px;}
+.muted{color:var(--muted);}
+
+/* drawer */
+.overlay{position:fixed; inset:0; background:rgba(26,26,26,0.22); opacity:0; pointer-events:none; transition:opacity .2s; z-index:20;}
+.overlay.on{opacity:1; pointer-events:auto;}
+.drawer{position:fixed; top:0; right:0; height:100vh; width:430px; max-width:92vw; background:var(--bg); border-left:1px solid var(--border); transform:translateX(100%); transition:transform .22s ease; z-index:21; display:flex; flex-direction:column;}
+.drawer.on{transform:none;}
+.dhead{display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border);}
+.dhead h3{margin:0; font-size:17px; font-weight:600;}
+.dbody{padding:22px; overflow-y:auto; flex:1;}
+.dfoot{padding:16px 22px; border-top:1px solid var(--border); display:flex; gap:8px;}
+.iconx{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--ink);}
+.field-label{font-size:13px; font-weight:600; margin:16px 0 6px; display:block;}
+.input{width:100%; border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:14px; font-family:inherit; color:var(--ink); outline:none; background:var(--bg);}
+.input:focus{border-color:var(--accent);}
+.drow{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 0; border-bottom:1px solid var(--border);}
+.drow:last-child{border-bottom:none;}
+.drow b{font-weight:600;}
+.sw{width:42px; height:25px; border-radius:999px; background:var(--border); position:relative; border:none; flex:0 0 auto;}
+.sw.on{background:var(--accent);}
+.sw .k{position:absolute; top:3px; left:3px; width:19px; height:19px; border-radius:999px; background:#fff; transition:left .15s;}
+.sw.on .k{left:20px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;}
+.btn.sec{background:var(--bg);color:var(--ink);border:1px solid var(--border);font-weight:500;}
+
+@media(max-width:1080px){ .kpis{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:720px){ .sidebar{display:none;} }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="mark">O</div><div><b>Out of Stock</b><span>Materiaalbeheer</span></div></div>
+    <div class="switch"><div><b>Chiro Heverlee</b><small id="swCount">14 soorten in beheer</small></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="muted"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg></div>
+    <nav class="nav">
+      <a class="on" data-view="inventaris" onclick="show('inventaris',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/></svg></span>Inventaris</a>
+      <a data-view="uitgeleend" onclick="show('uitgeleend',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span>Uitgeleend</a>
+      <a data-view="aanvragen" onclick="show('aanvragen',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16v12H7l-3 3V5Z"/></svg></span>Aanvragen</a>
+      <a data-view="reststromen" onclick="show('reststromen',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 19a4 4 0 0 1-3.5-6l2-3.5M12 4.5 14 8M17 5a4 4 0 0 1 3.5 6l-2 3.5M20 16l-3.5.5M9 20l2.5-2.5"/></svg></span>Reststromen</a>
+    </nav>
+    <div class="coach"><div class="av"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div><div><b>Lien Vermeulen</b><span>Materiaalmeester</span></div></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Inventaris</h1>
+      <div class="actions">
+        <button class="tbtn" id="notesBtn" onclick="toggleNotes()"><span class="dot"></span> Ontwerpnotities</button>
+        <a class="tbtn" href="app.html">App (desktop)</a>
+        <a class="tbtn" href="beheer.html">Coach-dashboard</a>
+        <a class="tbtn" href="index.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg> Mobiel</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- INVENTARIS -->
+      <section class="view on" id="inventaris">
+        <div class="phead"><h2>Inventaris</h2><p>Al het materiaal van Chiro Heverlee op één plek</p></div>
+        <div class="note">Hier zit de echte meerwaarde van een groot scherm: het volledige materiaal in één overzicht beheren. Op de telefoon doe je snelle acties, hier houd je de inventaris actueel, wat in 1.0 net niet lukte met de Excel. Klik een rij voor de details, of voeg materiaal toe.</div>
+        <div class="kpis">
+          <div class="kpi"><div class="l">Soorten materiaal</div><div class="n" id="kpiSoorten">14</div><div class="d" id="kpiStuks">94 stuks totaal</div></div>
+          <div class="kpi"><div class="l">Open voor delen</div><div class="n" id="kpiOpen">11</div><div class="d">zichtbaar in de etalage</div></div>
+          <div class="kpi"><div class="l">Weinig gebruikt</div><div class="n" id="kpiWeinig">4</div><div class="d">kandidaat om te delen</div></div>
+          <div class="kpi"><div class="l">Aan vervanging toe</div><div class="n" id="kpiVerv">2</div><div class="d">opgemerkt bij teruggave</div></div>
+          <div class="kpi"><div class="l">Geschatte waarde</div><div class="n">€8.400</div><div class="d">vervangingswaarde</div></div>
+        </div>
+        <div class="toolbar">
+          <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><input id="invSearch" placeholder="Zoek in je materiaal..." oninput="filterInv()"></div>
+          <div class="filters" id="invFilters"></div>
+          <div class="spacer"></div>
+          <button class="tbtn primary" onclick="openAdd()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Materiaal toevoegen</button>
+        </div>
+        <div class="tablecard">
+          <table>
+            <thead><tr><th>Materiaal</th><th>Categorie</th><th class="num">Aantal</th><th>Delen</th><th class="num">Uitgeleend</th><th>Laatst</th><th>Staat</th></tr></thead>
+            <tbody id="invBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- UITGELEEND -->
+      <section class="view" id="uitgeleend">
+        <div class="phead"><h2>Uitgeleend</h2><p>Wat nu uit is en wat jullie zelf ontlenen</p></div>
+        <div class="note">Beide kanten van de journey: wat jullie uitlenen aan anderen en wat jullie zelf lenen. De staat-check bij ophalen en teruggave hoort hierbij, zo ontstaat er geen discussie.</div>
+        <div class="section-title">Nu uit het huis</div>
+        <div class="tablecard">
+          <table><thead><tr><th>Materiaal</th><th>Naar</th><th>Periode</th><th>Status</th></tr></thead><tbody>
+            <tr><td><b>12 klaptafels</b></td><td>KSA Wijgmaal</td><td>14 - 18 juni</td><td><span class="pill acc">uit</span></td></tr>
+            <tr><td><b>Springkasteel</b></td><td>Chiro Kessel-Lo</td><td>15 - 16 juni</td><td><span class="pill acc">uit</span></td></tr>
+          </tbody></table>
+        </div>
+        <div class="section-title">Wat jullie zelf lenen</div>
+        <div class="tablecard">
+          <table><thead><tr><th>Materiaal</th><th>Van</th><th>Periode</th><th>Status</th></tr></thead><tbody>
+            <tr><td><b>Frietketel (dubbel)</b></td><td>KSA Wijgmaal</td><td>13 - 16 juni</td><td><span class="pill acc">lopend</span></td></tr>
+            <tr><td><b>80 stoelen</b></td><td>KLJ Korbeek-Lo</td><td>17 - 19 mei</td><td><span class="pill ok">afgerond</span></td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <!-- AANVRAGEN -->
+      <section class="view" id="aanvragen">
+        <div class="phead"><h2>Aanvragen</h2><p>Verenigingen die jullie materiaal willen lenen</p></div>
+        <div class="note">De uitlener-kant van de journey. Zonder dit overzicht bestond de andere helft van een lening niet. Bevestigen of weigeren gebeurt hier, en de aanvrager krijgt een seintje.</div>
+        <div class="tablecard">
+          <table><thead><tr><th>Vereniging</th><th>Materiaal</th><th>Periode</th><th>Status</th><th></th></tr></thead><tbody>
+            <tr><td><b>Sportkring Heverlee</b></td><td>12 klaptafels</td><td>20 - 22 juni</td><td class="statuscell"><span class="pill warn">wacht op jou</span></td><td class="num actioncell"><button class="tbtn sm" onclick="reqAction(this,false)">Niet nu</button> <button class="tbtn sm primary" onclick="reqAction(this,true)">Bevestig</button></td></tr>
+            <tr><td><b>Toneelgroep De Bron</b></td><td>Geluidsinstallatie</td><td>28 juni</td><td class="statuscell"><span class="pill warn">wacht op jou</span></td><td class="num actioncell"><button class="tbtn sm" onclick="reqAction(this,false)">Niet nu</button> <button class="tbtn sm primary" onclick="reqAction(this,true)">Bevestig</button></td></tr>
+            <tr><td><b>KSA Wijgmaal</b></td><td>12 klaptafels</td><td>14 - 18 juni</td><td class="statuscell"><span class="pill ok">bevestigd</span></td><td></td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+      <!-- RESTSTROMEN -->
+      <section class="view" id="reststromen">
+        <div class="phead"><h2>Reststromen</h2><p>Materiaal dat weg mag, maar elders waarde heeft</p></div>
+        <div class="note">Een aparte stroom met eigen dynamiek: inspiratie en urgentie in plaats van zoeken. Te koppelen aan jullie opruimdagen.</div>
+        <div class="toolbar"><div class="spacer"></div><button class="tbtn primary" onclick="alert('Reststroom toevoegen: foto, omschrijving en een datum waarvoor het weg moet.')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Reststroom toevoegen</button></div>
+        <div class="tablecard">
+          <table><thead><tr><th>Reststroom</th><th>Mogelijke bestemming</th><th>Weg voor</th><th>Status</th></tr></thead><tbody>
+            <tr><td><b>Oude decorstukken</b></td><td>fuifaankleding · 2 geïnteresseerd</td><td>30 juni</td><td><span class="pill acc">gematcht</span></td></tr>
+            <tr><td><b>Restpartij verf</b></td><td>lokaal opknappen</td><td>15 juli</td><td><span class="pill">open</span></td></tr>
+          </tbody></table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- drawers -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="detailDrawer">
+  <div class="dhead"><h3 id="ddTitle">Materiaal</h3><button class="iconx" onclick="closeDrawer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="dbody" id="ddBody"></div>
+  <div class="dfoot"><button class="btn sec" style="flex:1" onclick="closeDrawer()">Sluiten</button><button class="btn" style="flex:1" onclick="alert('Hier pas je naam, aantal, foto en beschrijving aan.')">Gegevens aanpassen</button></div>
+</aside>
+<aside class="drawer" id="addDrawer">
+  <div class="dhead"><h3>Materiaal toevoegen</h3><button class="iconx" onclick="closeDrawer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="dbody">
+    <label class="field-label" style="margin-top:0;">Naam</label>
+    <input class="input" id="addName" placeholder="bv. nadarhekken, statafels, beamer">
+    <label class="field-label">Categorie</label>
+    <select class="input" id="addCat"><option>Tenten</option><option>Tafels &amp; stoelen</option><option>Keuken</option><option>Geluid</option><option>Spel</option><option>Gereedschap</option><option>Vervoer</option></select>
+    <label class="field-label">Aantal</label>
+    <input class="input" id="addQty" type="number" min="1" value="1">
+    <div class="drow" style="margin-top:14px;"><div><b>Open voor delen</b><div class="sub muted">zichtbaar in de etalage</div></div><button class="sw on" id="addOpen" onclick="this.classList.toggle('on'); this.previousElementSibling.querySelector('.sub').textContent=this.classList.contains('on')?'zichtbaar in de etalage':'alleen voor jullie zelf';"><span class="k"></span></button></div>
+    <p class="muted" style="font-size:13px; margin-top:14px;">Een foto en beschrijving kan je later toevoegen. Alleen de naam is verplicht.</p>
+  </div>
+  <div class="dfoot"><button class="btn sec" style="flex:1" onclick="closeDrawer()">Annuleer</button><button class="btn" style="flex:1" onclick="submitAdd()">Toevoegen</button></div>
+</aside>
+
+<script>
+function ic(name){
+  var p={ tent:'<path d="M12 4 3 20h18L12 4Z"/><path d="M12 9v11"/>', table:'<path d="M3 9h18M5 9v10M19 9v10M3 9l2-4h14l2 4"/>', chair:'<path d="M6 11V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6M6 11h12l-1 5M6 11l1 5M7 16v4M17 16v4"/>', fryer:'<path d="M4 9h16l-1.2 9.5a2 2 0 0 1-2 1.5H7.2a2 2 0 0 1-2-1.5L4 9Z"/><path d="M3 9h18"/>', fridge:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M6 10h12M9 5v2"/>', speaker:'<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="14" r="3.5"/>', spel:'<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/>', bbq:'<path d="M5 8h14l-1.5 7a3 3 0 0 1-3 2.5H9.5a3 3 0 0 1-3-2.5L5 8Z"/><path d="M9 20l-1 2M15 20l1 2M9 5v1M12 4v2M15 5v1"/>', tool:'<path d="M14 7a4 4 0 0 0-5.3 5.3l-4.4 4.4a1.5 1.5 0 0 0 2.1 2.1l4.4-4.4A4 4 0 0 0 17 12"/>', ladder:'<path d="M7 3v18M17 3v18M7 7h10M7 12h10M7 17h10"/>', light:'<path d="M4 6h16M7 6l1 4h8l1-4M9 10v4a3 3 0 0 0 6 0v-4"/>', coffee:'<path d="M5 8h11v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V8ZM16 9h2a2 2 0 0 1 0 4h-2M5 21h12"/>', box:'<path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/>' }[name]||'<path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/>';
+  return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+}
+var INV=[
+  {n:'Partytenten 3×6 m',c:'Tenten',a:4,open:true,lent:12,last:'mei 2026',staat:'goed',ic:'tent',blocked:'12-19 juli (kamp)',history:[['KLJ Korbeek-Lo','mei 2026'],['Scouts Heverlee','apr 2026'],['Sportkring Heverlee','aug 2025']]},
+  {n:'Klaptafels 180cm',c:'Tafels & stoelen',a:12,open:true,lent:9,last:'jun 2026',staat:'goed',ic:'table',blocked:'',history:[['KSA Wijgmaal','jun 2026'],['Scouts Heverlee','mei 2026']]},
+  {n:'Stapelstoelen',c:'Tafels & stoelen',a:60,open:true,lent:6,last:'mei 2026',staat:'goed',ic:'chair',blocked:'',history:[['KLJ Korbeek-Lo','mei 2026']]},
+  {n:'Frietketel (enkel)',c:'Keuken',a:1,open:true,lent:3,last:'mei 2026',staat:'goed',ic:'fryer',blocked:'',history:[['Chiro Kessel-Lo','mei 2026']]},
+  {n:'Koelkast 200L',c:'Keuken',a:1,open:true,lent:2,last:'apr 2026',staat:'goed',ic:'fridge',blocked:'',history:[]},
+  {n:'Grote BBQ',c:'Keuken',a:1,open:true,lent:4,last:'aug 2025',staat:'goed',ic:'bbq',blocked:'',history:[['FC Wilsele','aug 2025']]},
+  {n:'Koffiezet (50 kopjes)',c:'Keuken',a:2,open:true,lent:1,last:'mrt 2026',staat:'goed',ic:'coffee',blocked:'',history:[]},
+  {n:'Geluidsinstallatie',c:'Geluid',a:1,open:false,lent:0,last:'zelden',staat:'goed',ic:'speaker',blocked:'',history:[]},
+  {n:'Party-verlichting',c:'Geluid',a:3,open:true,lent:2,last:'dec 2025',staat:'goed',ic:'light',blocked:'',history:[]},
+  {n:'Springkasteel',c:'Spel',a:1,open:true,lent:5,last:'jun 2026',staat:'goed',ic:'spel',blocked:'',history:[['Chiro Kessel-Lo','jun 2026']]},
+  {n:'Tafelvoetbal',c:'Spel',a:1,open:false,lent:0,last:'zelden',staat:'goed',ic:'spel',blocked:'',history:[]},
+  {n:'Boormachine + slijp',c:'Gereedschap',a:1,open:false,lent:0,last:'feb 2026',staat:'vervangen',ic:'tool',blocked:'',history:[]},
+  {n:'Ladder 4m',c:'Gereedschap',a:1,open:true,lent:1,last:'jan 2026',staat:'goed',ic:'ladder',blocked:'',history:[]},
+  {n:'Verlengkabels (haspel)',c:'Gereedschap',a:5,open:true,lent:3,last:'apr 2026',staat:'vervangen',ic:'tool',blocked:'',history:[]}
+];
+var INVCATS=['Alles','Tenten','Tafels & stoelen','Keuken','Geluid','Spel','Gereedschap','Vervoer'];
+var invFilter='Alles';
+function renderFilters(){ document.getElementById('invFilters').innerHTML=INVCATS.map(function(c){return '<button class="chip'+(c===invFilter?' on':'')+'" onclick="setFilter(\''+c+'\')">'+c+'</button>';}).join(''); }
+function setFilter(c){ invFilter=c; renderFilters(); filterInv(); }
+function filterInv(){
+  var q=(document.getElementById('invSearch').value||'').toLowerCase();
+  var html='';
+  INV.forEach(function(r,i){
+    if(invFilter!=='Alles' && r.c!==invFilter) return;
+    if(q && (r.n+' '+r.c).toLowerCase().indexOf(q)<0) return;
+    var delen = r.open?'<span class="pill ok">open</span>':'<span class="pill">privé</span>';
+    var staat = r.staat==='goed'?'<span class="pill"><span class="d" style="background:#0F7A3D"></span>goed</span>':'<span class="pill warn">vervangen</span>';
+    html += '<tr class="clickable" onclick="openDetail('+i+')"><td><div class="tcell"><span class="tile">'+ic(r.ic)+'</span><b>'+r.n+'</b></div></td><td class="muted">'+r.c+'</td><td class="num">'+r.a+'</td><td>'+delen+'</td><td class="num">'+r.lent+'×</td><td class="muted">'+r.last+'</td><td>'+staat+'</td></tr>';
+  });
+  document.getElementById('invBody').innerHTML = html || '<tr><td colspan="7" class="muted" style="padding:24px 16px; text-align:center;">Niets gevonden.</td></tr>';
+}
+function updateKpis(){
+  document.getElementById('kpiSoorten').textContent=INV.length;
+  document.getElementById('kpiStuks').textContent=INV.reduce(function(s,r){return s+r.a;},0)+' stuks totaal';
+  document.getElementById('kpiOpen').textContent=INV.filter(function(r){return r.open;}).length;
+  document.getElementById('kpiWeinig').textContent=INV.filter(function(r){return r.lent<=1;}).length;
+  document.getElementById('kpiVerv').textContent=INV.filter(function(r){return r.staat==='vervangen';}).length;
+  document.getElementById('swCount').textContent=INV.length+' soorten in beheer';
+}
+function openDrawer(id){ document.getElementById('overlay').classList.add('on'); document.getElementById(id).classList.add('on'); }
+function closeDrawer(){ document.getElementById('overlay').classList.remove('on'); document.querySelectorAll('.drawer').forEach(function(d){d.classList.remove('on');}); }
+function openAdd(){ openDrawer('addDrawer'); document.getElementById('addName').focus(); }
+function submitAdd(){
+  var name=document.getElementById('addName').value.trim(); if(!name){ alert('Geef een naam in.'); return; }
+  var cat=document.getElementById('addCat').value.replace('&amp;','&');
+  var qty=parseInt(document.getElementById('addQty').value)||1;
+  var open=document.getElementById('addOpen').classList.contains('on');
+  INV.unshift({n:name,c:cat,a:qty,open:open,lent:0,last:'zojuist',staat:'goed',ic:'box',blocked:'',history:[]});
+  document.getElementById('addName').value=''; document.getElementById('addQty').value='1';
+  closeDrawer(); renderFilters(); filterInv(); updateKpis();
+}
+function openDetail(i){
+  var r=INV[i];
+  document.getElementById('ddTitle').textContent=r.n;
+  var hist = (r.history&&r.history.length) ? r.history.map(function(h){return '<div class="drow"><div>'+h[0]+'</div><span class="muted">'+h[1]+'</span></div>';}).join('') : '<div class="muted" style="padding:13px 0;">Nog niet uitgeleend.</div>';
+  document.getElementById('ddBody').innerHTML=
+    '<div class="drow" style="padding-top:0;"><div class="tcell"><span class="tile" style="width:42px;height:42px;">'+ic(r.ic)+'</span><div><b>'+r.n+'</b><div class="sub muted">'+r.c+' · '+r.a+' stuks</div></div></div></div>'+
+    '<div class="drow"><div><b>Open voor delen</b><div class="sub muted" id="ddOpenSub">'+(r.open?'zichtbaar in de etalage':'alleen voor jullie zelf')+'</div></div><button class="sw'+(r.open?' on':'')+'" onclick="toggleItemOpen('+i+', this)"><span class="k"></span></button></div>'+
+    '<div class="drow"><div><b>Staat</b></div>'+(r.staat==='goed'?'<span class="pill"><span class="d" style="background:#0F7A3D"></span>goed</span>':'<span class="pill warn">aan vervanging toe</span>')+'</div>'+
+    '<div class="drow"><div><b>Uitgeleend</b></div><span class="muted">'+r.lent+'× · laatst '+r.last+'</span></div>'+
+    '<label class="field-label">Niet uitlenen</label>'+(r.blocked?('<span class="pill">'+r.blocked+'</span>'):'<span class="muted">geen periode geblokkeerd</span>')+
+    '<label class="field-label">Uitleengeschiedenis</label>'+hist;
+  openDrawer('detailDrawer');
+}
+function toggleItemOpen(i,btn){
+  INV[i].open=!INV[i].open; var on=INV[i].open;
+  btn.classList.toggle('on',on);
+  var sub=document.getElementById('ddOpenSub'); if(sub) sub.textContent=on?'zichtbaar in de etalage':'alleen voor jullie zelf';
+  filterInv(); updateKpis();
+}
+function reqAction(btn,ok){
+  var tr=btn.closest('tr');
+  tr.querySelector('.statuscell').innerHTML = ok?'<span class="pill ok">bevestigd</span>':'<span class="pill">geweigerd</span>';
+  tr.querySelector('.actioncell').innerHTML = '<span class="muted" style="font-size:12.5px;">'+(ok?'seintje verstuurd':'')+'</span>';
+}
+function show(id, el){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('on',v.id===id);});
+  document.querySelectorAll('.nav a').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-view')===id);});
+  var titles={inventaris:'Inventaris',uitgeleend:'Uitgeleend',aanvragen:'Aanvragen',reststromen:'Reststromen'};
+  document.getElementById('pageTitle').textContent=titles[id]||''; window.scrollTo(0,0);
+}
+function toggleNotes(){ var on=document.body.classList.toggle('notes-on'); document.getElementById('notesBtn').classList.toggle('on',on); }
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeDrawer(); });
+renderFilters(); filterInv(); updateKpis();
+</script>
+<script>
+window.CM_CONFIG = {
+  projectName: 'Out of Stock',
+  storagePrefix: 'oos_',
+  apiEndpoint: null,
+  pageNames: { 'index.html':'Mobiele app','app.html':'Desktop-app','inventaris.html':'Inventaris-dashboard','beheer.html':'Coach-dashboard' },
+  screenNames: {
+    'home':'Start (feed)','zoeken':'Zoeken','nood':'Noden-ingang','suggesties':'Suggesties','etalage':'Etalage','ruimer':'Ruimer aanbod','fiche':'Materiaalfiche','vraag':'Vraag','aanvraag':'Leningaanvraag','aanvraagverzonden':'Aanvraag verstuurd','ophalen':'Ophalen','bevestiging':'Bevestiging','meldingen':'Meldingen','aanvraaginbox':'Inkomende aanvraag','terugbrengen':'Terugbrengen','reststroomdetail':'Reststroom detail','aanbieden':'Aanbieden','reststromen':'Reststromen','kast':'Onze kast','mijnactiviteit':'Mijn activiteit','mijnitem':'Eigen materiaal','lening':'Jouw lening','profiel':'Profiel',
+    'start':'Start (feed)','ontdek':'Ontdek',
+    'inventaris':'Inventaris','uitgeleend':'Uitgeleend','aanvragen':'Aanvragen',
+    'overzicht':'Overzicht','verenigingen':'Verenigingen','materiaal':'Materiaal','transacties':'Transacties','rapport':'Rapport gemeente'
+  }
+};
+</script>
+<script src="comments.js"></script>
+</body>
+</html>

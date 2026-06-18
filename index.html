@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Out of Stock - prototype</title>
+<style>
+:root{
+  --ink:#1A1A1A; --muted:#6B7280; --accent:#1A6DFF; --bg:#FFFFFF;
+  --surface:#F9FAFB; --border:#E5E7EB; --accent-soft:#EAF1FF;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; padding:0;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--surface); color:var(--ink); font-size:15px; line-height:1.6;
+  display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:32px 16px;
+}
+button{font-family:inherit; cursor:pointer;}
+a{color:var(--accent);}
+
+.intro{margin-bottom:24px; text-align:center; max-width:520px;}
+.intro h1{font-size:22px; font-weight:600; letter-spacing:-0.02em; margin:0 0 6px;}
+.intro p{color:var(--muted); margin:0; font-size:14px;}
+.controls{display:flex; gap:8px; justify-content:center; margin-top:14px; flex-wrap:wrap;}
+.ctrl{border:1px solid var(--border); background:var(--bg); border-radius:999px; padding:7px 14px; font-size:13px; font-weight:500; color:var(--ink); display:inline-flex; align-items:center; gap:7px; text-decoration:none;}
+.ctrl.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.dot{width:7px; height:7px; border-radius:999px; background:var(--muted);}
+.ctrl.on .dot{background:var(--accent);}
+
+.chrome{width:100%; max-width:880px; display:flex; gap:32px; align-items:flex-start; justify-content:center;}
+.device{width:390px; height:820px; background:var(--bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; position:relative; flex:0 0 auto;}
+.statusbar{height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 22px; font-size:13px; font-weight:600; flex:0 0 auto;}
+.statusbar .sigs{display:flex; gap:5px; align-items:center;}
+
+.viewport{flex:1; position:relative; overflow:hidden;}
+.screen{position:absolute; inset:0; display:flex; flex-direction:column; opacity:0; transform:translateX(14px); pointer-events:none; transition:opacity .24s ease, transform .24s ease;}
+.screen.active{opacity:1; transform:none; pointer-events:auto;}
+.scroll{flex:1; overflow-y:auto; padding:4px 20px 92px;}
+.scroll.with-cta{padding-bottom:104px;}
+.scroll::-webkit-scrollbar{width:0;}
+
+.appbar{display:flex; align-items:center; gap:12px; padding:6px 16px 10px; min-height:44px;}
+.appbar .title{font-size:17px; font-weight:600; letter-spacing:-0.01em;}
+.appbar .spacer{flex:1;}
+.iconbtn{width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:center; color:var(--ink);}
+
+.h-greet{font-size:24px; font-weight:600; letter-spacing:-0.02em; margin:6px 0 2px;}
+.sub{color:var(--muted); font-size:14px;}
+.section-title{font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin:24px 0 12px; display:flex; align-items:center; justify-content:space-between;}
+.section-title a{font-size:12px; text-transform:none; letter-spacing:0; font-weight:600;}
+.h2{font-size:22px; font-weight:600; letter-spacing:-0.02em; margin:6px 0 4px;}
+
+.card{background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:16px;}
+.card + .card{margin-top:10px;}
+
+.searchbar{display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:11px 14px; color:var(--muted); width:100%; text-align:left;}
+.searchbar input{border:none; background:none; outline:none; font:inherit; color:var(--ink); flex:1; padding:0;}
+
+.qa{display:flex; gap:10px;}
+.qa button{flex:1; display:flex; flex-direction:column; gap:8px; align-items:flex-start; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px; text-align:left; color:var(--ink);}
+.qa button .ic{width:36px; height:36px; border-radius:9px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center;}
+.qa button b{font-weight:600; font-size:14.5px; line-height:1.3;}
+
+.action{display:flex; align-items:center; gap:14px; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:16px; width:100%; text-align:left; color:var(--ink);}
+.action + .action{margin-top:10px;}
+.action .ic{width:42px; height:42px; border-radius:10px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+.action .tx{flex:1;}
+.action .tx b{display:block; font-weight:600; font-size:16px;}
+.action .tx span{color:var(--muted); font-size:13px;}
+.action .chev{color:var(--muted);}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:13px 20px; font-size:15px; font-weight:600; width:100%;}
+.btn.sec{background:var(--bg); color:var(--ink); border:1px solid var(--border); font-weight:500;}
+.btn.ghost{background:transparent; color:var(--accent); border:none; width:auto; padding:8px; font-weight:600;}
+.btn[disabled]{opacity:.4;}
+.btn-row{position:absolute; left:0; right:0; bottom:0; padding:14px 20px; background:var(--bg); border-top:1px solid var(--border);}
+
+.chips{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{border:1px solid var(--border); background:var(--bg); border-radius:999px; padding:8px 14px; font-size:14px; font-weight:500; color:var(--ink);}
+.chip.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
+.chip.sm{padding:5px 11px; font-size:12.5px;}
+
+.lab{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:500; padding:3px 9px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:var(--surface);}
+.lab.ok{color:#0F7A3D; border-color:#CDEBD8; background:#F1FBF5;}
+.lab.warn{color:#A85A00; border-color:#F3E2C6; background:#FCF6EC;}
+.lab.acc{color:var(--accent); border-color:#CFE0FF; background:var(--accent-soft);}
+.dot-s{width:7px; height:7px; border-radius:999px; flex:0 0 auto;}
+
+.input,.textarea{width:100%; border:1px solid var(--border); border-radius:8px; padding:11px 14px; font-size:15px; font-family:inherit; color:var(--ink); background:var(--bg); outline:none;}
+.textarea{min-height:84px; resize:none; line-height:1.5;}
+.input:focus,.textarea:focus{border-color:var(--accent);}
+.field-label{font-size:13px; font-weight:600; margin:14px 0 6px; display:block;}
+
+.tile{width:52px; height:52px; border-radius:10px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); flex:0 0 auto;}
+.tile.lg{width:100%; height:172px; border-radius:12px; flex-direction:column; gap:8px;}
+.tile.lg .ph{font-size:12px; color:var(--muted); font-weight:500;}
+
+.item{display:flex; gap:13px; align-items:center; padding:13px 0; border-bottom:1px solid var(--border); cursor:pointer;}
+.item:last-child{border-bottom:none;}
+.item .meta{flex:1; min-width:0;}
+.item .meta b{font-weight:600; font-size:15px; display:block;}
+.item .meta span{color:var(--muted); font-size:13px;}
+.item .right{text-align:right; flex:0 0 auto;}
+
+.check{display:flex; align-items:center; gap:12px; padding:13px 14px; border:1px solid var(--border); border-radius:10px; background:var(--bg); width:100%; text-align:left; color:var(--ink);}
+.check + .check{margin-top:8px;}
+.check .box{width:22px; height:22px; border-radius:6px; border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:#fff;}
+.check.on .box{background:var(--accent); border-color:var(--accent);}
+.check .box svg{opacity:0;}
+.check.on .box svg{opacity:1;}
+.check .tx{flex:1;}
+.check .tx b{font-weight:600; font-size:15px; display:block;}
+.check .tx span{color:var(--muted); font-size:13px;}
+
+.stats{display:flex; gap:10px;}
+.stat{flex:1; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px;}
+.stat .n{font-size:24px; font-weight:600; letter-spacing:-0.02em;}
+.stat .l{font-size:12.5px; color:var(--muted); line-height:1.35; margin-top:2px;}
+
+.cal{display:flex; gap:7px; margin-top:4px;}
+.cal .d{flex:1; border:1px solid var(--border); border-radius:9px; padding:9px 0; text-align:center; background:var(--bg); cursor:pointer;}
+.cal .d small{display:block; font-size:11px; color:var(--muted);}
+.cal .d b{font-size:15px; font-weight:600;}
+.cal .d.busy{background:var(--surface); color:var(--muted); cursor:default;}
+.cal .d.busy b{color:var(--muted);}
+.cal .d.sel{border-color:var(--accent); background:var(--accent-soft);}
+.cal .d.sel b{color:var(--accent);}
+
+.seg{display:flex; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:3px;}
+.seg button{flex:1; border:none; background:transparent; padding:8px; border-radius:8px; font-size:14px; font-weight:500; color:var(--muted);}
+.seg button.on{background:var(--bg); color:var(--ink); border:1px solid var(--border);}
+
+.map{height:240px; border:1px solid var(--border); border-radius:12px; background:var(--surface); position:relative; overflow:hidden;}
+.map .grid{position:absolute; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:40px 40px; opacity:.5;}
+.pin{position:absolute; display:flex; flex-direction:column; align-items:center; transform:translate(-50%,-100%); color:var(--accent);}
+.pin .lbl{font-size:11px; font-weight:600; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:2px 6px; color:var(--ink); margin-top:2px; white-space:nowrap;}
+.pin.me{color:var(--ink);}
+
+/* feed */
+.post{border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:10px; background:var(--bg);}
+.post .ph{display:flex; gap:11px; align-items:flex-start;}
+.post .av{width:40px; height:40px; border-radius:999px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); flex:0 0 auto;}
+.post .who{flex:1; min-width:0;}
+.post .who .l1{font-size:14.5px; line-height:1.4;}
+.post .who .l1 b{font-weight:600;}
+.post .who .l2{color:var(--muted); font-size:12.5px;}
+.post .time{color:var(--muted); font-size:12px; flex:0 0 auto;}
+.post .thumb{display:flex; gap:11px; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px; margin-top:11px; cursor:pointer;}
+.post .thumb .meta b{font-weight:600; font-size:14px; display:block;}
+.post .thumb .meta span{color:var(--muted); font-size:12.5px;}
+.post .foot{display:flex; gap:18px; margin-top:11px; padding-top:11px; border-top:1px solid var(--border);}
+.post .foot button{background:none; border:none; color:var(--muted); font-size:13px; font-weight:500; display:inline-flex; align-items:center; gap:6px; padding:0;}
+.post .foot button.liked{color:var(--accent);}
+
+/* category grid */
+.catgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.cat{display:flex; align-items:center; gap:11px; border:1px solid var(--border); border-radius:12px; padding:14px; background:var(--bg); color:var(--ink); text-align:left;}
+.cat .ic{width:34px;height:34px;border-radius:9px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+.cat b{font-weight:600; font-size:14px;}
+
+/* toggle switch */
+.sw{width:42px; height:25px; border-radius:999px; background:var(--border); position:relative; border:none; flex:0 0 auto;}
+.sw.on{background:var(--accent);}
+.sw .k{position:absolute; top:3px; left:3px; width:19px; height:19px; border-radius:999px; background:#fff; transition:left .15s;}
+.sw.on .k{left:20px;}
+
+.tabbar{flex:0 0 auto; display:flex; align-items:center; justify-content:space-around; border-top:1px solid var(--border); background:var(--bg); padding:8px 6px; position:absolute; left:0; right:0; bottom:0; height:64px;}
+.tab{display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; color:var(--muted); font-size:10.5px; font-weight:500; padding:4px 8px; flex:1;}
+.tab.on{color:var(--accent);}
+.tab.add{flex:0 0 auto;}
+.tab.add .plus{width:46px; height:38px; border-radius:10px; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; margin-top:-12px;}
+
+.notes{flex:0 0 300px; max-width:300px; display:none;}
+.notes.show{display:block;}
+.notes .np{position:sticky; top:32px; border:1px solid var(--border); background:var(--bg); border-radius:12px; padding:18px;}
+.notes .np .k{font-size:12px; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em;}
+.notes .np h4{font-size:17px; font-weight:600; margin:8px 0 8px; letter-spacing:-0.01em;}
+.notes .np p{font-size:13.5px; color:var(--muted); margin:0; line-height:1.6;}
+.notes .np .tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);}
+.notes .np .tg{font-size:11.5px; font-weight:500; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:3px 8px;}
+
+.muted{color:var(--muted);}
+.row-between{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.mt8{margin-top:8px;} .mt12{margin-top:12px;} .mt16{margin-top:16px;} .mt24{margin-top:24px;}
+.hr{height:1px; background:var(--border); margin:16px 0;}
+.hidden{display:none !important;}
+.center{text-align:center;}
+
+@media(max-width:560px){
+  body{padding:0;}
+  .device{width:100vw; max-width:100%; height:100vh; border-radius:0; border:none;}
+  .notes,.intro{display:none !important;}
+}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Out of Stock</h1>
+  <p>Klikbaar prototype. Scenario: Lien, materiaalmeester bij Chiro Heverlee, organiseert een eetfestijn voor 80 mensen.</p>
+  <div class="controls">
+    <button class="ctrl" id="notesToggle" onclick="toggleNotes()"><span class="dot"></span> Ontwerpnotities</button>
+    <button class="ctrl" onclick="setTab('home')">Naar start</button>
+    <a class="ctrl" href="app.html">App desktop →</a>
+    <a class="ctrl" href="inventaris.html">Inventaris (desktop) →</a>
+    <a class="ctrl" href="beheer.html">Coach-dashboard (desktop) →</a>
+  </div>
+</div>
+
+<div class="chrome">
+<div class="device">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="sigs">
+      <svg width="17" height="11" viewBox="0 0 17 11"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4.5" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="9" y="2.5" width="3" height="8.5" rx="1" fill="currentColor"/><rect x="13.5" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="1" y="1" width="20" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity="0.4"/><rect x="2.5" y="2.5" width="15" height="7" rx="1.5" fill="currentColor"/><rect x="22.5" y="4" width="1.5" height="4" rx="0.75" fill="currentColor" fill-opacity="0.4"/></svg>
+    </span>
+  </div>
+
+  <div class="viewport" id="viewport">
+
+    <!-- HOME (feed) -->
+    <section class="screen" id="home">
+      <div class="scroll">
+        <div class="row-between" style="margin-top:8px;">
+          <div><div class="h-greet">Hallo Lien</div><div class="sub">Chiro Heverlee · Deelnetwerk Leuven</div></div>
+          <div style="display:flex; gap:8px;">
+            <div class="iconbtn" onclick="go('meldingen')" aria-label="Meldingen"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+            <div class="iconbtn" onclick="go('profiel')" aria-label="Profiel"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+          </div>
+        </div>
+
+        <button class="searchbar mt16" onclick="setTab('zoeken')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+          Zoek materiaal of beschrijf je activiteit
+        </button>
+
+        <div class="qa mt12">
+          <button onclick="go('nood')"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></span><b>Ik heb iets nodig</b></button>
+          <button onclick="go('aanbieden')"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg></span><b>Delen of opruimen</b></button>
+        </div>
+
+        <div class="card mt16">
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <span class="lab acc" style="margin-top:2px;">juli</span>
+            <div style="flex:1;">
+              <b style="font-weight:600;">Jullie kamp komt eraan</b>
+              <div class="sub mt8">Vorig jaar leenden jullie 4 partytenten. Nu al reserveren voorkomt de zomerse stress.</div>
+              <button class="btn ghost" style="padding:10px 0 2px;" onclick="openItem('partytent')">Bekijk tenten in de buurt →</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Activiteit in je netwerk <a onclick="setTab('zoeken')">zoeken</a></div>
+        <div id="feedList"></div>
+      </div>
+    </section>
+
+    <!-- ZOEKEN (echte search) -->
+    <section class="screen" id="zoeken">
+      <div class="appbar"><div class="title">Zoeken</div></div>
+      <div class="scroll">
+        <div class="searchbar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+          <input id="searchInput" placeholder="Zoek naar materiaal..." oninput="runSearch(this.value)">
+          <span id="searchClear" class="hidden" onclick="clearSearch()" style="cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+        </div>
+
+        <div id="searchBrowse">
+          <div class="section-title">Recent gezocht</div>
+          <div class="chips">
+            <button class="chip sm" onclick="quickSearch('frietketel')">frietketel</button>
+            <button class="chip sm" onclick="quickSearch('tafels')">tafels</button>
+            <button class="chip sm" onclick="quickSearch('tent')">tent</button>
+            <button class="chip sm" onclick="quickSearch('geluid')">geluid</button>
+          </div>
+          <div class="section-title">Bladeren per categorie</div>
+          <div class="catgrid" id="catGrid"></div>
+          <div class="card mt16">
+            <div class="row-between">
+              <div style="flex:1;"><b style="font-weight:600;">Weet je niet wat je zoekt?</b><div class="sub mt8">Beschrijf gewoon je activiteit, dan zoeken wij het materiaal erbij.</div></div>
+            </div>
+            <button class="btn sec mt12" onclick="go('nood')">Beschrijf je activiteit</button>
+          </div>
+        </div>
+
+        <div id="searchResults" class="hidden"></div>
+      </div>
+    </section>
+
+    <!-- NOOD -->
+    <section class="screen" id="nood">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Wat heb je nodig?</div></div>
+      <div class="scroll with-cta">
+        <p class="sub" style="margin-top:0;">Beschrijf wat je van plan bent. Wij zoeken het materiaal erbij, zo hoef je niet zelf alles op te lijsten.</p>
+        <span class="field-label">Kies een type activiteit</span>
+        <div class="chips" data-single="1">
+          <button class="chip on" onclick="pickChip(this)">Eetfestijn</button>
+          <button class="chip" onclick="pickChip(this)">Kamp</button>
+          <button class="chip" onclick="pickChip(this)">Fuif</button>
+          <button class="chip" onclick="pickChip(this)">Tornooi</button>
+          <button class="chip" onclick="pickChip(this)">Werkdag</button>
+        </div>
+        <span class="field-label">Vertel kort wat je plant</span>
+        <textarea class="textarea">Eetfestijn voor 80 mensen in de parochiezaal, zaterdagavond. We hebben zelf borden en bestek.</textarea>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="go('suggesties')">Toon wat ik nodig heb</button></div>
+    </section>
+
+    <!-- SUGGESTIES -->
+    <section class="screen" id="suggesties">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Voorstel</div></div>
+      <div class="scroll with-cta">
+        <div class="h2">Voor een eetfestijn (80 p.)</div>
+        <p class="sub">Op basis van gelijkaardige evenementen. Vink aan wat je nodig hebt.</p>
+        <div class="mt16" id="sugList"></div>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="setTab('zoeken'); showAllResults();"><span id="sugCount">Bekijk beschikbaar materiaal</span></button></div>
+    </section>
+
+    <!-- ETALAGE (alle in de buurt) -->
+    <section class="screen" id="etalage">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">In de buurt</div></div>
+      <div class="scroll">
+        <div class="seg" id="etSeg">
+          <button class="on" onclick="etView('list',this)">Lijst</button>
+          <button onclick="etView('map',this)">Kaart</button>
+        </div>
+        <div id="etList" class="mt16">
+          <div class="card" style="padding:6px 16px;" id="etItems"></div>
+          <div class="card mt12 center">
+            <div class="sub">Niets passend in de buurt?</div>
+            <button class="btn ghost" onclick="go('ruimer')">Toon ruimer aanbod →</button>
+          </div>
+        </div>
+        <div id="etMap" class="mt16 hidden">
+          <div class="map">
+            <div class="grid"></div>
+            <div class="pin me" style="left:50%; top:62%;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg><span class="lbl">Jij</span></div>
+            <div class="pin" style="left:33%; top:40%;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 22s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg><span class="lbl">Frietketel</span></div>
+            <div class="pin" style="left:64%; top:34%;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 22s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg><span class="lbl">Partytent</span></div>
+          </div>
+          <p class="sub center mt12">Alles binnen 2,5 km. Lokaal eerst, want ophalen en terugbrengen blijft zo haalbaar.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RUIMER AANBOD -->
+    <section class="screen" id="ruimer">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Ruimer aanbod</div></div>
+      <div class="scroll">
+        <p class="sub" style="margin-top:0;">Buiten je eigen gemeente, plus uitleendiensten en de deelkaart van WijDelen.</p>
+        <div class="card" style="padding:6px 16px;" id="ruimerItems"></div>
+      </div>
+    </section>
+
+    <!-- FICHE (generiek) -->
+    <section class="screen" id="fiche">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="spacer"></div><div class="iconbtn" id="favBtn" onclick="this.classList.toggle('on'); this.style.color=this.classList.contains('on')?'var(--accent)':'';"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.5-7 9-7 9Z"/></svg></div></div>
+      <div class="scroll with-cta" id="ficheBody"></div>
+      <div class="btn-row"><button class="btn" id="ficheCta" onclick="go('aanvraag')">Vraag aan</button></div>
+    </section>
+
+    <!-- VRAAG (reageren op een vraag uit de feed) -->
+    <section class="screen" id="vraag">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Vraag</div></div>
+      <div class="scroll with-cta">
+        <div class="item" style="cursor:default;">
+          <span class="av tile">S</span>
+          <span class="meta"><b>Scouts Heverlee</b><span>vraag · 5 uur geleden</span></span>
+        </div>
+        <p style="margin:8px 0 0;">Wij zoeken een <b>extra partytent</b> voor het ledenweekend van 14 juni. Eentje van 3×6 zou perfect zijn. Ophalen en terugbrengen kunnen we zelf.</p>
+        <div class="card mt16" style="background:var(--surface);">
+          <div class="sub">Heb jij dit liggen?</div>
+          <div class="mt12"><span class="lab">Chiro Heverlee heeft 4 partytenten</span></div>
+        </div>
+        <span class="field-label">Reacties (1)</span>
+        <div class="item" style="cursor:default;"><span class="av tile">K</span><span class="meta"><b>KLJ Korbeek-Lo</b><span>"Wij hebben er eentje vrij na 12 juni."</span></span></div>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="alert('Je reactie is verstuurd naar Scouts Heverlee.'); back();">Reageer: ik heb dit</button></div>
+    </section>
+
+    <!-- AANVRAAG -->
+    <section class="screen" id="aanvraag">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Leningaanvraag</div></div>
+      <div class="scroll with-cta">
+        <div class="item" style="cursor:default; padding:6px 0 14px;" id="aanvraagHead"></div>
+        <span class="field-label">Welke periode heb je het nodig?</span>
+        <div class="card" style="padding:4px 16px;">
+          <div class="item" style="cursor:default;"><span class="meta"><b>Van</b></span><button class="chip sm" onclick="alert('Kies een startdatum.')">za 14 juni</button></div>
+          <div class="item" style="cursor:default;"><span class="meta"><b>Tot</b></span><button class="chip sm" onclick="alert('Kies een einddatum.')">ma 16 juni</button></div>
+        </div>
+        <span class="field-label">Ophalen en terugbrengen</span>
+        <div class="chips" data-single="1"><button class="chip sm on" onclick="pickChip(this)">'s avonds</button><button class="chip sm" onclick="pickChip(this)">overdag</button><button class="chip sm" onclick="pickChip(this)">in overleg</button></div>
+        <div class="card mt24">
+          <button class="row-between" style="width:100%; background:none; border:none; padding:0; color:var(--ink); font:inherit; text-align:left;" onclick="toggleFaq()">
+            <b style="font-weight:600;">Wat als er iets stuk gaat?</b>
+            <span id="faqChev" class="muted"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m6 9 6 6 6-6"/></svg></span>
+          </button>
+          <p id="faqBody" class="sub hidden" style="margin:10px 0 0;">Kleine slijtage hoort erbij en wordt gewoon gemeld. Bij echte schade nemen jullie samen contact op. Voor uitzonderlijke grote schade is er de verzekering van het deelnetwerk. Alles wordt vastgelegd bij ophalen en terugbrengen, zodat er geen discussie achteraf ontstaat.</p>
+        </div>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="go('aanvraagverzonden')">Stuur aanvraag</button></div>
+    </section>
+
+    <!-- AANVRAAG VERSTUURD (lener wacht op bevestiging) -->
+    <section class="screen" id="aanvraagverzonden">
+      <div class="scroll center" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding-top:54px;">
+        <div class="tile" style="width:72px; height:72px; border-radius:999px; background:var(--surface); color:var(--accent);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z"/></svg></div>
+        <div class="h2 mt24">Aanvraag verstuurd</div>
+        <p class="sub" id="verzondenHead" style="max-width:290px;"></p>
+        <div class="card mt16" style="width:100%; text-align:left; background:var(--surface);"><div class="sub">Je krijgt een melding zodra de uitlener bevestigt. Pas dan spreek je het ophalen af. Niets is dus al definitief.</div></div>
+        <div class="mt24" style="width:100%;">
+          <button class="btn" onclick="setTab('home')">Naar start</button>
+          <button class="btn ghost mt8" style="width:100%;" onclick="go('ophalen')">Demo: ga verder alsof bevestigd →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MELDINGEN -->
+    <section class="screen" id="meldingen">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Meldingen</div></div>
+      <div class="scroll">
+        <div class="card" style="padding:6px 16px;">
+          <div class="item" onclick="go('aanvraaginbox')"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9h18M5 9v10M19 9v10M3 9l2-4h14l2 4"/></svg></span><span class="meta"><b>Sportkring Heverlee wil iets lenen</b><span>12 klaptafels · 20-22 juni</span></span><span class="right"><span class="lab acc">actie</span></span></div>
+          <div class="item" onclick="ctx('frietketel'); go('ophalen')"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m5 12 4 4 10-10"/></svg></span><span class="meta"><b>KSA Wijgmaal bevestigde je aanvraag</b><span>frietketel · spreek het ophalen af</span></span><span class="right muted"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></span></div>
+          <div class="item" onclick="go('lening')"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="meta"><b>Breng de frietketel terug</b><span>tegen maandag 16 juni</span></span><span class="right muted"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></span></div>
+          <div class="item" onclick="go('vraag')"><span class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z"/></svg></span><span class="meta"><b>Scouts Heverlee zoekt een partytent</b><span>jullie hebben er 4 · reageren?</span></span><span class="right muted"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AANVRAAG INBOX (eigenaar bevestigt inkomende aanvraag) -->
+    <section class="screen" id="aanvraaginbox">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Inkomende aanvraag</div></div>
+      <div class="scroll with-cta">
+        <div class="item" style="cursor:default;"><span class="av tile">S</span><span class="meta"><b>Sportkring Heverlee</b><span>vraagt iets van jullie te leen</span></span></div>
+        <div class="item" style="cursor:default; border:none;"><span class="tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9h18M5 9v10M19 9v10M3 9l2-4h14l2 4"/></svg></span><span class="meta"><b>12 klaptafels</b><span>jullie eigen materiaal</span></span></div>
+        <span class="field-label">Gevraagde periode</span>
+        <div class="card" style="background:var(--surface);"><b style="font-weight:600;">20 - 22 juni</b><div class="sub mt8">Ophalen in overleg. Sportkring haalt zelf op en brengt terug.</div></div>
+        <span class="field-label">Past dit?</span>
+        <div class="card"><div class="sub">In die periode is er geen blokkering ingesteld voor de klaptafels. Bevestig je, dan krijgt Sportkring een seintje en spreken jullie het ophalen af.</div></div>
+      </div>
+      <div class="btn-row" style="display:flex; gap:8px;">
+        <button class="btn sec" style="flex:1;" onclick="alert('Geweigerd. Sportkring krijgt een seintje.'); back();">Niet nu</button>
+        <button class="btn" style="flex:2;" onclick="alert('Bevestigd! Sportkring krijgt een seintje en jullie spreken het ophalen af.'); back();">Bevestig lening</button>
+      </div>
+    </section>
+
+    <!-- TERUGBRENGEN (staat-check bij teruggave) -->
+    <section class="screen" id="terugbrengen">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Terugbrengen</div></div>
+      <div class="scroll with-cta">
+        <p class="sub" style="margin-top:0;">Je brengt de frietketel terug bij KSA Wijgmaal. Doe dezelfde check als bij het ophalen, dan is er nooit discussie achteraf.</p>
+        <span class="field-label">Foto bij teruggave</span>
+        <button class="tile lg" style="cursor:pointer;" onclick="this.querySelector('.ph').textContent='Foto toegevoegd'; this.querySelector('.ph').style.color='var(--accent)';"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.5-2.5h5L16 7"/><circle cx="12" cy="13" r="3.2"/></svg><span class="ph">Tik om een foto te nemen</span></button>
+        <span class="field-label">Snelle check</span>
+        <button class="check on" onclick="toggleCheck(this)"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 4 4 10-10"/></svg></span><span class="tx"><b>Alles terug en proper</b></span></button>
+        <button class="check" onclick="toggleCheck(this)"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 4 4 10-10"/></svg></span><span class="tx"><b>Iets te melden</b><span>kleine slijtage of schade</span></span></button>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="document.getElementById('bevestigHead').textContent='De frietketel is terug bij KSA Wijgmaal. Bedankt, de lening is afgerond en telt mee.'; go('bevestiging');">Bevestig teruggave</button></div>
+    </section>
+
+    <!-- RESTSTROOM DETAIL (iemand anders biedt een reststroom aan) -->
+    <section class="screen" id="reststroomdetail">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Reststroom</div></div>
+      <div class="scroll with-cta">
+        <div class="tile lg"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h18M3 12h18M3 17h18M6 7v10M12 7v10M18 7v10"/></svg><span class="ph">foto van de reststroom</span></div>
+        <div class="row-between mt16"><div><div class="h2" style="margin:0;">Houten paletten (8 stuks)</div><div class="sub">Scouts Heverlee · 0,8 km</div></div><span class="lab warn">weg voor 30 jun</span></div>
+        <div class="card mt16" style="background:var(--surface);"><b style="font-weight:600; display:flex; gap:8px; align-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3Z"/></svg> Wat kan je ermee?</b><p class="mt8" style="margin-bottom:0;">Andere verenigingen maakten er tuinbanken en plantenbakken van. Ook handig als ondergrond bij een evenement.</p></div>
+        <p class="sub mt16">Laat weten dat je interesse hebt, dan brengt Scouts je in contact. Ophalen spreek je samen af.</p>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="alert('Scouts Heverlee krijgt een seintje dat je interesse hebt.'); back();">Ik heb interesse</button></div>
+    </section>
+
+    <!-- OPHALEN -->
+    <section class="screen" id="ophalen">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Ophalen</div></div>
+      <div class="scroll with-cta">
+        <p class="sub" id="ophaalHead" style="margin-top:0;"></p>
+        <span class="field-label">Foto bij ophalen</span>
+        <button class="tile lg" style="cursor:pointer;" onclick="this.querySelector('.ph').textContent='Foto toegevoegd'; this.querySelector('.ph').style.color='var(--accent)';"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.5-2.5h5L16 7"/><circle cx="12" cy="13" r="3.2"/></svg><span class="ph">Tik om een foto te nemen · 1 volstaat</span></button>
+        <span class="field-label">Snelle check</span>
+        <button class="check on" onclick="toggleCheck(this)"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 4 4 10-10"/></svg></span><span class="tx"><b>Alles aanwezig</b></span></button>
+        <button class="check on" onclick="toggleCheck(this)"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 4 4 10-10"/></svg></span><span class="tx"><b>Geen zichtbare schade</b></span></button>
+        <p class="sub mt16">Bij het terugbrengen doe je dezelfde check. Zo is melden normaal, geen verwijt.</p>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="go('bevestiging')">Bevestig ophaling</button></div>
+    </section>
+
+    <!-- BEVESTIGING -->
+    <section class="screen" id="bevestiging">
+      <div class="scroll center" style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding-top:60px;">
+        <div class="tile" style="width:72px; height:72px; border-radius:999px; background:var(--accent-soft); border-color:#CFE0FF; color:var(--accent);"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4 10-10"/></svg></div>
+        <div class="h2 mt24">Geregeld</div>
+        <p class="sub" id="bevestigHead" style="max-width:280px;"></p>
+        <div class="card mt16" style="width:100%; text-align:left;">
+          <div class="item" style="border:none; padding:0; cursor:default;"><span class="tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="meta"><b>Deze lening telt mee</b><span>Chiro Heverlee bespaarde naar schatting 95 euro huur.</span></span></div>
+        </div>
+        <div class="mt24" style="width:100%;">
+          <button class="btn sec" onclick="alert('Toegevoegd aan de agenda van de vereniging.')">Zet in agenda</button>
+          <button class="btn ghost mt8" style="width:100%;" onclick="setTab('home')">Terug naar start</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- AANBIEDEN -->
+    <section class="screen" id="aanbieden">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Aanbieden</div></div>
+      <div class="scroll with-cta">
+        <div class="seg"><button class="on">Materiaal delen</button><button onclick="go('reststromen')">Reststroom opruimen</button></div>
+
+        <div class="section-title">Wat kan je zoal uitlenen?</div>
+        <p class="sub" style="margin:-6px 0 12px;">Verenigingen denken er niet altijd aan. Dit zijn dingen die vaak gedeeld worden. Misschien heb jij ze ook liggen. Tik om toe te voegen.</p>
+        <div class="card" style="padding:6px 16px;" id="triggerList"></div>
+
+        <div class="section-title">Of voeg zelf iets toe</div>
+        <span class="field-label" style="margin-top:0;">Naam</span>
+        <input class="input" id="addName" placeholder="bv. partytent, frietketel, aanhangwagen" oninput="checkAdd()">
+        <span class="field-label">Categorie</span>
+        <div class="chips" id="addCats" data-single="1"></div>
+        <span class="field-label">Beschrijving (optioneel)</span>
+        <textarea class="textarea" id="addDesc" placeholder="Korte omschrijving. Hoeft niet perfect, je kan ze laten bijschaven."></textarea>
+        <div class="row-between mt8">
+          <button class="btn ghost" style="padding:6px 0;" onclick="aiPolish()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="margin-right:2px;"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3Z"/><path d="M18.5 15l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7 .7-1.6Z"/></svg>Verbeter de tekst</button>
+          <span id="aiTag" class="lab acc hidden">bijgeschaafd</span>
+        </div>
+        <span class="field-label">Foto (optioneel)</span>
+        <button class="action" style="padding:12px 14px;" onclick="this.querySelector('b').textContent='Foto toegevoegd'; this.querySelector('.ic').style.color='var(--accent)';"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.5-2.5h5L16 7"/><circle cx="12" cy="13" r="3.2"/></svg></span><span class="tx"><b>Voeg een foto toe</b></span></button>
+        <span class="field-label">Wanneer mag je dit NIET uitlenen?</span>
+        <div class="chips"><button class="chip sm on" onclick="pickChip(this)">12-19 juli (kamp)</button><button class="chip sm" onclick="pickChip(this)">+ blokkeer dagen</button></div>
+      </div>
+      <div class="btn-row"><button class="btn" id="aanbiedBtn" disabled onclick="alert('In de kast gezet en zichtbaar voor je deelnetwerk.'); setTab('kast');">Zet in de kast</button></div>
+    </section>
+
+    <!-- KAST -->
+    <section class="screen" id="kast">
+      <div class="appbar"><div class="title">Onze kast</div><div class="spacer"></div><div class="iconbtn" onclick="go('aanbieden')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg></div></div>
+      <div class="scroll">
+        <div class="sub" style="margin-top:-4px;">Chiro Heverlee</div>
+        <div class="stats mt16">
+          <div class="stat"><div class="n">34</div><div class="l">stuks in beheer</div></div>
+          <div class="stat"><div class="n">5</div><div class="l">weinig gebruikt</div></div>
+          <div class="stat"><div class="n">2</div><div class="l">aan vervanging toe</div></div>
+        </div>
+        <div class="card mt16" style="background:var(--surface);">
+          <div style="display:flex; gap:12px;">
+            <span class="tile" style="background:var(--bg);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3Z"/></svg></span>
+            <div><b style="font-weight:600;">Samen aankopen?</b><div class="sub mt8">Jullie en KLJ Korbeek-Lo hebben allebei een geluidsinstallatie die zelden samen nodig is. Samen vervangen deelt de kosten.</div></div>
+          </div>
+        </div>
+        <div class="section-title">Mijn activiteit <a onclick="go('mijnactiviteit')">alles</a></div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="item" onclick="go('lening')"><span class="tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h16l-1.2 9.5a2 2 0 0 1-2 1.5H7.2a2 2 0 0 1-2-1.5L4 9Z"/><path d="M3 9h18M8 9V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/></svg></span><span class="meta"><b>Frietketel geleend</b><span>van KSA Wijgmaal · loopt tot 16 jun</span></span><span class="right"><span class="lab acc">lopend</span></span></div>
+        </div>
+        <div class="section-title">Jouw materiaal</div>
+        <div class="card" style="padding:6px 16px;" id="kastItems"></div>
+      </div>
+    </section>
+
+    <!-- MIJN ACTIVITEIT -->
+    <section class="screen" id="mijnactiviteit">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Mijn activiteit</div></div>
+      <div class="scroll">
+        <div class="section-title">Lopend</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="item" onclick="go('lening')"><span class="tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h16l-1.2 9.5a2 2 0 0 1-2 1.5H7.2a2 2 0 0 1-2-1.5L4 9Z"/><path d="M3 9h18"/></svg></span><span class="meta"><b>Frietketel</b><span>geleend van KSA Wijgmaal</span></span><span class="right"><span class="lab acc">tot 16 jun</span></span></div>
+        </div>
+        <div class="section-title">Afgerond</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="item" onclick="openItem('stoelen')"><span class="tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 11V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6M6 11h12l-1 5M6 11l1 5M7 16v4M17 16v4"/></svg></span><span class="meta"><b>80 stoelen</b><span>van KLJ Korbeek-Lo · netjes terug</span></span><span class="right"><span class="lab ok">klaar</span></span></div>
+          <div class="item" onclick="openItem('tafels')"><span class="tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9h18M5 9v10M19 9v10M3 9l2-4h14l2 4"/></svg></span><span class="meta"><b>10 klaptafels</b><span>van KLJ Korbeek-Lo</span></span><span class="right"><span class="lab ok">klaar</span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MIJN ITEM (eigenaarsweergave) -->
+    <section class="screen" id="mijnitem">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Jouw materiaal</div></div>
+      <div class="scroll with-cta" id="mijnitemBody"></div>
+      <div class="btn-row"><button class="btn sec" onclick="alert('Hier pas je naam, foto en beschrijving aan.')">Gegevens aanpassen</button></div>
+    </section>
+
+    <!-- LENING (lopende lening die jij ontleent) -->
+    <section class="screen" id="lening">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Jouw lening</div></div>
+      <div class="scroll with-cta">
+        <div class="item" style="cursor:default; padding:6px 0 14px;"><span class="tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9h16l-1.2 9.5a2 2 0 0 1-2 1.5H7.2a2 2 0 0 1-2-1.5L4 9Z"/><path d="M3 9h18M8 9V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/></svg></span><span class="meta"><b>Frietketel (dubbel)</b><span>geleend van KSA Wijgmaal</span></span></div>
+        <div class="card" style="background:var(--surface);"><div class="row-between"><b style="font-weight:600;">Loopt tot maandag 16 juni</b><span class="lab acc">lopend</span></div></div>
+        <span class="field-label">Contactpersoon</span>
+        <div class="card" style="padding:6px 16px;"><div class="item" style="cursor:default;"><span class="av tile">T</span><span class="meta"><b>Tom</b><span>KSA Wijgmaal</span></span><button class="iconbtn" onclick="alert('Bericht sturen naar Tom.')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z"/></svg></button></div></div>
+        <span class="field-label">Afspraken</span>
+        <div class="card"><div class="sub">Opgehaald: vrijdag 13 juni. Terugbrengen: maandag 16 juni, bij KSA Wijgmaal. Bij het terugbrengen doe je dezelfde staat-check als bij het ophalen.</div></div>
+      </div>
+      <div class="btn-row"><button class="btn" onclick="go('terugbrengen')">Terugbrengen</button></div>
+    </section>
+
+    <!-- RESTSTROMEN -->
+    <section class="screen" id="reststromen">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Opruimen</div></div>
+      <div class="scroll with-cta">
+        <div class="seg"><button onclick="go('aanbieden')">Materiaal delen</button><button class="on">Reststroom opruimen</button></div>
+        <p class="sub mt16">Niet alles hoeft naar het containerpark. Soms zoekt iemand anders het net. Maak een foto van wat in de weg ligt.</p>
+        <button class="tile lg" style="cursor:pointer;" id="restBtn" onclick="analyseRest()"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h18M3 12h18M3 17h18M6 7v10M12 7v10M18 7v10"/></svg><span class="ph">Foto van de reststroom</span></button>
+        <div id="restFill" class="hidden">
+          <div class="row-between mt24"><span class="field-label" style="margin:0;">Houten paletten (8 stuks)</span><span class="lab warn">weg voor 30 jun</span></div>
+          <div class="card mt8" style="background:var(--surface);">
+            <b style="font-weight:600; display:flex; gap:8px; align-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3Z"/></svg> Inspiratie</b>
+            <p class="mt8" style="margin-bottom:0;">Andere verenigingen maakten hier tuinbanken en plantenbakken van. <b style="font-weight:600;">3 verenigingen in de buurt</b> zoeken op dit moment hout.</p>
+          </div>
+          <button class="check on mt12" onclick="toggleCheck(this)"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 4 4 10-10"/></svg></span><span class="tx"><b>Koppel aan onze opruimdag</b><span>zaterdag 28 juni</span></span></button>
+        </div>
+      </div>
+      <div class="btn-row"><button class="btn" id="restPlaceBtn" disabled onclick="alert('Geplaatst. De 3 zoekende verenigingen krijgen een seintje.'); setTab('home');">Plaats reststroom</button></div>
+    </section>
+
+    <!-- PROFIEL -->
+    <section class="screen" id="profiel">
+      <div class="appbar"><div class="iconbtn" onclick="back()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 6-6 6 6 6"/></svg></div><div class="title">Profiel</div></div>
+      <div class="scroll">
+        <div class="card mt8">
+          <div class="item" style="border:none; padding:0; cursor:default;"><span class="tile" style="width:52px;height:52px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></span><span class="meta"><b>Lien Vermeulen</b><span>Materiaalmeester · Chiro Heverlee</span></span></div>
+        </div>
+        <div class="section-title">Mijn netwerk</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="item" onclick="go('mijnactiviteit')"><span class="meta"><b>Mijn activiteit</b><span>1 lopend · 2 afgerond</span></span><span class="right muted"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></span></div>
+          <div class="item" style="cursor:default;"><span class="meta"><b>Deelnetwerk Leuven</b><span>14 verenigingen actief</span></span><span class="right"><span class="lab">lid</span></span></div>
+        </div>
+        <div class="section-title">Instellingen</div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="item" style="cursor:default;"><span class="meta"><b>Meldingen rond piekmomenten</b><span>seintje voor je kamp of evenement</span></span><button class="sw on" onclick="this.classList.toggle('on')"><span class="k"></span></button></div>
+          <div class="item" style="cursor:default;"><span class="meta"><b>Reststromen tonen</b></span><button class="sw on" onclick="this.classList.toggle('on')"><span class="k"></span></button></div>
+          <div class="item" style="cursor:default;"><span class="meta"><b>Uitleendienst stad Leuven</b><span>gekoppeld aanbod tonen</span></span><button class="sw on" onclick="this.classList.toggle('on')"><span class="k"></span></button></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="tabbar">
+    <button class="tab on" data-root="home" onclick="setTab('home')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>Start</button>
+    <button class="tab" data-root="zoeken" onclick="setTab('zoeken')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></span>Zoeken</button>
+    <button class="tab add" onclick="go('aanbieden')"><span class="plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6v12M6 12h12"/></svg></span></button>
+    <button class="tab" data-root="kast" onclick="setTab('kast')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/></svg></span>Kast</button>
+    <button class="tab" data-root="profiel" onclick="setTab('profiel')"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></span>Profiel</button>
+  </div>
+</div>
+
+<div class="notes" id="notes">
+  <div class="np">
+    <div class="k">Ontwerpnotitie</div>
+    <h4 id="nTitle"></h4>
+    <p id="nBody"></p>
+    <div class="tags" id="nTags"></div>
+  </div>
+</div>
+</div>
+
+<script>
+function icon(name,size){
+  var s=size||22;
+  var p={
+    fryer:'<path d="M4 9h16l-1.2 9.5a2 2 0 0 1-2 1.5H7.2a2 2 0 0 1-2-1.5L4 9Z"/><path d="M3 9h18M8 9V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/>',
+    tent:'<path d="M12 4 3 20h18L12 4Z"/><path d="M12 9v11"/>',
+    table:'<path d="M3 9h18M5 9v10M19 9v10M3 9l2-4h14l2 4"/>',
+    chair:'<path d="M6 11V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6M6 11h12l-1 5M6 11l1 5M7 16v4M17 16v4"/>',
+    speaker:'<rect x="6" y="3" width="12" height="18" rx="2"/><circle cx="12" cy="14" r="3.5"/><circle cx="12" cy="7" r="1.2"/>',
+    fridge:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M6 10h12M9 5v2M9 13v3"/>',
+    spel:'<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/>',
+    pallet:'<path d="M3 7h18M3 12h18M3 17h18M6 7v10M12 7v10M18 7v10"/>',
+    tool:'<path d="M14 7a4 4 0 0 0-5.3 5.3l-4.4 4.4a1.5 1.5 0 0 0 2.1 2.1l4.4-4.4A4 4 0 0 0 17 12"/>'
+  }[name]||'';
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+}
+
+var ITEMS={
+  frietketel:{name:'Frietketel (dubbel)',cat:'Keuken',qty:'2× 8 liter',ver:'KSA Wijgmaal',dist:'1,2 km',icon:'fryer',lent:7,status:'vrij',statusType:'ok',
+    desc:'Dubbele elektrische friteuse, 2 × 8 liter. Geschikt voor grote groepen. Aansluiting 400V (krachtstroom) nodig.',
+    care:['Zet de thermostaat niet hoger dan 180°C. Een verkeerd gezette knop lijkt op een defect, maar is het meestal niet.','Controleer of je locatie een krachtstroomaansluiting (400V) heeft.'],
+    trust:'Geleend door 3 verenigingen · altijd op tijd terug'},
+  partytent:{name:'Partytent 3×6 m',cat:'Tenten',qty:'1 stuk',ver:'Scouts Heverlee',dist:'0,8 km',icon:'tent',lent:12,status:'vrij',statusType:'ok',
+    desc:'Partytent 3 op 6 meter met stalen frame. Inclusief haringen en spanbanden. Op te bouwen met 2 personen.',
+    care:['Maak de tent volledig droog voor je ze terugbrengt, anders schimmelt het doek.','Tel de haringen na bij ophalen en terugbrengen.'],
+    trust:'Geleend door 7 verenigingen'},
+  tafels:{name:'10 klaptafels',cat:'Tafels & stoelen',qty:'10 stuks',ver:'KLJ Korbeek-Lo',dist:'2,1 km',icon:'table',lent:9,status:'vanaf 14 jun',statusType:'warn',
+    desc:'Tien stevige klaptafels van 180 × 70 cm. Inklapbaar en makkelijk te stapelen.',
+    care:['Klap ze volledig dicht voor transport.'],trust:'Geleend door 5 verenigingen'},
+  stoelen:{name:'80 stoelen',cat:'Tafels & stoelen',qty:'80 stuks',ver:'KLJ Korbeek-Lo',dist:'2,1 km',icon:'chair',lent:6,status:'vrij',statusType:'ok',
+    desc:'Tachtig stapelbare kunststof stoelen, geleverd op rolwagens per 20.',
+    care:['Vervoer met de rolwagens, niet los.'],trust:'Geleend door 5 verenigingen'},
+  geluid:{name:'Geluidsset',cat:'Geluid',qty:'2 boxen + mengpaneel',ver:'Sportkring Heverlee',dist:'1,5 km',icon:'speaker',lent:5,status:'vrij',statusType:'ok',
+    desc:'Twee actieve speakers van 300W met statieven, een klein mengpaneel en twee microfoons. Geschikt voor zalen tot 150 personen.',
+    care:['Draai het volume op nul voor je aan- of uitschakelt, dat beschermt de boxen.'],trust:'Geleend door 4 verenigingen'},
+  koelkast:{name:'Koelkast',cat:'Keuken',qty:'300 liter',ver:'Chiro Kessel-Lo',dist:'3,4 km',icon:'fridge',lent:2,status:'vrij',statusType:'ok',
+    desc:'Horeca-koelkast van 300 liter, op wieltjes.',
+    care:['Laat na transport een uur staan voor je inschakelt.'],trust:'Geleend door 2 verenigingen'}
+};
+var SEARCHABLE=['frietketel','partytent','tafels','stoelen','geluid','koelkast'];
+var RUIMER=['koelkast'];
+var CATS=[['Keuken','fryer'],['Tenten','tent'],['Tafels & stoelen','table'],['Geluid','speaker'],['Spel','spel'],['Gereedschap','tool']];
+
+var FEED=[
+  {who:'KSA Wijgmaal',ini:'K',text:'bood een frietketel (dubbel) aan',sub:'Keuken · 1,2 km',time:'2 u',item:'frietketel',likes:4},
+  {who:'Scouts Heverlee',ini:'S',text:'zoekt een extra partytent voor 14 juni',sub:'voor een ledenweekend',time:'5 u',vraag:true,likes:1},
+  {who:'Chiro Heverlee',ini:'C',text:'leende 80 stoelen van KLJ Korbeek-Lo',sub:'afgerond, netjes terug',time:'gisteren',item:'stoelen',likes:6},
+  {who:'Scouts Heverlee',ini:'S',text:'heeft 8 houten paletten over',sub:'weg voor 30 juni · 3 geïnteresseerd',time:'gisteren',rest:true,likes:3},
+  {who:'Sportkring Heverlee',ini:'S',text:'stelde een geluidsset open',sub:'Geluid · 1,5 km',time:'2 dagen',item:'geluid',likes:2},
+  {who:'Scouts Heverlee',ini:'S',text:'leende een koelkast van Chiro Kessel-Lo',sub:'afgerond',time:'3 dagen',item:'koelkast',likes:5}
+];
+
+function labFor(t){return t==='ok'?'ok':(t==='warn'?'warn':'');}
+function itemRow(id){
+  var it=ITEMS[id];
+  return '<div class="item" onclick="openItem(\''+id+'\')"><span class="tile">'+icon(it.icon)+'</span><span class="meta"><b>'+it.name+'</b><span>'+it.ver+' · '+it.dist+' · '+it.lent+'× geleend</span></span><span class="right"><span class="lab '+labFor(it.statusType)+'">'+it.status+'</span></span></div>';
+}
+
+function renderFeed(){
+  document.getElementById('feedList').innerHTML=FEED.map(function(f,i){
+    var thumb='';
+    if(f.item){var it=ITEMS[f.item]; thumb='<div class="thumb" onclick="event.stopPropagation(); openItem(\''+f.item+'\')"><span class="tile" style="width:42px;height:42px;">'+icon(it.icon)+'</span><span class="meta"><b>'+it.name+'</b><span>'+it.ver+' · '+it.dist+'</span></span><span class="muted"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></span></div>';}
+    if(f.rest){thumb='<div class="thumb" onclick="event.stopPropagation(); go(\'reststroomdetail\')"><span class="tile" style="width:42px;height:42px;">'+icon('pallet')+'</span><span class="meta"><b>8 houten paletten</b><span>reststroom · tuinmeubels</span></span><span class="lab warn">30 jun</span></div>';}
+    var onclick = f.vraag ? "go('vraag')" : (f.rest ? "go('reststroomdetail')" : (f.item?"openItem('"+f.item+"')":""));
+    return '<div class="post"><div class="ph" '+(onclick?'onclick="'+onclick+'" style="cursor:pointer;"':'')+'><span class="av">'+f.ini+'</span><span class="who"><div class="l1"><b>'+f.who+'</b> '+f.text+'</div><div class="l2">'+f.sub+'</div></span><span class="time">'+f.time+'</span></div>'+thumb+
+    '<div class="foot"><button onclick="likePost(this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.5-7 9-7 9Z"/></svg> <span>'+f.likes+'</span></button>'+
+    '<button onclick="'+(f.vraag?"go('vraag')":(f.rest?"go('reststroomdetail')":(f.item?"openItem('"+f.item+"')":"void 0")))+'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z"/></svg> '+(f.vraag?'Reageer':(f.rest?'Bekijk':'Vraag aan'))+'</button></div></div>';
+  }).join('');
+}
+function likePost(btn){
+  var span=btn.querySelector('span'); var liked=btn.classList.toggle('liked');
+  span.textContent=parseInt(span.textContent)+(liked?1:-1);
+}
+
+function renderCats(){
+  document.getElementById('catGrid').innerHTML=CATS.map(function(c){
+    return '<button class="cat" onclick="quickSearch(\''+c[0]+'\')"><span class="ic">'+icon(c[1])+'</span><b>'+c[0]+'</b></button>';
+  }).join('');
+}
+function renderEt(){ document.getElementById('etItems').innerHTML=SEARCHABLE.map(itemRow).join(''); document.getElementById('ruimerItems').innerHTML=RUIMER.map(itemRow).join(''); }
+function renderKast(){
+  document.getElementById('kastItems').innerHTML=[
+    {ic:'tent',n:'4 partytenten 3×6',m:'3× uitgeleend',s:'open',id:'own_tent'},
+    {ic:'fryer',n:'Frietketel enkel',m:'laatst: mei',s:'open',id:'own_fryer'},
+    {ic:'speaker',n:'Geluidsinstallatie',m:'zelden gebruikt',s:'privé',id:'own_speaker'},
+    {ic:'table',n:'12 klaptafels',m:'5× uitgeleend',s:'open',id:'own_table'},
+    {ic:'tool',n:'Boormachine',m:'aan vervanging toe',s:'privé',id:'own_drill'}
+  ].map(function(k){
+    var lab=k.s==='open'?'<span class="lab ok">open</span>':'<span class="lab">privé</span>';
+    return '<div class="item" onclick="openOwnItem(\''+k.id+'\')"><span class="tile">'+icon(k.ic)+'</span><span class="meta"><b>'+k.n+'</b><span>'+k.m+'</span></span><span class="right">'+lab+'</span></div>';
+  }).join('');
+}
+function renderSug(){
+  var rows=[['Klaptafels','10 stuks','ok','lokaal beschikbaar'],['Stoelen','80 stuks','ok','lokaal beschikbaar'],['Frietketel','2 stuks','warn','1 beschikbaar'],['Partytent','1 stuk','ok','lokaal beschikbaar'],['Koelkast','1 stuk','','niet lokaal'],['Geluidsinstallatie','1 set','ok','lokaal beschikbaar']];
+  document.getElementById('sugList').innerHTML=rows.map(function(r){
+    return '<button class="check on" onclick="toggleSug(this)"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12 4 4 10-10"/></svg></span><span class="tx"><b>'+r[0]+'</b><span>'+r[1]+'</span></span><span class="lab '+r[2]+'">'+r[3]+'</span></button>';
+  }).join('');
+  updateSugCount();
+}
+
+// search
+function runSearch(q){
+  q=(q||'').trim().toLowerCase();
+  document.getElementById('searchClear').classList.toggle('hidden',!q);
+  var browse=document.getElementById('searchBrowse'), res=document.getElementById('searchResults');
+  if(!q){ browse.classList.remove('hidden'); res.classList.add('hidden'); return; }
+  browse.classList.add('hidden'); res.classList.remove('hidden');
+  var matches=SEARCHABLE.filter(function(id){var it=ITEMS[id]; return (it.name+' '+it.cat+' '+it.ver).toLowerCase().indexOf(q)>-1;});
+  if(matches.length){
+    res.innerHTML='<div class="section-title">'+matches.length+' resultaten</div><div class="card" style="padding:6px 16px;">'+matches.map(itemRow).join('')+'</div>';
+  } else {
+    res.innerHTML='<div class="card center mt16"><div class="sub">Niets gevonden voor "'+q+'" in de buurt.</div><button class="btn sec mt12" onclick="go(\'nood\')">Beschrijf je activiteit</button><button class="btn ghost mt8" style="width:100%;" onclick="go(\'ruimer\')">Toon ruimer aanbod</button></div>';
+  }
+}
+function quickSearch(q){ setTab('zoeken'); var inp=document.getElementById('searchInput'); inp.value=q; runSearch(q); }
+function clearSearch(){ var inp=document.getElementById('searchInput'); inp.value=''; runSearch(''); }
+function showAllResults(){ var inp=document.getElementById('searchInput'); inp.value=''; document.getElementById('searchBrowse').classList.add('hidden'); var res=document.getElementById('searchResults'); res.classList.remove('hidden'); res.innerHTML='<div class="section-title">In de buurt ('+SEARCHABLE.length+')</div><div class="card" style="padding:6px 16px;">'+SEARCHABLE.map(itemRow).join('')+'</div><div class="card mt12 center"><div class="sub">Niets passend?</div><button class="btn ghost" onclick="go(\'ruimer\')">Toon ruimer aanbod →</button></div>'; }
+
+// fiche
+var current='frietketel';
+function openItem(id){
+  current=id; var it=ITEMS[id];
+  var care=it.care.map(function(c){return '<p class="mt8" style="margin-bottom:8px;">'+c+'</p>';}).join('');
+  document.getElementById('ficheBody').innerHTML=
+    '<div class="tile lg">'+icon(it.icon,'34')+'<span class="ph">foto van het materiaal</span></div>'+
+    '<div class="row-between mt16"><div><div class="h2" style="margin:0;">'+it.name+'</div><div class="sub">'+it.ver+' · '+it.dist+'</div></div><span class="lab '+labFor(it.statusType)+'">'+it.status+'</span></div>'+
+    '<span class="field-label">Beschikbaarheid</span><div class="card" style="background:var(--surface);"><b style="font-weight:600;">Meestal vrij</b><div class="sub mt8">Geen vaste kalender om bij te houden. Je vraagt de periode aan die je nodig hebt, '+it.ver+' bevestigt of het lukt.</div></div>'+
+    '<div class="row-between mt24"><span class="field-label" style="margin:0;">Beschrijving</span></div><p style="margin:8px 0 0;">'+it.desc+'</p>'+
+    '<div class="card mt16" style="background:var(--surface);"><b style="font-weight:600; display:flex; align-items:center; gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg> Goed om te weten</b>'+care+'</div>'+
+    '<div class="item mt12" style="border:none; padding:14px 0 0; cursor:default;"><span class="tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="meta"><b>Vlot geleend</b><span>'+it.trust+'</span></span></div>'+
+    '<p class="sub" style="margin-top:16px;">Gratis te leen. Je stuurt een aanvraag, '+it.ver+' bevestigt. Jij haalt op en brengt terug.</p>';
+  document.getElementById('ficheCta').textContent='Vraag te leen bij '+it.ver;
+  document.getElementById('favBtn').classList.remove('on'); document.getElementById('favBtn').style.color='';
+  ctx(id);
+  go('fiche');
+}
+function ctx(id){
+  current=id; var it=ITEMS[id];
+  document.getElementById('aanvraagHead').innerHTML='<span class="tile">'+icon(it.icon)+'</span><span class="meta"><b>'+it.name+'</b><span>'+it.ver+' · contact: Tom</span></span>';
+  document.getElementById('ophaalHead').textContent='Vrijdag 13 juni, 18-20u bij '+it.ver+'. Leg even de staat vast, dat beschermt jou en de uitlener.';
+  document.getElementById('bevestigHead').textContent='Je hebt de '+it.name.toLowerCase()+' tot maandag 16 juni. We sturen op tijd een seintje om terug te brengen.';
+  var v=document.getElementById('verzondenHead'); if(v) v.textContent=it.ver+' krijgt je aanvraag voor de '+it.name.toLowerCase()+' (za 14 tot ma 16 juni) en bevestigt of het lukt.';
+}
+
+var OWN={
+  own_tent:{name:'4 partytenten 3×6 m',icon:'tent',sub:'3× uitgeleend · laatst in mei',open:true,now:'Nu beschikbaar',blocked:'12-19 juli (kamp)',history:[['KLJ Korbeek-Lo','mei 2026'],['Scouts Heverlee','april 2026'],['Sportkring Heverlee','augustus 2025']]},
+  own_fryer:{name:'Frietketel (enkel)',icon:'fryer',sub:'laatst gebruikt in mei',open:true,now:'Nu beschikbaar',blocked:'geen blokkering ingesteld',history:[['Chiro Kessel-Lo','mei 2026']]},
+  own_speaker:{name:'Geluidsinstallatie',icon:'speaker',sub:'zelden gebruikt',open:false,now:'Privé, niet zichtbaar in de etalage',blocked:'geen blokkering ingesteld',history:[]},
+  own_table:{name:'12 klaptafels',icon:'table',sub:'5× uitgeleend',open:true,now:'Wordt geleend door KSA Wijgmaal tot 18 juni',blocked:'geen blokkering ingesteld',history:[['KSA Wijgmaal','juni 2026'],['Scouts Heverlee','mei 2026']]},
+  own_drill:{name:'Boormachine',icon:'tool',sub:'aan vervanging toe',open:false,now:'Privé, aan vervanging toe',blocked:'geen blokkering ingesteld',history:[]}
+};
+function openOwnItem(id){
+  var o=OWN[id];
+  var hist=o.history.length?o.history.map(function(h){return '<div class="item" style="cursor:default;"><span class="meta"><b>'+h[0]+'</b><span>'+h[1]+'</span></span><span class="right muted" style="font-size:12.5px;">teruggebracht</span></div>';}).join(''):'<div class="item" style="cursor:default; border:none;"><span class="meta"><span class="sub">Nog niet uitgeleend.</span></span></div>';
+  document.getElementById('mijnitemBody').innerHTML=
+    '<div class="item" style="cursor:default; padding:6px 0 14px;"><span class="tile">'+icon(o.icon)+'</span><span class="meta"><b>'+o.name+'</b><span>'+o.sub+'</span></span></div>'+
+    '<div class="card"><div class="item" style="border:none; padding:0; cursor:default;"><span class="meta"><b>Open voor delen</b><span id="ownOpenSub">'+(o.open?'zichtbaar in de etalage':'alleen voor jullie zelf')+'</span></span><button class="sw'+(o.open?' on':'')+'" onclick="toggleOwnOpen(this)"><span class="k"></span></button></div></div>'+
+    '<span class="field-label">Status nu</span><div class="card" style="background:var(--surface);"><b style="font-weight:600;">'+o.now+'</b></div>'+
+    '<span class="field-label">Niet uitlenen</span><div class="chips"><span class="chip sm">'+o.blocked+'</span><button class="chip sm" onclick="alert(\'Kies periodes waarin dit niet uitgeleend kan worden, bv. tijdens je kamp.\')">+ blokkeer periode</button></div>'+
+    '<div class="section-title">Uitleengeschiedenis</div><div class="card" style="padding:6px 16px;">'+hist+'</div>'+
+    '<div class="card mt12" style="background:var(--surface);"><div class="sub">Zo werkt uitlenen: andere verenigingen zien dit in de etalage en sturen je een aanvraag voor een periode. Jij bevestigt en spreekt het ophalen af.</div></div>';
+  go('mijnitem');
+}
+function toggleOwnOpen(btn){ var on=btn.classList.toggle('on'); document.getElementById('ownOpenSub').textContent=on?'zichtbaar in de etalage':'alleen voor jullie zelf'; }
+
+// nav
+var stack=['home'];
+function curr(){return stack[stack.length-1];}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.toggle('active',s.id===id);});
+  var sc=document.querySelector('#'+id+' .scroll'); if(sc) sc.scrollTop=0;
+  syncTab(id); updateNotes(id);
+}
+function go(id,push){ if(push!==false) stack.push(id); showScreen(id); }
+function back(){ if(stack.length>1){stack.pop(); showScreen(curr());} }
+function setTab(id){ stack=[id]; showScreen(id); }
+function syncTab(id){
+  var roots={home:'home',zoeken:'zoeken',nood:'zoeken',suggesties:'zoeken',etalage:'zoeken',ruimer:'zoeken',fiche:'zoeken',vraag:'home',aanvraag:'zoeken',aanvraagverzonden:'zoeken',ophalen:'zoeken',bevestiging:'zoeken',meldingen:'home',aanvraaginbox:'home',terugbrengen:'kast',reststroomdetail:'home',aanbieden:'aanbieden',reststromen:'aanbieden',kast:'kast',mijnactiviteit:'kast',mijnitem:'kast',lening:'kast',profiel:'profiel'};
+  var root=roots[id]||id;
+  document.querySelectorAll('.tab[data-root]').forEach(function(t){t.classList.toggle('on',t.getAttribute('data-root')===root);});
+}
+
+// interactions
+function pickChip(el){ var p=el.parentElement; if(p.getAttribute('data-single')){p.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');}); el.classList.add('on');} else { el.classList.toggle('on'); } }
+function toggleCheck(el){el.classList.toggle('on');}
+function toggleSug(el){el.classList.toggle('on'); updateSugCount();}
+function updateSugCount(){ var n=document.querySelectorAll('#sugList .check.on').length; document.getElementById('sugCount').textContent='Bekijk beschikbaar materiaal ('+n+')'; }
+function selDay(el){ if(el.classList.contains('busy'))return; el.parentElement.querySelectorAll('.d').forEach(function(d){if(!d.classList.contains('busy'))d.classList.remove('sel');}); el.classList.add('sel'); }
+function etView(v,btn){ document.querySelectorAll('#etSeg button').forEach(function(b){b.classList.remove('on');}); btn.classList.add('on'); document.getElementById('etList').classList.toggle('hidden',v!=='list'); document.getElementById('etMap').classList.toggle('hidden',v!=='map'); }
+function toggleFaq(){ var b=document.getElementById('faqBody'); var open=!b.classList.toggle('hidden'); document.getElementById('faqChev').innerHTML=open?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m6 15 6-6 6 6"/></svg>':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m6 9 6 6 6-6"/></svg>'; }
+var TRIGGERS=[{name:'Partytent',cat:'Tenten',hint:'vaak gevraagd'},{name:'Frietketel',cat:'Keuken',hint:'vaak gevraagd'},{name:'Klaptafels en stoelen',cat:'Tafels & stoelen',hint:''},{name:'Geluidsinstallatie',cat:'Geluid',hint:''},{name:'Springkasteel',cat:'Spel',hint:''},{name:'Aanhangwagen',cat:'Vervoer',hint:'vaak gevraagd'},{name:'BBQ of grote barbecue',cat:'Keuken',hint:''},{name:'Gereedschap (boor, slijp)',cat:'Gereedschap',hint:''}];
+var ADDCATS=['Keuken','Tenten','Tafels & stoelen','Geluid','Spel','Gereedschap','Vervoer'];
+function renderTriggers(){ document.getElementById('triggerList').innerHTML=TRIGGERS.map(function(t){ var hint=t.hint?'<span class="lab acc">'+t.hint+'</span>':'<span class="lab">+ toevoegen</span>'; return '<div class="item" onclick="prefillAdd(\''+t.name+'\',\''+t.cat+'\')"><span class="meta"><b>'+t.name+'</b><span>'+t.cat+'</span></span><span class="right">'+hint+'</span></div>'; }).join(''); }
+function renderAddCats(){ document.getElementById('addCats').innerHTML=ADDCATS.map(function(c){return '<button class="chip sm" onclick="pickChip(this)">'+c+'</button>';}).join(''); }
+function prefillAdd(name,cat){ document.getElementById('addName').value=name; document.querySelectorAll('#addCats .chip').forEach(function(c){c.classList.toggle('on',c.textContent===cat);}); checkAdd(); document.getElementById('addName').scrollIntoView({behavior:'smooth',block:'center'}); }
+function checkAdd(){ document.getElementById('aanbiedBtn').disabled = !document.getElementById('addName').value.trim(); }
+function aiPolish(){
+  var ta=document.getElementById('addDesc'); var t=ta.value.trim();
+  var name=document.getElementById('addName').value.trim()||'Dit materiaal';
+  if(t){ t=t.charAt(0).toUpperCase()+t.slice(1); if(!/[.!?]$/.test(t))t+='.'; ta.value=t+' In goede staat. Ophalen en terugbrengen in onderling overleg.'; }
+  else { ta.value=name+' in goede staat, met de nodige toebehoren. Ophalen en terugbrengen in onderling overleg.'; }
+  document.getElementById('aiTag').classList.remove('hidden');
+}
+function analyseRest(){ var b=document.getElementById('restBtn'); b.querySelector('.ph').textContent='Herkend'; b.querySelector('.ph').style.color='var(--accent)'; document.getElementById('restFill').classList.remove('hidden'); document.getElementById('restPlaceBtn').disabled=false; }
+
+// design notes
+var NOTES={
+  home:{t:'Een levende feed',b:'Het startscherm toont wat er in je netwerk gebeurt: aanbod, leningen, vragen en reststromen. Zo wordt delen zichtbaar en krijg je een reden om de app te openen, in plaats van dat ze de laatste keuze blijft na het informele netwerk.',g:['feed','zichtbaarheid','journey: laatste keuze']},
+  zoeken:{t:'Twee manieren om te zoeken',b:'Een gewone zoekbalk met categorieen voor wie weet wat hij zoekt, en daarnaast de noden-ingang voor wie alleen het probleem kent. Faalt het zoeken lokaal, dan is er een nette doorstroom naar ruimer aanbod.',g:['zoeken','noden-eerst','fallback']},
+  nood:{t:'Noden-ingang',b:'"Ik organiseer een eetfestijn" in plaats van "ik zoek een tent". Overbrugt de vertaalkloof tussen een vage nood en een concrete vraag.',g:['vertaalkloof','jobs to be done']},
+  suggesties:{t:'Van situatie naar lijst',b:'De vertaling die vandaag niemand doet: een activiteit omzetten in een materiaallijst, met meteen zicht op wat lokaal beschikbaar is.',g:['noden-eerst','minimale invoer']},
+  etalage:{t:'De levende etalage',b:'Vervangt de dode Excel uit 1.0. Lokaal eerst, met ruimer aanbod als fallback, want ophalen en terugbrengen blijven hyperlokaal het haalbaarst.',g:['etalage','lokaal primair']},
+  ruimer:{t:'Lokaal faalt, dan breder',b:'Pas wanneer lokaal niets oplevert, tonen we aanbod buiten de gemeente, plus uitleendiensten en de deelkaart van WijDelen en VITO.',g:['fallback','uitleendiensten']},
+  fiche:{t:'Meer dan een catalogus',b:'De zorg-laag voorkomt fout gebruik (de frietketel-knop, het droog terugbrengen van de tent). De vertrouwensregel toont de warme lokale trust.',g:['zorg voor materiaal','vertrouwen']},
+  vraag:{t:'Vraag aan de groep',b:'Niet alles begint bij aanbod. Soms post iemand een vraag en reageert de groep. Dit houdt de communicatie in de app, in plaats van te verschuiven naar losse 1-op-1 berichten.',g:['vraag stellen','journey: communicatie']},
+  aanvraag:{t:'Een periode, geen dagkalender',b:'Niemand houdt een dagkalender bij voor een frietketel, dat was net de last die de Excel uit 1.0 om zeep hielp. Je vraagt gewoon de periode aan die je nodig hebt, de eigenaar bevestigt. Dit is ook het tweede breekpunt: van match naar logistiek, met de afspraken in het systeem.',g:['geen onderhoud','journey: logistiek','afspraken']},
+  mijnitem:{t:'Jouw materiaal, niet om te lenen',b:'Klik je op je eigen materiaal, dan beheer je het: open of privé zetten, een periode blokkeren, de uitleengeschiedenis zien. Dat is iets anders dan de fiche waarmee je bij iemand anders leent. Het scherm legt ook uit hoe anderen bij jou aanvragen.',g:['eigenaarsweergave','beheer']},
+  lening:{t:'Een lopende lening',b:'Wat je nu ontleent, met de afspraken, de contactpersoon en een knop om terug te brengen. Sluit de lus van de journey aan jouw kant.',g:['journey','retentie']},
+  ophalen:{t:'Staat vastleggen',b:'Een foto bij ophalen en terugbrengen. Antwoord op de schade-angst, een pijn zonder feature in de documenten. Melden wordt normaal.',g:['pain zonder feature','schade']},
+  bevestiging:{t:'De lus sluiten',b:'De journey eindigde in 1.0 vaag. Hier krijgt de transactie een afsluiting en erkenning, zodat er een reden is om terug te komen.',g:['journey lust niet','frequentie']},
+  aanbieden:{t:'Simpel toevoegen, AI schaaft bij',b:'Inventariseren moet licht zijn, maar de invoer hoeft niet door AI te gebeuren. Je voegt gewoon zelf iets toe; AI kan optioneel je tekstje bijschaven. De lijst "wat kan je zoal uitlenen" geeft inspiratie, want vaak denken verenigingen er niet aan wat ze allemaal kunnen delen.',g:['lichte invoer','AI als hulp','men denkt er niet aan']},
+  aanvraagverzonden:{t:'Niets is meteen definitief',b:'Een aanvraag gaat eerst naar de uitlener, die bevestigt. Dat was eerst een gat: de aanvraag sprong meteen naar ophalen. Nu klopt de twee-zijdige journey: vraag, bevestiging, dan pas afspreken.',g:['twee journeys','bevestiging']},
+  meldingen:{t:'Waar de twee kanten samenkomen',b:'Inkomende aanvragen voor jullie materiaal, bevestigingen van je eigen aanvragen, terugbreng-herinneringen en reacties op vragen. Dit houdt de communicatie in de app in plaats van te verschuiven naar losse berichten.',g:['twee journeys','communicatie in app']},
+  aanvraaginbox:{t:'De uitlener bevestigt',b:'De andere helft van de journey: iemand vraagt jullie materiaal te leen, en jij bevestigt of weigert. Zonder dit scherm bestond de uitlener-kant niet in de app.',g:['eigenaarskant','bevestiging']},
+  terugbrengen:{t:'Staat ook bij teruggave',b:'Dezelfde foto- en check-stap als bij ophalen. De documenten benadrukken check-in en check-out. Zo is melden van slijtage normaal en ontstaat er geen discussie achteraf.',g:['check-in en check-out','schade']},
+  reststroomdetail:{t:'De claim-kant van reststromen',b:'Wie een reststroom van een ander ziet, kan interesse tonen. Inspiratie en urgentie sturen dit, geen zoekopdracht. Dit is de tegenhanger van het opruim-scherm.',g:['reststromen','andere discovery']},
+  kast:{t:'Ontzorging',b:'Een reden om terug te komen los van een transactie, want de frequentie is laag. Het dubbel-aankoop-signaal maakt waarde zichtbaar zonder te delen.',g:['ontzorging','frequentie']},
+  mijnactiviteit:{t:'Overzicht van je leningen',b:'Wat je leent en uitleent op een plek. Sluit de lus en houdt de gebruiker betrokken tussen piekmomenten door.',g:['retentie','lus']},
+  reststromen:{t:'Inspiratie, geen zoekopdracht',b:'Niemand zoekt naar oude paletten. Daarom een aparte flow: tonen wie interesse heeft en welke toepassingen mogelijk zijn, met urgentie en een koppeling aan opruimdagen.',g:['reststromen','andere discovery']},
+  profiel:{t:'Lokaal verankerd',b:'Het deelnetwerk en de uitleendienst staan in het profiel. De meldingen rond piekmomenten voeden de proactieve vooruitblik op het startscherm.',g:['lokaal netwerk','uitleendiensten']}
+};
+function updateNotes(id){ var n=NOTES[id]; if(!n)return; document.getElementById('nTitle').textContent=n.t; document.getElementById('nBody').textContent=n.b; document.getElementById('nTags').innerHTML=n.g.map(function(x){return '<span class="tg">'+x+'</span>';}).join(''); }
+function toggleNotes(){ var on=document.getElementById('notes').classList.toggle('show'); document.getElementById('notesToggle').classList.toggle('on',on); }
+
+// init
+renderFeed(); renderCats(); renderEt(); renderKast(); renderSug(); renderTriggers(); renderAddCats();
+showScreen('home');
+</script>
+<script>
+window.CM_CONFIG = {
+  projectName: 'Out of Stock',
+  storagePrefix: 'oos_',
+  apiEndpoint: null,
+  pageNames: { 'index.html':'Mobiele app','app.html':'Desktop-app','inventaris.html':'Inventaris-dashboard','beheer.html':'Coach-dashboard' },
+  screenNames: {
+    'home':'Start (feed)','zoeken':'Zoeken','nood':'Noden-ingang','suggesties':'Suggesties','etalage':'Etalage','ruimer':'Ruimer aanbod','fiche':'Materiaalfiche','vraag':'Vraag','aanvraag':'Leningaanvraag','aanvraagverzonden':'Aanvraag verstuurd','ophalen':'Ophalen','bevestiging':'Bevestiging','meldingen':'Meldingen','aanvraaginbox':'Inkomende aanvraag','terugbrengen':'Terugbrengen','reststroomdetail':'Reststroom detail','aanbieden':'Aanbieden','reststromen':'Reststromen','kast':'Onze kast','mijnactiviteit':'Mijn activiteit','mijnitem':'Eigen materiaal','lening':'Jouw lening','profiel':'Profiel',
+    'start':'Start (feed)','ontdek':'Ontdek',
+    'inventaris':'Inventaris','uitgeleend':'Uitgeleend','aanvragen':'Aanvragen',
+    'overzicht':'Overzicht','verenigingen':'Verenigingen','materiaal':'Materiaal','transacties':'Transacties','rapport':'Rapport gemeente'
+  }
+};
+</script>
+<script src="comments.js"></script>
+</body>
+</html>
