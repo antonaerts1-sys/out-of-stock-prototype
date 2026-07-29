@@ -15,7 +15,13 @@ organiseert een eetfestijn voor 80 mensen.
 | Materiaalmeester | Inventarisbeheer van de eigen vereniging | [inventaris.html](inventaris.html) |
 | Coach en gemeente | Netwerk-dashboard en continuïteit | [beheer.html](beheer.html) |
 
-Bovenaan (of via de dev-knoppen op de mobiele versie) spring je tussen de vier.
+Daarnaast is er de **minimale versie (MVP)**: [mvp.html](mvp.html). Die toont wat er als eerste
+gebouwd zou worden voor de veldtest: een levende "Wie heeft wat"-catalogus (gevuld met de echte
+data uit piloot Leuven 1.0), simpel beheer per vereniging met een toegangscode, en een telling
+voor de deelcoach. De transactie zelf blijft in WhatsApp. De vier prototypes hierboven zijn de
+droomversie en dienen als roadmap.
+
+Bovenaan (of via de dev-knoppen op de mobiele versie) spring je tussen de schermen.
 De knop **Ontwerpnotities** toont per scherm waarom het zo ontworpen is.
 
 ## Feedback geven (comment-tool)
