@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Out of Stock MVP - één lening van begin tot einde</title>
+<style>
+:root{
+  --ink:#1A1A1A; --muted:#6B7280; --accent:#1A6DFF; --bg:#FFFFFF;
+  --surface:#F9FAFB; --border:#E5E7EB; --accent-soft:#EAF1FF;
+}
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg); color:var(--ink); font-size:15px; line-height:1.6;
+}
+a{color:var(--accent);}
+.wrap{max-width:760px; margin:0 auto; padding:56px 20px 80px;}
+.kicker{font-size:12.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted);}
+h1{font-size:32px; font-weight:600; letter-spacing:-0.02em; margin:10px 0 14px; line-height:1.25;}
+.lead{font-size:16.5px; color:var(--muted); margin:0 0 10px;}
+h2{font-size:22px; font-weight:600; letter-spacing:-0.02em; margin:56px 0 8px;}
+h3{font-size:16px; font-weight:600; margin:0 0 4px;}
+p{margin:0 0 12px;}
+.muted{color:var(--muted);}
+.small{font-size:13.5px;}
+.links{display:flex; gap:8px; flex-wrap:wrap; margin-top:18px;}
+.ctrl{border:1px solid var(--border); background:var(--bg); border-radius:999px; padding:7px 14px; font-size:13px; font-weight:500; color:var(--ink); text-decoration:none;}
+
+.station{display:flex; gap:18px; margin-top:36px;}
+.station .num{width:34px; height:34px; border-radius:999px; background:var(--accent-soft); color:var(--accent); border:1px solid #CFE0FF; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px; flex:0 0 auto; margin-top:2px;}
+.station .body{flex:1; min-width:0;}
+.station .caption{color:var(--muted); font-size:14px; margin-top:12px;}
+
+.mock{border:1px solid var(--border); border-radius:12px; background:var(--bg); margin-top:14px; overflow:hidden; max-width:420px;}
+.mock .bar{display:flex; align-items:center; gap:8px; padding:9px 14px; border-bottom:1px solid var(--border); background:var(--surface); font-size:12.5px; color:var(--muted); font-weight:500;}
+.mock .bar .dot{width:8px; height:8px; border-radius:999px; background:var(--border);}
+.mock .in{padding:16px;}
+.mock.phone{max-width:340px;}
+
+.card{background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px;}
+.card + .card{margin-top:8px;}
+.itemrow{display:flex; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:14px;}
+.itemrow:last-child{border-bottom:none;}
+.itemrow b{font-weight:600; display:block;}
+.itemrow span{color:var(--muted); font-size:12.5px;}
+.btn{display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:10px 16px; font-size:14px; font-weight:600; text-decoration:none;}
+.btn.sec{background:var(--bg); color:var(--ink); border:1px solid var(--border); font-weight:500;}
+.btn.full{width:100%;}
+.lab{display:inline-block; font-size:12px; font-weight:600; padding:3px 9px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:var(--surface);}
+.lab.ok{color:#0F7A3D; border-color:#CDEBD8; background:#F1FBF5;}
+.lab.acc{color:var(--accent); border-color:#CFE0FF; background:var(--accent-soft);}
+.lab.nth{color:#A85A00; border-color:#F3E2C6; background:#FCF6EC;}
+.field{border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:14px; color:var(--ink); background:var(--bg); margin-top:6px;}
+.field .ph{color:var(--muted);}
+.fl{font-size:12.5px; font-weight:600; margin-top:12px; color:var(--ink);}
+.two{display:flex; gap:8px;}
+.two > *{flex:1;}
+
+.wa{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 14px; font-size:14px; max-width:340px;}
+.wa .bub{background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:9px 12px; margin-top:8px;}
+.wa .bub:first-child{margin-top:0;}
+.wa .who{font-size:12px; font-weight:600; color:var(--accent); display:block;}
+.wa .t{font-size:11px; color:var(--muted); text-align:right; margin-top:2px;}
+
+.inv{border:1px solid var(--border); border-radius:12px; margin-top:16px; overflow:hidden;}
+.inv .group{padding:18px 20px; border-bottom:1px solid var(--border);}
+.inv .group:last-child{border-bottom:none;}
+.inv .gk{font-size:12px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--muted);}
+.inv .gt{font-size:17px; font-weight:600; margin:4px 0 10px;}
+.feat{display:flex; gap:12px; padding:10px 0; border-top:1px solid var(--surface);}
+.feat:first-of-type{border-top:none;}
+.feat .tx{flex:1;}
+.feat .tx b{font-weight:600; display:block; font-size:14.5px;}
+.feat .tx span{color:var(--muted); font-size:13.5px;}
+.feat .tag{flex:0 0 auto; margin-top:2px;}
+
+.note{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-top:16px;}
+.note b{font-weight:600;}
+
+footer{border-top:1px solid var(--border); margin-top:64px; padding:20px; text-align:center; color:var(--muted); font-size:13px;}
+@media(max-width:560px){ h1{font-size:26px;} .wrap{padding-top:40px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="kicker">Out of Stock · piloot 2.0</div>
+<h1>De MVP: één lening van begin tot einde</h1>
+<p class="lead">Eén doorlopend voorbeeld, van de link in de WhatsApp-groep tot het rapport voor de gemeente. Als voorbeeld nemen we Lien van Chiro Heverlee, die voor het eetfestijn de friteuse van F.C. Tabor wil lenen.</p>
+<p class="lead">Dit is de tussenweg: meer dan de levende lijst (waar alleen de Excel vervangen wordt), veel minder dan de droomversie. De kern van deze versie: <b style="color:var(--ink);">de aanvraag gebeurt in de tool, het gesprek blijft in WhatsApp</b>. Daardoor telt elke lening zichzelf.</p>
+<div class="links">
+  <a class="ctrl" href="mvp.html">Minimale versie (klikbaar) &rarr;</a>
+  <a class="ctrl" href="index.html">Droomversie (klikbaar) &rarr;</a>
+</div>
+
+<!-- STATION 1 -->
+<div class="station">
+  <div class="num">1</div>
+  <div class="body">
+    <h3>De link in de WhatsApp-groep</h3>
+    <p class="muted small">Alles begint waar het vandaag ook begint. Alleen verwijst de groep nu naar een lijst die klopt.</p>
+    <div class="wa">
+      <div class="bub"><span class="who">Sara (deelcoach)</span>Kampen en eetfestijnen komen eraan! Kijk eerst even in de lijst wat er in het netwerk is: <span style="color:var(--accent);">deelnetwerkleuven.be</span>. Staat het er niet in? Vraag gewoon hier in de groep.<div class="t">9:41</div></div>
+    </div>
+    <div class="caption">Geen nieuwe app, geen installatie. De catalogus is een gewone mobiele webpagina, zonder login om te kijken.</div>
+  </div>
+</div>
+
+<!-- STATION 2 -->
+<div class="station">
+  <div class="num">2</div>
+  <div class="body">
+    <h3>De fiche, met een periode</h3>
+    <p class="muted small">Lien vindt de friteuse van F.C. Tabor en vraagt ze aan voor het weekend van het eetfestijn.</p>
+    <div class="mock phone">
+      <div class="bar"><span class="dot"></span>Materiaal</div>
+      <div class="in">
+        <b style="font-size:16px; font-weight:600;">Industriële friteuse en bakplaat</b>
+        <div class="muted small">F.C. Tabor Heverlee · laatst bijgewerkt jul 2026</div>
+        <div class="fl">Van wanneer tot wanneer?</div>
+        <div class="two">
+          <div class="field">vr 14 aug</div>
+          <div class="field">zo 16 aug</div>
+        </div>
+        <div class="fl">Waarvoor? (één zin)</div>
+        <div class="field"><span class="ph">Eetfestijn voor 80 personen</span></div>
+        <div style="margin-top:14px;"><span class="btn full">Vraag te leen bij F.C. Tabor</span></div>
+      </div>
+    </div>
+    <div class="caption">Een periode, geen dagkalender: niemand onderhoudt beschikbaarheid, dat leerde de Excel uit 1.0. De aanbieder zegt gewoon ja of nee.</div>
+  </div>
+</div>
+
+<!-- STATION 3 -->
+<div class="station">
+  <div class="num">3</div>
+  <div class="body">
+    <h3>De aanbieder bevestigt met één klik</h3>
+    <p class="muted small">De materiaalmeester van F.C. Tabor krijgt een mail. Geen login nodig, de knoppen werken meteen.</p>
+    <div class="mock">
+      <div class="bar"><span class="dot"></span>Mail aan materiaal@fctabor.be</div>
+      <div class="in">
+        <b style="font-weight:600;">Chiro Heverlee vraagt jullie friteuse en bakplaat te leen</b>
+        <p class="muted small" style="margin-top:6px;">Van vrijdag 14 tot zondag 16 augustus, voor een eetfestijn voor 80 personen. Contactpersoon: Lien.</p>
+        <div class="two" style="max-width:300px;">
+          <span class="btn">Bevestig</span>
+          <span class="btn sec">Dit lukt niet</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption">De aanbieder bepaalt de voorwaarden, zoals in de bestaande deelregels. Weigeren mag zonder uitleg, en Lien weet meteen waar ze aan toe is.</div>
+  </div>
+</div>
+
+<!-- STATION 4 -->
+<div class="station">
+  <div class="num">4</div>
+  <div class="body">
+    <h3>Het gesprek blijft gewoon in WhatsApp</h3>
+    <p class="muted small">Ophalen, de zak olie, de reservesleutel: dat regelen Lien en F.C. Tabor 1-op-1, zoals altijd.</p>
+    <div class="wa">
+      <div class="bub"><span class="who">Lien (Chiro Heverlee)</span>Top, bedankt! Lukt vrijdag rond 18u om ze op te halen?<div class="t">14:22</div></div>
+      <div class="bub"><span class="who">Marc (F.C. Tabor)</span>Prima, ik ben aan de kantine. Breng een riem mee voor in de auto, ze is zwaar.<div class="t">14:31</div></div>
+    </div>
+    <div class="caption">Dit bouwen we bewust niet na. De tool registreert de lening, WhatsApp blijft het gesprek. Dat is het hele ontwerpprincipe van deze versie.</div>
+  </div>
+</div>
+
+<!-- STATION 5 -->
+<div class="station">
+  <div class="num">5</div>
+  <div class="body">
+    <h3>De herinnering, vanzelf</h3>
+    <p class="muted small">Tegen het einde van de periode krijgt Lien automatisch een mailtje.</p>
+    <div class="mock">
+      <div class="bar"><span class="dot"></span>Mail aan Chiro Heverlee</div>
+      <div class="in">
+        <b style="font-weight:600;">Zondag brengen jullie de friteuse terug naar F.C. Tabor</b>
+        <p class="muted small" style="margin-top:6px;">Proper en in dezelfde staat, zoals afgesproken in de deelregels. Alles teruggebracht? Klik dan hieronder, dan is de lening afgerond.</p>
+        <span class="btn">Teruggebracht, rond het af</span>
+      </div>
+    </div>
+    <div class="caption">De journey eindigde in piloot 1.0 vaag. Eén automatische mail sluit de lus, en die klik op afronden is meteen het meetmoment.</div>
+  </div>
+</div>
+
+<!-- STATION 6 -->
+<div class="station">
+  <div class="num">6</div>
+  <div class="body">
+    <h3>Geteld zonder dat iemand telt</h3>
+    <p class="muted small">De afgeronde lening is automatisch een regel in het systeem. De coach ziet wat loopt en wat blijft hangen.</p>
+    <div class="mock">
+      <div class="bar"><span class="dot"></span>Coach-werklijst · Deelnetwerk Leuven</div>
+      <div class="in">
+        <div class="itemrow"><span><b>Friteuse en bakplaat</b><span>F.C. Tabor → Chiro Heverlee · afgerond 16 aug</span></span><span class="lab ok">afgerond</span></div>
+        <div class="itemrow"><span><b>Partytent 4x8</b><span>Scouts Egenhoven → KSA Wijgmaal · wacht 3 dagen op antwoord</span></span><span class="lab nth">blijft hangen</span></div>
+        <div class="itemrow"><span><b>Chiro Vlierbeek</b><span>lijst 6 maanden niet bijgewerkt</span></span><span class="lab">verouderd</span></div>
+      </div>
+    </div>
+    <div class="caption">Geen dashboard met grafieken, maar een werklijst: waar zijn coach-uren nodig. De cijfers voor de gemeente rollen hier vanzelf uit, exporteerbaar.</div>
+  </div>
+</div>
+
+<!-- STATION 7 -->
+<div class="station">
+  <div class="num">7</div>
+  <div class="body">
+    <h3>En als het er niet in staat: de gezocht-kant</h3>
+    <p class="muted small">Niet gevonden? Dan plaats je een vraag die in de catalogus zichtbaar blijft, in plaats van weg te zakken in de groep.</p>
+    <div class="mock phone">
+      <div class="bar"><span class="dot"></span>Wie heeft wat · Gezocht</div>
+      <div class="in">
+        <div class="itemrow"><span><b>Gezocht: podiumelementen</b><span>Bazart Leuven · voor 5 sep</span></span><span class="lab acc">ik heb dit</span></div>
+        <div class="itemrow"><span><b>Gezocht: walkietalkies</b><span>Chiro Blauwput · voor het kamp</span></span><span class="lab acc">ik heb dit</span></div>
+      </div>
+    </div>
+    <div class="caption">"Durf te vragen" staat letterlijk in de bestaande deelregels. Hier krijgt die regel een vindbare plek, en elke match is opnieuw een gemeten transactie.</div>
+  </div>
+</div>
+
+<!-- INVENTARIS -->
+<h2>Wat de tool allemaal omvat</h2>
+<p class="muted">De zeven stations hierboven zijn de journey. Hieronder het volledige plaatje van wat er in deze versie zit, per gebruiker, inclusief wat geen scherm heeft maar wel gebouwd moet worden. Onderdelen met het label <span class="lab nth">nice to have</span> zijn optioneel en afhankelijk van budget; al de rest is de kern.</p>
+
+<div class="inv">
+  <div class="group">
+    <div class="gk">Voor de verenigingen</div>
+    <div class="gt">Vinden en lenen</div>
+    <div class="feat"><span class="tx"><b>De catalogus "Wie heeft wat"</b><span>Doorzoekbaar, per categorie, mobiel eerst, zonder login om te kijken. Gevuld met de bestaande inventaris uit 1.0.</span></span></div>
+    <div class="feat"><span class="tx"><b>Aanvragen met een periode</b><span>Van/tot plus één zin waarvoor. De aanbieder bevestigt of weigert per mail. Geen dagkalender, geen chat.</span></span></div>
+    <div class="feat"><span class="tx"><b>De gezocht-kant</b><span>Een vraag plaatsen die zichtbaar blijft tot ze opgelost is, met een "ik heb dit"-knop voor aanbieders.</span></span></div>
+    <div class="feat"><span class="tx"><b>Spelregels en FAQ</b><span>De bestaande deelregels en FAQ uit 1.0 als vaste pagina's, gelinkt vanuit elke fiche.</span></span></div>
+    <div class="feat"><span class="tx"><b>Meldingen in de app zelf</b><span>Alles loopt in de kern via mail en WhatsApp. Een eigen meldingencentrum is droomversie-materiaal.</span></span><span class="tag lab nth">nice to have</span></div>
+  </div>
+  <div class="group">
+    <div class="gk">Voor de materiaalmeester</div>
+    <div class="gt">De eigen lijst</div>
+    <div class="feat"><span class="tx"><b>Toegang per vereniging</b><span>Eén code of magic link per vereniging, geen wachtwoorden. Doorgeefbaar bij de ploegwissel, uitgedeeld door de coach.</span></span></div>
+    <div class="feat"><span class="tx"><b>Eigen materiaal beheren</b><span>Toevoegen is drie velden, aanpassen en verwijderen één klik. De rij die je in de Excel nooit zelf kon bijwerken.</span></span></div>
+    <div class="feat"><span class="tx"><b>Aanvragen afhandelen</b><span>Bevestigen of weigeren rechtstreeks vanuit de mail, plus een overzichtje van wat jullie uitgeleend hebben.</span></span></div>
+    <div class="feat"><span class="tx"><b>Periodes blokkeren</b><span>Bijvoorbeeld tijdens het eigen kamp. Handig, maar weigeren per mail vangt hetzelfde op.</span></span><span class="tag lab nth">nice to have</span></div>
+  </div>
+  <div class="group">
+    <div class="gk">Voor de deelcoach</div>
+    <div class="gt">Waar de uren renderen</div>
+    <div class="feat"><span class="tx"><b>De werklijst</b><span>Aanvragen die blijven hangen, verenigingen die stilvallen, lijsten die verouderen. Actie, geen grafieken.</span></span></div>
+    <div class="feat"><span class="tx"><b>Het transactielog</b><span>Elke lening automatisch geregistreerd: wat, tussen wie, wanneer, afgerond of niet. Exporteerbaar naar Excel.</span></span></div>
+    <div class="feat"><span class="tx"><b>Verenigingen beheren</b><span>Toevoegen, codes uitdelen, de Excel van een nieuw netwerk importeren als startlijst.</span></span></div>
+    <div class="feat"><span class="tx"><b>Cijferdashboard met grafieken</b><span>Bewust sober gehouden: de export en de werklijst doen het echte werk in de piloot.</span></span><span class="tag lab nth">nice to have</span></div>
+  </div>
+  <div class="group">
+    <div class="gk">Voor de gemeente en Ecolife</div>
+    <div class="gt">Waarvoor dit project bestaat</div>
+    <div class="feat"><span class="tx"><b>Het rapport</b><span>Aantal actieve verenigingen, aantal leningen, wat het meest gevraagd wordt. Rolt automatisch uit het transactielog, per kwartaal deelbaar met de betaler.</span></span></div>
+    <div class="feat"><span class="tx"><b>Vijf netwerken naast elkaar</b><span>Piloot 2.0 mikt op vijf gemeenten. Elk deelnetwerk krijgt een eigen catalogus, eigen coach en eigen cijfers, in dezelfde tool.</span></span></div>
+    <div class="feat"><span class="tx"><b>Geschat bespaard bedrag</b><span>Vermeden huur en aankoop in euro. Mooi voor het verhaal, maar een schatting; de piloot moet eerst echte aantallen tonen.</span></span><span class="tag lab nth">nice to have</span></div>
+  </div>
+  <div class="group">
+    <div class="gk">Het onzichtbare fundament</div>
+    <div class="gt">Geen schermen, wel werk</div>
+    <div class="feat"><span class="tx"><b>De mails</b><span>Aanvraag, bevestiging, weigering, terugbreng-herinnering. Dit is het zenuwstelsel van de tool: de nudge komt via een kanaal dat mensen al gebruiken.</span></span></div>
+    <div class="feat"><span class="tx"><b>Privacy-opzet</b><span>Gegevens van verenigingen, niet van personen. Eén contactmailadres per vereniging, geen ledenlijsten, geen tracking.</span></span></div>
+    <div class="feat"><span class="tx"><b>Gewoon het web</b><span>Geen app-store, niets installeren. Werkt op de telefoon van de materiaalmeester en de laptop van de coach.</span></span></div>
+  </div>
+</div>
+
+<div class="note">
+  <b>Wat bewust in WhatsApp blijft:</b> het gesprek. Overleg over ophalen, foto's, kleine vragen. En de groep zelf blijft de plek waar het netwerk leeft. De tool neemt alleen over wat WhatsApp structureel niet kan: een lijst die klopt, een aanvraag die niet verdampt, en cijfers zonder geturf.
+</div>
+
+<div class="note">
+  <b>Het eerlijke risico:</b> deze versie vraagt meer gedragsverandering dan de levende lijst alleen. De aanvraag moet in de tool gebeuren, anders meet ze niets. Daarom houdt de journey elke stap zo kort mogelijk: geen login om te kijken, bevestigen kan rechtstreeks vanuit de mail, en het gesprek hoeft nergens anders naartoe.
+</div>
+
+<footer>Preview om over te praten, nog geen gebouwd product. Niet geïndexeerd door zoekmachines.</footer>
+</div>
+
+<script>
+window.CM_CONFIG = {
+  projectName: 'Out of Stock',
+  storagePrefix: 'oos_',
+  apiEndpoint: null,
+  pageNames: { 'index.html':'Mobiele app','app.html':'Desktop-app','inventaris.html':'Inventaris-dashboard','beheer.html':'Coach-dashboard','mvp.html':'MVP (minimale versie)','mvp-journey.html':'MVP-journey' }
+};
+</script>
+<script src="comments.js"></script>
+</body>
+</html>

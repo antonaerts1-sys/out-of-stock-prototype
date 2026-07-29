@@ -15,11 +15,18 @@ organiseert een eetfestijn voor 80 mensen.
 | Materiaalmeester | Inventarisbeheer van de eigen vereniging | [inventaris.html](inventaris.html) |
 | Coach en gemeente | Netwerk-dashboard en continuïteit | [beheer.html](beheer.html) |
 
-Daarnaast is er de **minimale versie (MVP)**: [mvp.html](mvp.html). Die toont wat er als eerste
-gebouwd zou worden voor de veldtest: een levende "Wie heeft wat"-catalogus (gevuld met de echte
-data uit piloot Leuven 1.0), simpel beheer per vereniging met een toegangscode, en een telling
-voor de deelcoach. De transactie zelf blijft in WhatsApp. De vier prototypes hierboven zijn de
-droomversie en dienen als roadmap.
+Daarnaast zijn er twee MVP-stukken:
+
+- **De minimale versie (klikbaar)**: [mvp.html](mvp.html). Alleen de Excel wordt vervangen door
+  een levende "Wie heeft wat"-catalogus (gevuld met de echte data uit piloot Leuven 1.0), met
+  simpel beheer per vereniging en een handmatige telling voor de deelcoach. De transactie blijft
+  volledig in WhatsApp.
+- **De MVP met aanvraagflow (journey)**: [mvp-journey.html](mvp-journey.html). Eén doorlopend
+  voorbeeld in zeven stations (van de link in de WhatsApp-groep tot het rapport voor de gemeente)
+  plus een volledige inventaris van wat de tool omvat, per gebruiker, met nice-to-have-labels.
+  Kern: de aanvraag gebeurt in de tool en telt zichzelf, het gesprek blijft in WhatsApp.
+
+De vier prototypes bovenaan zijn de droomversie en dienen als roadmap.
 
 Bovenaan (of via de dev-knoppen op de mobiele versie) spring je tussen de schermen.
 De knop **Ontwerpnotities** toont per scherm waarom het zo ontworpen is.
