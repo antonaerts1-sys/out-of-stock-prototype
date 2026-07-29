@@ -259,14 +259,17 @@ a{color:var(--accent);}
         <span class="title">Beheer</span>
       </div>
       <div class="scroll">
-        <div class="h2">Lijst van jullie vereniging</div>
-        <div class="sub">Elke vereniging heeft een eigen toegangscode. Geen wachtwoord, geen account: de code geef je gewoon door bij de ploegwissel.</div>
-        <label class="field-label mt16">Toegangscode van je vereniging</label>
-        <input class="input" id="code" placeholder="bv. HEKEKO-2026" oninput="document.getElementById('loginBtn').disabled=!this.value.trim()">
-        <button class="btn mt12" id="loginBtn" disabled onclick="go('beheer')">Open onze lijst</button>
+        <div class="h2">Log in</div>
+        <div class="sub">Je account is gekoppeld aan je vereniging. Kijken in de catalogus kan altijd zonder in te loggen; beheren doe je met je account.</div>
+        <label class="field-label mt16">E-mailadres</label>
+        <input class="input" id="code" placeholder="lien@chirohekeko.be" oninput="document.getElementById('loginBtn').disabled=!this.value.trim()">
+        <label class="field-label">Wachtwoord</label>
+        <input class="input" type="password" placeholder="••••••••">
+        <button class="btn mt12" id="loginBtn" disabled onclick="go('beheer')">Log in</button>
+        <div class="center mt12 sub"><a href="#" onclick="return false;">Wachtwoord vergeten?</a></div>
         <div class="card mt24" style="background:var(--surface);">
-          <b style="font-weight:600;">Code kwijt?</b>
-          <div class="sub mt8">Vraag ze aan je deelcoach, of laat een nieuwe link sturen naar het e-mailadres van je vereniging.</div>
+          <b style="font-weight:600;">Nieuw of ploegwissel?</b>
+          <div class="sub mt8">De huidige materiaalmeester of je deelcoach voegt je toe aan het account van je vereniging. Je krijgt dan een uitnodiging per mail.</div>
         </div>
       </div>
     </section>
@@ -456,7 +459,7 @@ var NOTES={
   item:{t:'Genoeg om te beslissen',b:'Wat is het, van wie, en is de info recent. Geen reservering, geen kalender, geen beschikbaarheid: dat onderhoudt toch niemand, en het was net de last die de Excel om zeep hielp.',g:['minimale fiche','geen kalender']},
   whatsapp:{t:'De transactie blijft in WhatsApp',b:'De groep werkte in 1.0, dus die bouwen we niet na. De app maakt alleen het bericht klaar, in het formaat van hun eigen WhatsApp-regels: wat, waar, wanneer. Duimpje en "dank je" blijven zoals ze zijn.',g:['WhatsApp niet afpakken','hun eigen regels']},
   spelregels:{t:'Al geschreven',b:'De deelregels en FAQ uit Leuven 1.0 bestaan al als documenten. Hier krijgen ze alleen een vaste plek waar elke fiche naar kan linken. Nul nieuwe inhoud nodig.',g:['bestaand materiaal','deelregels 1.0']},
-  toegang:{t:'Account per vereniging, geen wachtwoord',b:'Eén code per vereniging, uitgedeeld door de deelcoach. Door te geven bij de ploegwissel, te delen met je co. Geen wachtwoord-vergeten-verkeer dat bij de coach belandt.',g:['ploegwissel','geen wachtwoorden','minder coach-last']},
+  toegang:{t:'Echte accounts, kijken blijft vrij',b:'Persoonlijke accounts, gekoppeld aan de vereniging. Zo weet je altijd wie wat deed, en overleeft het account de ploegwissel: de vorige materiaalmeester of de coach nodigt de nieuwe uit. De catalogus zelf blijft open, het account komt pas als je iets wil doen.',g:['accounts','ploegwissel via uitnodiging','kijken zonder login']},
   beheer:{t:'De rij die je zelf kan bijwerken',b:'Dit is wat de Excel om zeep hielp: niemand kon zijn eigen rij aanpassen. Toevoegen is drie velden, verwijderen is een klik. De lijst actueel houden moet lichter zijn dan ze negeren.',g:['eigen rij bijwerken','lichte invoer']},
   telling:{t:'Meet het enige dat telt',b:'Het centrale risico van dit model is de lage transactiefrequentie. De veldtest moet dus leningen tellen, niet kliks. De coach turft per "dank je" in de groep, en dat lijstje is meteen het rapport voor de gemeente, die de continuïteit betaalt.',g:['transactiefrequentie','rapport gemeente','veldtest']}
 };
