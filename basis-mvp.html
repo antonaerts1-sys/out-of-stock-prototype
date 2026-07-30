@@ -16,8 +16,8 @@ body{
   background:var(--surface); color:var(--ink); font-size:15px; line-height:1.6;
   display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:32px 16px;
 }
-button{font-family:inherit; cursor:pointer;}
-a{color:var(--accent);}
+button{font-family:inherit; cursor:pointer; color:inherit;}
+a{color:var(--accent); text-decoration:none;}
 
 .intro{margin-bottom:24px; text-align:center; max-width:640px;}
 .intro h1{font-size:22px; font-weight:600; letter-spacing:-0.02em; margin:0 0 6px;}
@@ -28,90 +28,150 @@ a{color:var(--accent);}
 .dot{width:7px; height:7px; border-radius:999px; background:var(--muted);}
 .ctrl.on .dot{background:var(--accent);}
 
-.chrome{width:100%; max-width:1180px; display:flex; gap:32px; align-items:flex-start; justify-content:center;}
+.chrome{width:100%; max-width:1220px; display:flex; gap:32px; align-items:flex-start; justify-content:center;}
 .frame{flex:1; min-width:0; background:var(--bg); border:1px solid var(--border); border-radius:16px; overflow:hidden;}
 .browserbar{display:flex; align-items:center; gap:10px; padding:10px 16px; border-bottom:1px solid var(--border); background:var(--surface);}
 .browserbar .b-dot{width:10px; height:10px; border-radius:999px; background:var(--border);}
 .browserbar .url{flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:5px 12px; font-size:12.5px; color:var(--muted);}
 
-.view{display:none; min-height:640px;}
+.view{display:none;}
 .view.active{display:block;}
-.inner{padding:26px 30px 46px;}
 
-.sitehead{display:flex; align-items:center; gap:14px; padding:16px 30px; border-bottom:1px solid var(--border);}
-.logo{width:34px; height:34px; border-radius:9px; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px;}
-.sitehead .t b{font-weight:600; display:block; line-height:1.3;}
-.sitehead .t span{font-size:12.5px; color:var(--muted);}
-.sitehead .spacer{flex:1;}
-.navlink{background:none; border:none; font-size:14px; font-weight:500; color:var(--muted); padding:8px 10px;}
-.navlink.on{color:var(--accent);}
+/* ====== site header ====== */
+.topbar{display:flex; align-items:center; gap:20px; padding:14px 32px; border-bottom:1px solid var(--border); background:var(--bg);}
+.brand{display:flex; align-items:center; gap:11px; background:none; border:none; padding:0;}
+.logo{width:36px; height:36px; border-radius:10px; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; letter-spacing:-0.02em;}
+.brand b{font-weight:600; font-size:16px; letter-spacing:-0.01em;}
+.netpick{display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:999px; padding:7px 8px 7px 13px; font-size:13.5px; font-weight:500; background:var(--bg); position:relative;}
+.netpick svg{color:var(--muted);}
+.netpick select{position:absolute; inset:0; opacity:0; cursor:pointer; width:100%;}
+.topnav{display:flex; gap:4px; margin-left:6px;}
+.topnav button{background:none; border:none; font-size:14px; font-weight:500; color:var(--muted); padding:8px 12px; border-radius:8px;}
+.topnav button:hover{color:var(--ink); background:var(--surface);}
+.topnav button.on{color:var(--ink); background:var(--surface);}
+.topbar .spacer{flex:1;}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:10px 18px; font-size:14.5px; font-weight:600;}
+.btn.sec{background:var(--bg); color:var(--ink); border:1px solid var(--border); font-weight:500;}
+.btn.sec:hover{border-color:var(--muted);}
+.btn.sm{padding:7px 13px; font-size:13px;}
+.btn.lg{padding:13px 22px; font-size:15px; width:100%;}
+.btn[disabled]{opacity:.4; cursor:default;}
+.ghostlink{background:none; border:none; font-size:14px; font-weight:500; color:var(--muted); padding:8px 10px;}
+.ghostlink:hover{color:var(--ink);}
 
-.h1{font-size:26px; font-weight:600; letter-spacing:-0.02em; margin:0 0 4px;}
-.sub{color:var(--muted); font-size:14px;}
-.h2{font-size:19px; font-weight:600; letter-spacing:-0.01em; margin:0 0 4px;}
+/* ====== hero + catalog ====== */
+.hero{padding:34px 32px 8px; max-width:1120px; margin:0 auto;}
+.hero h1{font-size:29px; font-weight:600; letter-spacing:-0.02em; margin:0 0 4px;}
+.hero .sub{color:var(--muted); font-size:15px;}
+.bigsearch{display:flex; align-items:center; gap:12px; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px 18px; color:var(--muted); margin-top:18px;}
+.bigsearch:focus-within{border-color:var(--accent);}
+.bigsearch input{border:none; background:none; outline:none; font:inherit; font-size:15.5px; color:var(--ink); flex:1; padding:0;}
 
-.cat-layout{display:flex; gap:26px; margin-top:22px;}
-.filters{flex:0 0 230px;}
-.fgroup{border:1px solid var(--border); border-radius:12px; background:var(--bg); padding:14px 16px; margin-bottom:12px;}
-.fgroup .fl{font-size:12.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); margin-bottom:8px;}
-.fopt{display:flex; align-items:center; gap:9px; padding:5px 0; font-size:14px; cursor:pointer;}
-.fopt .box{width:17px; height:17px; border-radius:5px; border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; flex:0 0 auto;}
+.cat-layout{display:flex; gap:28px; padding:22px 32px 40px; max-width:1120px; margin:0 auto;}
+.filters{flex:0 0 236px;}
+.fgroup{padding:2px 0 16px; margin-bottom:14px; border-bottom:1px solid var(--border);}
+.fgroup:last-of-type{border-bottom:none;}
+.fgroup .fl{font-size:12.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:9px;}
+.fopt{display:flex; align-items:center; gap:9px; padding:5px 0; font-size:14px; cursor:pointer; border:none; background:none; width:100%; text-align:left;}
+.fopt .box{width:17px; height:17px; border-radius:5px; border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; flex:0 0 auto; background:var(--bg);}
 .fopt.on .box{background:var(--accent); border-color:var(--accent);}
 .fopt .cnt{margin-left:auto; color:var(--muted); font-size:12.5px;}
-select.input{appearance:auto;}
+.select{width:100%; border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:14px; font-family:inherit; color:var(--ink); background:var(--bg); outline:none;}
 
 .results{flex:1; min-width:0;}
-.searchbar{display:flex; align-items:center; gap:10px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:11px 14px; color:var(--muted); width:100%;}
-.searchbar input{border:none; background:none; outline:none; font:inherit; color:var(--ink); flex:1; padding:0;}
-.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-top:14px;}
-.tile{border:1px solid var(--border); border-radius:12px; background:var(--bg); padding:14px; text-align:left; color:var(--ink); display:flex; flex-direction:column; gap:8px;}
-.tile .ph{height:74px; border-radius:9px; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted);}
+.reshead{display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:4px;}
+.reshead .n{font-size:14px; color:var(--muted);}
+.sortwrap{display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--muted);}
+.sortwrap select{border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-size:13.5px; font-family:inherit; background:var(--bg); color:var(--ink); outline:none;}
+.activefilters{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 2px;}
+.afchip{display:inline-flex; align-items:center; gap:7px; border:1px solid #CFE0FF; background:var(--accent-soft); color:var(--accent); border-radius:999px; padding:5px 12px; font-size:13px; font-weight:500;}
+.afchip button{background:none; border:none; color:inherit; padding:0; display:flex; font-size:15px; line-height:1;}
+
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(226px,1fr)); gap:14px; margin-top:14px;}
+.tile{border:1px solid var(--border); border-radius:12px; background:var(--bg); padding:0; text-align:left; color:var(--ink); display:flex; flex-direction:column; overflow:hidden; transition:border-color .12s;}
+.tile:hover{border-color:var(--muted);}
+.tile .ph{height:104px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted); position:relative;}
+.tile .ph .st{position:absolute; top:10px; left:10px;}
+.tile .tx{padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px;}
 .tile b{font-weight:600; font-size:14.5px; line-height:1.35;}
 .tile .m{font-size:12.5px; color:var(--muted);}
-
-.lab{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; padding:2px 9px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:var(--surface); width:fit-content;}
+.lab{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; padding:2px 9px; border-radius:6px; border:1px solid var(--border); color:var(--muted); background:var(--bg); width:fit-content;}
 .lab.ok{color:#0F7A3D; border-color:#CDEBD8; background:#F1FBF5;}
 .lab.warn{color:#A85A00; border-color:#F3E2C6; background:#FCF6EC;}
 .lab.acc{color:var(--accent); border-color:#CFE0FF; background:var(--accent-soft);}
 
+/* ====== footer ====== */
+.foot{border-top:1px solid var(--border); background:var(--surface); padding:30px 32px; }
+.foot .cols{max-width:1120px; margin:0 auto; display:flex; gap:40px; flex-wrap:wrap;}
+.foot .col{min-width:180px;}
+.foot .col b{font-weight:600; font-size:13.5px; display:block; margin-bottom:8px;}
+.foot .col a{display:block; color:var(--muted); font-size:13.5px; padding:3px 0;}
+.foot .base{max-width:1120px; margin:22px auto 0; padding-top:16px; border-top:1px solid var(--border); font-size:12.5px; color:var(--muted); display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+
+/* ====== object page ====== */
+.obwrap{max-width:1020px; margin:0 auto; padding:24px 32px 46px;}
+.crumb{font-size:13px; color:var(--muted); margin-bottom:16px;}
+.crumb a{color:var(--muted);}
+.crumb a:hover{color:var(--accent);}
+.obcols{display:flex; gap:28px; align-items:flex-start;}
+.obmain{flex:1; min-width:0;}
+.obside{flex:0 0 330px; position:sticky; top:16px;}
+.obphoto{height:250px; border:1px solid var(--border); border-radius:14px; background:var(--surface); display:flex; flex-direction:column; gap:10px; align-items:center; justify-content:center; color:var(--muted);}
+.obphoto span{font-size:12.5px;}
+.obtitle{font-size:25px; font-weight:600; letter-spacing:-0.02em; margin:18px 0 2px;}
+.obmeta{color:var(--muted); font-size:14px;}
 .card{background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:18px;}
 .card + .card{margin-top:12px;}
-.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; background:var(--accent); color:#fff; border:none; border-radius:8px; padding:10px 18px; font-size:14.5px; font-weight:600;}
-.btn.sec{background:var(--bg); color:var(--ink); border:1px solid var(--border); font-weight:500;}
-.btn.sm{padding:7px 12px; font-size:13px;}
-.btn[disabled]{opacity:.4;}
+.card h3{font-size:15px; font-weight:600; margin:0 0 6px;}
+.speclist{margin:14px 0 0;}
+.spec{display:flex; justify-content:space-between; gap:14px; padding:9px 0; border-bottom:1px solid var(--surface); font-size:14px;}
+.spec:last-child{border-bottom:none;}
+.spec .k{color:var(--muted);}
+.vercard{display:flex; gap:13px; align-items:center;}
+.avatar{width:44px; height:44px; border-radius:999px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:16px; flex:0 0 auto;}
+.vercard .tx b{font-weight:600; display:block;}
+.vercard .tx span{font-size:12.5px; color:var(--muted);}
 .input,.textarea{width:100%; border:1px solid var(--border); border-radius:8px; padding:10px 13px; font-size:14.5px; font-family:inherit; color:var(--ink); background:var(--bg); outline:none;}
-.textarea{min-height:76px; resize:none;}
+.textarea{min-height:72px; resize:none;}
 .input:focus,.textarea:focus{border-color:var(--accent);}
 .field-label{font-size:13px; font-weight:600; margin:12px 0 6px; display:block;}
-.two{display:flex; gap:10px;} .two>*{flex:1;}
+.linkrow{display:flex; gap:8px;}
+.linkrow input{flex:1; color:var(--muted); font-size:13px;}
+.morefrom{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+.minitile{border:1px solid var(--border); border-radius:10px; background:var(--bg); padding:10px 13px; font-size:13.5px; font-weight:500; display:inline-flex; gap:8px; align-items:center; color:var(--ink);}
+.minitile:hover{border-color:var(--muted);}
 
-.backbtn{display:inline-flex; align-items:center; gap:7px; background:none; border:none; color:var(--muted); font-size:13.5px; font-weight:500; padding:0; margin-bottom:14px;}
+/* ====== login ====== */
+.loginwrap{min-height:560px; display:flex; align-items:center; justify-content:center; background:var(--surface); padding:40px 20px;}
+.logincard{width:400px; background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:34px;}
+.logincard .logo{margin:0 auto 14px;}
+.logincard h2{font-size:21px; font-weight:600; text-align:center; margin:0 0 4px; letter-spacing:-0.01em;}
+.logincard .sub{text-align:center; font-size:13.5px; color:var(--muted);}
 
+/* ====== backend ====== */
+.inner{padding:24px 32px 44px; max-width:1120px; margin:0 auto;}
+.pagetitle{font-size:23px; font-weight:600; letter-spacing:-0.02em; margin:0 0 2px;}
+.tabs{display:flex; gap:8px; margin:18px 0 18px; flex-wrap:wrap;}
+.tab{border:1px solid var(--border); background:var(--bg); border-radius:999px; padding:8px 16px; font-size:13.5px; font-weight:500; color:var(--ink); display:inline-flex; gap:8px; align-items:center;}
+.tab.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
 table{width:100%; border-collapse:collapse; font-size:14px;}
-th{font-size:12px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); font-weight:600; text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); background:var(--surface);}
-td{padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:middle;}
+th{font-size:12px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); font-weight:600; text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); background:var(--surface);}
+td{padding:12px 14px; border-bottom:1px solid var(--border); vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 .tablecard{border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--bg);}
-
 .seg{display:inline-flex; background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:2px;}
 .seg button{border:none; background:transparent; padding:5px 11px; border-radius:7px; font-size:12.5px; font-weight:500; color:var(--muted);}
 .seg button.on{background:var(--bg); color:var(--ink); border:1px solid var(--border);}
 .seg button.on.st-vrij{color:#0F7A3D;}
 .seg button.on.st-uit{color:#A85A00;}
-.seg button.on.st-pauze{color:var(--muted);}
-
-.tabs{display:flex; gap:8px; margin:18px 0 16px; flex-wrap:wrap;}
-.tab{border:1px solid var(--border); background:var(--bg); border-radius:999px; padding:7px 15px; font-size:13.5px; font-weight:500; color:var(--ink);}
-.tab.on{border-color:var(--accent); color:var(--accent); background:var(--accent-soft);}
-
 .note{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; font-size:14px;}
-.muted{color:var(--muted);}
 .row-between{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.muted{color:var(--muted);}
 .mt8{margin-top:8px;} .mt12{margin-top:12px;} .mt16{margin-top:16px;} .mt24{margin-top:24px;}
 .hr{height:1px; background:var(--border); margin:14px 0;}
 .hidden{display:none !important;}
 .center{text-align:center;}
+.two{display:flex; gap:10px;} .two>*{flex:1;}
 
 .notes{flex:0 0 300px; max-width:300px; display:none;}
 .notes.show{display:block;}
@@ -120,12 +180,15 @@ tr:last-child td{border-bottom:none;}
 .notes .np h4{font-size:17px; font-weight:600; margin:8px 0 8px;}
 .notes .np p{font-size:13.5px; color:var(--muted); margin:0; line-height:1.6;}
 
-@media(max-width:900px){
+@media(max-width:960px){
   .cat-layout{flex-direction:column;}
   .filters{flex:none; width:100%;}
+  .obcols{flex-direction:column;}
+  .obside{position:static; flex:none; width:100%;}
   .notes,.intro{display:none !important;}
   body{padding:0;}
   .frame{border-radius:0; border:none;}
+  .topnav{display:none;}
 }
 </style>
 </head>
@@ -133,10 +196,10 @@ tr:last-child td{border-bottom:none;}
 
 <div class="intro">
   <h1>Out of Stock - basis-MVP</h1>
-  <p>De heel basic versie om mee te starten: een publieke catalogus zonder login, een achterkant per vereniging met leenstatus en aanvragen, en een deelcoach-overzicht. Aanvragen lopen via een formulier en mail.</p>
+  <p>Eén platform voor heel Vlaanderen: publieke catalogus per deelnetwerk, achterkant per vereniging, deelcoach-overzicht. Aanvragen via formulier en mail, contactgegevens achter een klik.</p>
   <div class="controls">
     <button class="ctrl" id="notesToggle" onclick="toggleNotes()"><span class="dot"></span> Ontwerpnotities</button>
-    <button class="ctrl" onclick="setView('catalogus')">Catalogus (publiek)</button>
+    <button class="ctrl" onclick="setView('catalogus')">Catalogus</button>
     <button class="ctrl" onclick="setView('login')">Achterkant vereniging</button>
     <button class="ctrl" onclick="setView('coach')">Deelcoach</button>
     <a class="ctrl" href="mvp.html">Andere MVP-versies &rarr;</a>
@@ -145,145 +208,243 @@ tr:last-child td{border-bottom:none;}
 
 <div class="chrome">
 <div class="frame">
-  <div class="browserbar"><span class="b-dot"></span><span class="b-dot"></span><span class="b-dot"></span><span class="url" id="urlbar">outofstock.be/leuven</span></div>
+  <div class="browserbar"><span class="b-dot"></span><span class="b-dot"></span><span class="b-dot"></span><span class="url" id="urlbar">outofstock.be</span></div>
 
   <!-- ===================== PUBLIEKE CATALOGUS ===================== -->
   <section class="view" id="catalogus">
-    <div class="sitehead">
-      <span class="logo">O</span>
-      <span class="t"><b>Out of Stock</b><span>Verenigingen delen materiaal · Deelnetwerk Leuven</span></span>
+    <header class="topbar">
+      <button class="brand" onclick="setView('catalogus')"><span class="logo">O</span><b>Out of Stock</b></button>
+      <span class="netpick">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="netLabel">Deelnetwerk Leuven</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        <select id="netSelect" onchange="setNet(this.value)"></select>
+      </span>
+      <nav class="topnav">
+        <button class="on">Alle materialen</button>
+        <button onclick="alert('In de echte versie: de deelregels en FAQ uit Leuven 1.0 als vaste pagina.')">Spelregels</button>
+        <button onclick="alert('In de echte versie: uitleg over het project, de deelcoaches en hoe je gemeente kan aansluiten.')">Over</button>
+      </nav>
       <span class="spacer"></span>
-      <button class="navlink" onclick="alert('In de echte versie: een pagina met de deelregels en FAQ uit Leuven 1.0.')">Spelregels</button>
-      <button class="navlink" onclick="setView('login')">Log in</button>
-    </div>
-    <div class="inner">
-      <div class="h1">Alle materialen</div>
-      <div class="sub" id="resCount"></div>
+      <button class="ghostlink" onclick="setView('login')">Log in</button>
+      <button class="btn sm" onclick="setView('login')">Deel jullie materiaal</button>
+    </header>
 
-      <div class="cat-layout">
-        <aside class="filters">
-          <div class="fgroup">
-            <div class="fl">Categorie</div>
-            <div id="fCats"></div>
-          </div>
-          <div class="fgroup">
-            <div class="fl">Beschikbaarheid</div>
-            <div id="fStatus"></div>
-          </div>
-          <div class="fgroup">
-            <div class="fl">Vereniging</div>
-            <select class="input" id="fVer" onchange="renderGrid()"></select>
-          </div>
-          <div class="fgroup">
-            <div class="fl">Buurt</div>
-            <select class="input" id="fBuurt" onchange="renderGrid()"></select>
-          </div>
-          <button class="btn sec" style="width:100%;" onclick="resetFilters()">Wis alle filters</button>
-        </aside>
-        <div class="results">
-          <div class="searchbar">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
-            <input id="zoek" placeholder="Zoek materiaal, bv. friteuse of partytent" oninput="renderGrid()">
-          </div>
-          <div class="grid" id="grid"></div>
-        </div>
+    <div class="hero">
+      <h1 id="heroTitle">Materiaal lenen in Leuven</h1>
+      <div class="sub" id="heroSub"></div>
+      <div class="bigsearch">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+        <input id="zoek" placeholder="Zoek materiaal, bv. friteuse, partytent, geluidsinstallatie" oninput="renderGrid()">
       </div>
     </div>
+
+    <div class="cat-layout">
+      <aside class="filters">
+        <div class="fgroup">
+          <div class="fl">Categorie</div>
+          <div id="fCats"></div>
+        </div>
+        <div class="fgroup">
+          <div class="fl">Beschikbaarheid</div>
+          <div id="fStatus"></div>
+        </div>
+        <div class="fgroup">
+          <div class="fl">Vereniging</div>
+          <select class="select" id="fVer" onchange="renderGrid()"></select>
+        </div>
+        <div class="fgroup">
+          <div class="fl">Buurt</div>
+          <select class="select" id="fBuurt" onchange="renderGrid()"></select>
+        </div>
+        <button class="btn sec" style="width:100%;" onclick="resetFilters()">Wis alle filters</button>
+      </aside>
+      <div class="results">
+        <div class="reshead">
+          <span class="n" id="resCount"></span>
+          <span class="sortwrap">Sorteer op
+            <select id="sort" onchange="renderGrid()">
+              <option value="recent">recent bijgewerkt</option>
+              <option value="naam">naam (A-Z)</option>
+              <option value="ver">vereniging</option>
+            </select>
+          </span>
+        </div>
+        <div class="activefilters" id="afRow"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+
+    <footer class="foot">
+      <div class="cols">
+        <div class="col" style="max-width:300px;">
+          <b>Out of Stock</b>
+          <span class="muted" style="font-size:13.5px;">Verenigingen delen, lenen en geven materiaal door in plaats van het te kopen of te huren. Eén platform voor het verenigingsleven in Vlaanderen.</span>
+        </div>
+        <div class="col">
+          <b>Voor verenigingen</b>
+          <a href="#" onclick="setView('login');return false;">Deel jullie materiaal</a>
+          <a href="#" onclick="return false;">Spelregels en FAQ</a>
+          <a href="#" onclick="return false;">Vraag een deelscan aan</a>
+        </div>
+        <div class="col">
+          <b>Voor gemeenten</b>
+          <a href="#" onclick="return false;">Start een deelnetwerk</a>
+          <a href="#" onclick="return false;">De deelcoach</a>
+        </div>
+        <div class="col">
+          <b>Deelnetwerken</b>
+          <a href="#" onclick="setNet('leuven');return false;">Leuven</a>
+          <a href="#" onclick="setNet('hasselt');return false;">Hasselt</a>
+          <a href="#" onclick="setNet('oostende');return false;">Oostende</a>
+          <a href="#" onclick="setNet('koksijde');return false;">Koksijde</a>
+        </div>
+      </div>
+      <div class="base">
+        <span>Een initiatief van Ecolife en WijDelen, met steun van Vlaanderen Circulair.</span>
+        <span>Privacy · Contact</span>
+      </div>
+    </footer>
   </section>
 
   <!-- ===================== OBJECTPAGINA ===================== -->
   <section class="view" id="object">
-    <div class="sitehead">
-      <span class="logo">O</span>
-      <span class="t"><b>Out of Stock</b><span>Deelnetwerk Leuven</span></span>
+    <header class="topbar">
+      <button class="brand" onclick="setView('catalogus')"><span class="logo">O</span><b>Out of Stock</b></button>
       <span class="spacer"></span>
-      <button class="navlink" onclick="setView('catalogus')">Alle materialen</button>
-    </div>
-    <div class="inner" style="max-width:660px;">
-      <button class="backbtn" onclick="setView('catalogus')">&larr; Terug naar het overzicht</button>
-      <div class="h1" id="obNaam"></div>
-      <div class="sub" id="obSub"></div>
-      <div class="mt12" id="obStatus"></div>
-
-      <div class="card mt16" id="obNoteCard">
-        <b style="font-weight:600;">Opmerking van de vereniging</b>
-        <div class="sub mt8" id="obNote"></div>
-      </div>
-
-      <div class="card mt12">
-        <b style="font-weight:600;">Deelbare link</b>
-        <div class="two mt8">
-          <input class="input" id="obLink" readonly>
-          <button class="btn sec" style="flex:0 0 auto;" onclick="copyLink(this)">Kopieer link</button>
+      <button class="ghostlink" onclick="setView('catalogus')">Alle materialen</button>
+      <button class="ghostlink" onclick="setView('login')">Log in</button>
+    </header>
+    <div class="obwrap">
+      <div class="crumb"><a href="#" onclick="setView('catalogus');return false;">Alle materialen</a> <span id="crumbCat"></span> / <span id="crumbNaam"></span></div>
+      <div class="obcols">
+        <div class="obmain">
+          <div class="obphoto"><span id="obIcon"></span><span>Foto volgt van de vereniging</span></div>
+          <div class="obtitle" id="obNaam"></div>
+          <div class="obmeta" id="obMeta"></div>
+          <div class="card mt16" id="obNoteCard">
+            <h3>Goed om te weten</h3>
+            <div class="muted" style="font-size:14px;" id="obNote"></div>
+          </div>
+          <div class="card mt12">
+            <h3>Details</h3>
+            <div class="speclist">
+              <div class="spec"><span class="k">Categorie</span><span id="spCat"></span></div>
+              <div class="spec"><span class="k">Beschikbaarheid</span><span id="spStatus"></span></div>
+              <div class="spec"><span class="k">Buurt</span><span id="spBuurt"></span></div>
+              <div class="spec"><span class="k">Laatst bijgewerkt</span><span id="spUpd"></span></div>
+            </div>
+          </div>
+          <div class="card mt12">
+            <h3>Zo werkt lenen</h3>
+            <div class="muted" style="font-size:14px;">Je vraagt aan, de vereniging bevestigt en jullie spreken samen ophalen en terugbrengen af. Breng alles proper en in dezelfde staat terug. Lees de <a href="#" onclick="return false;">deelregels</a>.</div>
+          </div>
+          <div class="mt16">
+            <h3 style="font-size:15px; font-weight:600; margin:0 0 2px;">Meer van <span id="moreVer"></span></h3>
+            <div class="morefrom" id="moreFrom"></div>
+          </div>
         </div>
-        <div class="sub mt8">Plak deze link gerust in jullie WhatsApp-groep of mail.</div>
-      </div>
-
-      <div class="card mt12">
-        <b style="font-weight:600;">Vraag het te leen</b>
-        <div id="aanvraagForm">
-          <label class="field-label">Jouw naam</label>
-          <input class="input" id="afNaam" placeholder="bv. Lien Vermeulen">
-          <label class="field-label">Jouw vereniging</label>
-          <input class="input" id="afVer" placeholder="bv. Chiro Heverlee">
-          <label class="field-label">Wanneer heb je het nodig?</label>
-          <input class="input" id="afWanneer" placeholder="bv. 14 tot 16 augustus">
-          <label class="field-label">Bericht (niet verplicht)</label>
-          <textarea class="textarea" id="afMsg" placeholder="bv. Voor ons eetfestijn voor 80 personen."></textarea>
-          <button class="btn mt16" onclick="stuurAanvraag()">Verstuur aanvraag</button>
-        </div>
-        <div class="hidden" id="aanvraagOk">
-          <div class="lab ok">Aanvraag verstuurd</div>
-          <div class="sub mt8"><span id="aoVer"></span> krijgt meteen een mailtje en neemt contact met je op.</div>
-        </div>
-        <div class="hr"></div>
-        <div id="contactBlok">
-          <button class="btn sec" onclick="toonContact()">Liever rechtstreeks? Toon contactgegevens</button>
-        </div>
-        <div class="hidden" id="contactOpen"></div>
+        <aside class="obside">
+          <div class="card">
+            <div id="obStatusBig"></div>
+            <div id="aanvraagForm" class="mt12">
+              <button class="btn lg" id="vraagBtn" onclick="document.getElementById('formVeld').classList.remove('hidden'); this.classList.add('hidden');">Vraag het te leen</button>
+              <div class="hidden" id="formVeld">
+                <label class="field-label" style="margin-top:0;">Jouw naam</label>
+                <input class="input" id="afNaam" placeholder="bv. Lien Vermeulen">
+                <label class="field-label">Jouw vereniging</label>
+                <input class="input" id="afVer" placeholder="bv. Chiro Heverlee">
+                <label class="field-label">Wanneer heb je het nodig?</label>
+                <input class="input" id="afWanneer" placeholder="bv. 14 tot 16 augustus">
+                <label class="field-label">Bericht (niet verplicht)</label>
+                <textarea class="textarea" id="afMsg" placeholder="bv. Voor ons eetfestijn voor 80 personen."></textarea>
+                <button class="btn lg mt12" onclick="stuurAanvraag()">Verstuur aanvraag</button>
+              </div>
+            </div>
+            <div class="hidden mt12" id="aanvraagOk">
+              <span class="lab ok">Aanvraag verstuurd</span>
+              <div class="muted mt8" style="font-size:13.5px;"><span id="aoVer"></span> krijgt meteen een mailtje en neemt contact met je op.</div>
+            </div>
+            <div class="hr"></div>
+            <div id="contactBlok"><button class="btn sec" style="width:100%;" onclick="toonContact()">Liever rechtstreeks? Toon contact</button></div>
+            <div class="hidden" id="contactOpen"></div>
+          </div>
+          <div class="card mt12">
+            <div class="vercard">
+              <span class="avatar" id="verAvatar"></span>
+              <span class="tx"><b id="verNaam"></b><span id="verInfo"></span></span>
+            </div>
+          </div>
+          <div class="card mt12">
+            <h3>Deel dit materiaal</h3>
+            <div class="linkrow mt8">
+              <input class="input" id="obLink" readonly>
+              <button class="btn sec" style="flex:0 0 auto;" onclick="copyLink(this)">Kopieer</button>
+            </div>
+            <div class="muted mt8" style="font-size:12.5px;">Plak de link in jullie WhatsApp-groep of mail.</div>
+          </div>
+        </aside>
       </div>
     </div>
   </section>
 
   <!-- ===================== LOGIN ===================== -->
   <section class="view" id="login">
-    <div class="sitehead">
-      <span class="logo">O</span>
-      <span class="t"><b>Out of Stock</b><span>Achterkant voor verenigingen</span></span>
+    <header class="topbar">
+      <button class="brand" onclick="setView('catalogus')"><span class="logo">O</span><b>Out of Stock</b></button>
       <span class="spacer"></span>
-      <button class="navlink" onclick="setView('catalogus')">Naar de catalogus</button>
-    </div>
-    <div class="inner" style="max-width:420px;">
-      <div class="h1">Log in</div>
-      <div class="sub">Met het account van je vereniging beheer je jullie materialen en aanvragen.</div>
-      <label class="field-label mt16">E-mailadres</label>
-      <input class="input" id="liMail" placeholder="materiaal@chirohekeko.be" oninput="document.getElementById('liBtn').disabled=!this.value.trim()">
-      <label class="field-label">Wachtwoord</label>
-      <input class="input" type="password" placeholder="••••••••">
-      <button class="btn mt16" id="liBtn" style="width:100%;" disabled onclick="setView('achterkant')">Log in</button>
-      <div class="center mt12 sub"><a href="#" onclick="return false;">Wachtwoord vergeten?</a></div>
+      <button class="ghostlink" onclick="setView('catalogus')">Naar de catalogus</button>
+    </header>
+    <div class="loginwrap">
+      <div class="logincard">
+        <span class="logo">O</span>
+        <h2>Log in</h2>
+        <div class="sub">Beheer de materialen en aanvragen van je vereniging.</div>
+        <label class="field-label mt16">E-mailadres</label>
+        <input class="input" id="liMail" placeholder="materiaal@chirohekeko.be" oninput="document.getElementById('liBtn').disabled=!this.value.trim()">
+        <label class="field-label">Wachtwoord</label>
+        <input class="input" type="password" placeholder="••••••••">
+        <button class="btn lg mt16" id="liBtn" disabled onclick="setView('achterkant')">Log in</button>
+        <div class="center mt12" style="font-size:13px;"><a href="#" onclick="return false;">Wachtwoord vergeten?</a></div>
+        <div class="hr"></div>
+        <div class="center muted" style="font-size:13px;">Nog geen account? De huidige materiaalmeester of je deelcoach nodigt je uit.</div>
+      </div>
     </div>
   </section>
 
   <!-- ===================== ACHTERKANT VERENIGING ===================== -->
   <section class="view" id="achterkant">
-    <div class="sitehead">
-      <span class="logo">O</span>
-      <span class="t"><b>Onze materialen</b><span>Chiro Hekeko · ingelogd als Lore</span></span>
+    <header class="topbar">
+      <button class="brand"><span class="logo">O</span><b>Out of Stock</b></button>
+      <span class="lab acc">Chiro Hekeko · Kessel-Lo</span>
       <span class="spacer"></span>
-      <button class="navlink" onclick="setView('catalogus')">Bekijk de catalogus</button>
-      <button class="navlink" onclick="setView('login')">Log uit</button>
-    </div>
+      <button class="ghostlink" onclick="setView('catalogus')">Bekijk de catalogus</button>
+      <span class="avatar" style="width:34px; height:34px; font-size:13px;">L</span>
+      <button class="ghostlink" onclick="setView('login')">Log uit</button>
+    </header>
     <div class="inner">
+      <div class="pagetitle">Onze materialen</div>
+      <div class="muted" style="font-size:14px;">Wat jullie delen met het netwerk, en de aanvragen die binnenkomen.</div>
       <div class="tabs">
-        <button class="tab on" id="tabMat" onclick="setTab('mat')">Onze materialen</button>
-        <button class="tab" id="tabAan" onclick="setTab('aan')">Aanvragen <span class="lab acc" id="aanBadge" style="margin-left:4px;">2 nieuw</span></button>
+        <button class="tab on" id="tabMat" onclick="setTab('mat')">Materialen <span class="lab" id="matBadge"></span></button>
+        <button class="tab" id="tabAan" onclick="setTab('aan')">Aanvragen <span class="lab acc" id="aanBadge"></span></button>
         <button class="tab" id="tabInst" onclick="setTab('inst')">Contact-instellingen</button>
       </div>
 
       <div id="paneMat">
         <div class="note row-between">
-          <span><b style="font-weight:600;">Leenstatus</b>: zet een materiaal op uitgeleend of even niet, dan zien andere verenigingen dat meteen in de catalogus.</span>
+          <span><b style="font-weight:600;">Leenstatus</b>: zet iets op uitgeleend of even niet, en andere verenigingen zien dat meteen in de catalogus.</span>
+          <button class="btn sm" onclick="toggleAdd()">+ Materiaal toevoegen</button>
+        </div>
+        <div class="card mt12 hidden" id="addForm" style="max-width:520px;">
+          <h3>Nieuw materiaal</h3>
+          <label class="field-label">Wat is het?</label>
+          <input class="input" id="addNaam" placeholder="bv. Partytent 3x6 m" oninput="document.getElementById('addBtn').disabled=!this.value.trim()">
+          <label class="field-label">Categorie</label>
+          <select class="select" id="addCat"></select>
+          <label class="field-label">Opmerking (niet verplicht)</label>
+          <input class="input" id="addNote" placeholder="bv. enkel in het weekend op te halen">
+          <button class="btn mt16" id="addBtn" disabled onclick="addItem()">Zet in de catalogus</button>
         </div>
         <div class="tablecard mt12">
           <table>
@@ -291,37 +452,26 @@ tr:last-child td{border-bottom:none;}
             <tbody id="eigenBody"></tbody>
           </table>
         </div>
-        <button class="btn sec mt12" onclick="toggleAdd()" id="addToggleBtn">+ Materiaal toevoegen</button>
-        <div class="card mt12 hidden" id="addForm" style="max-width:520px;">
-          <b style="font-weight:600;">Nieuw materiaal</b>
-          <label class="field-label">Wat is het?</label>
-          <input class="input" id="addNaam" placeholder="bv. Partytent 3x6 m" oninput="document.getElementById('addBtn').disabled=!this.value.trim()">
-          <label class="field-label">Categorie</label>
-          <select class="input" id="addCat"></select>
-          <label class="field-label">Opmerking (niet verplicht)</label>
-          <input class="input" id="addNote" placeholder="bv. enkel in het weekend op te halen">
-          <button class="btn mt16" id="addBtn" disabled onclick="addItem()">Zet in de catalogus</button>
-        </div>
-        <div class="card mt16" style="background:var(--surface); max-width:520px;">
+        <div class="card mt16" style="background:var(--surface); max-width:560px;">
           <div class="row-between">
-            <span><b style="font-weight:600;">Hulp nodig bij wat je kan delen?</b><br><span class="sub">Jullie deelcoach kijkt graag mee wat relevant is.</span></span>
-            <button class="btn sm" onclick="alert('Hier boek je een sessie met Sara, jullie deelcoach. Zij komt langs en jullie overlopen samen wat je kan delen.')">Boek een sessie met je deelcoach</button>
+            <span><b style="font-weight:600;">Hulp nodig bij wat je kan delen?</b><br><span class="muted" style="font-size:13.5px;">Jullie deelcoach Sara kijkt graag mee wat relevant is.</span></span>
+            <button class="btn sm" onclick="alert('Hier boek je een sessie met Sara, jullie deelcoach.')">Boek een sessie</button>
           </div>
         </div>
       </div>
 
       <div id="paneAan" class="hidden">
-        <div class="note">Bij elke nieuwe aanvraag krijg je meteen een mailtje op materiaal@chirohekeko.be. Hier hou je de lijst bij.</div>
+        <div class="note">Bij elke nieuwe aanvraag krijg je meteen een mailtje op materiaal@chirohekeko.be.</div>
         <div class="mt12" id="aanLijst"></div>
       </div>
 
       <div id="paneInst" class="hidden">
-        <div class="card" style="max-width:520px;">
-          <b style="font-weight:600;">Wat tonen we op jullie objectpagina's?</b>
-          <div class="sub mt8">Het aanvraagformulier staat er altijd. Rechtstreekse contactgegevens tonen we pas na een klik, en enkel als jullie dat willen.</div>
+        <div class="card" style="max-width:540px;">
+          <h3>Wat tonen we op jullie objectpagina's?</h3>
+          <div class="muted" style="font-size:13.5px;">Het aanvraagformulier staat er altijd. Rechtstreekse contactgegevens tonen we pas na een klik, en enkel als jullie dat willen.</div>
           <div class="hr"></div>
-          <label class="fopt on" onclick="this.classList.toggle('on')"><span class="box">✓</span> Toon ons telefoonnummer (0476 12 34 56)</label>
-          <label class="fopt on" onclick="this.classList.toggle('on')"><span class="box">✓</span> Toon ons e-mailadres (materiaal@chirohekeko.be)</label>
+          <button class="fopt on" onclick="this.classList.toggle('on')"><span class="box">✓</span> Toon ons telefoonnummer (0476 12 34 56)</button>
+          <button class="fopt on" onclick="this.classList.toggle('on')"><span class="box">✓</span> Toon ons e-mailadres (materiaal@chirohekeko.be)</button>
         </div>
       </div>
     </div>
@@ -329,15 +479,16 @@ tr:last-child td{border-bottom:none;}
 
   <!-- ===================== DEELCOACH ===================== -->
   <section class="view" id="coach">
-    <div class="sitehead">
-      <span class="logo">O</span>
-      <span class="t"><b>Deelcoach</b><span>Deelnetwerk Leuven · Sara Joris</span></span>
+    <header class="topbar">
+      <button class="brand"><span class="logo">O</span><b>Out of Stock</b></button>
+      <span class="lab acc">Deelcoach · Deelnetwerk Leuven</span>
       <span class="spacer"></span>
-      <button class="navlink" onclick="setView('catalogus')">Bekijk de catalogus</button>
-    </div>
+      <button class="ghostlink" onclick="setView('catalogus')">Bekijk de catalogus</button>
+      <span class="avatar" style="width:34px; height:34px; font-size:13px;">S</span>
+    </header>
     <div class="inner">
-      <div class="h1">Verenigingen</div>
-      <div class="sub">Wie is aangesloten, wie is actief, en wie heeft al een deelscan gehad.</div>
+      <div class="pagetitle">Verenigingen</div>
+      <div class="muted" style="font-size:14px;">Wie is aangesloten, wie is actief, en wie heeft al een deelscan gehad.</div>
       <div class="tabs">
         <button class="tab on" onclick="coachFilter('alle',this)">Alle (8)</button>
         <button class="tab" onclick="coachFilter('geenscan',this)">Nog geen deelscan (3)</button>
@@ -345,11 +496,14 @@ tr:last-child td{border-bottom:none;}
       </div>
       <div class="tablecard">
         <table>
-          <thead><tr><th>Vereniging</th><th>Materialen</th><th>Laatst actief</th><th>Deelscan</th><th>Account</th></tr></thead>
+          <thead><tr><th>Vereniging</th><th>Materialen</th><th>Laatst actief</th><th>Deelscan</th><th style="text-align:right;">Account</th></tr></thead>
           <tbody id="coachBody"></tbody>
         </table>
       </div>
-      <div class="note mt12">Verenigingen uitnodigen, accounts resetten en nieuwe leden toevoegen doe je hier. Een deelscan is het kennismakingsgesprek waarin je samen bekijkt wat een vereniging kan delen.</div>
+      <div class="row-between mt12">
+        <span class="muted" style="font-size:13.5px;">Een deelscan is het kennismakingsgesprek waarin je samen bekijkt wat een vereniging kan delen.</span>
+        <button class="btn sm sec" onclick="alert('Hier nodig je een nieuwe vereniging uit: naam + e-mailadres, zij krijgen een uitnodigingsmail.')">+ Vereniging uitnodigen</button>
+      </div>
     </div>
   </section>
 
@@ -366,53 +520,77 @@ tr:last-child td{border-bottom:none;}
 
 <script>
 var CATS=['Keuken','Tafels & banken','Tenten & kamp','Spel & sport','Varia'];
+var CAT_ICON={
+ 'Keuken':'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h13v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7ZM16 12h3a2 2 0 0 1 0 4h-3M7 3v3M10.5 3v3M14 3v3"/></svg>',
+ 'Tafels & banken':'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9h18M5 9v10M19 9v10M9 13h6"/></svg>',
+ 'Tenten & kamp':'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4 2 20h20L12 4ZM12 12l4.5 8M12 12 7.5 20"/></svg>',
+ 'Spel & sport':'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3a15 15 0 0 1 0 18M3.5 9h17M3.5 15h17"/></svg>',
+ 'Varia':'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>'
+};
 var STATUS_LABEL={vrij:'beschikbaar', uit:'uitgeleend', pauze:'even niet'};
+var NETTEN={
+ leuven:{label:'Deelnetwerk Leuven', stad:'Leuven'},
+ hasselt:{label:'Deelnetwerk Hasselt', stad:'Hasselt'},
+ oostende:{label:'Deelnetwerk Oostende', stad:'Oostende'},
+ koksijde:{label:'Deelnetwerk Koksijde', stad:'Koksijde'},
+ alle:{label:'Heel Vlaanderen', stad:null}
+};
 var VERENIGINGEN={
- 'F.C. Tabor Heverlee':{buurt:'Heverlee', tel:'0478 23 45 67', mail:'materiaal@fctabor.be', toonTel:true, toonMail:true},
- 'Chiro Hekeko':{buurt:'Kessel-Lo', tel:'0476 12 34 56', mail:'materiaal@chirohekeko.be', toonTel:true, toonMail:true},
- 'Chiro Blauwput':{buurt:'Kessel-Lo', tel:null, mail:'blauwput@chiro.be', toonTel:false, toonMail:true},
- 'Scouts Egenhoven':{buurt:'Egenhoven', tel:'0499 88 77 66', mail:'scouts.egenhoven@gmail.com', toonTel:true, toonMail:true},
- 'Chiro Don Bosco Kessel-Lo':{buurt:'Kessel-Lo', tel:null, mail:null, toonTel:false, toonMail:false},
- 'Wandelclub WSP':{buurt:'Leuven centrum', tel:'016 22 11 00', mail:'info@wandelclubwsp.be', toonTel:true, toonMail:true},
- 'Bazart Leuven':{buurt:'Leuven centrum', tel:null, mail:'hallo@bazartleuven.be', toonTel:false, toonMail:true},
- 'Scouts Boven-Lo':{buurt:'Kessel-Lo', tel:null, mail:'info@scoutsbovenlo.be', toonTel:false, toonMail:true},
- 'FOS De Vlievleger':{buurt:'Heverlee', tel:null, mail:'devlievleger@fos.be', toonTel:false, toonMail:true},
- 'Damiaanscouts Wilsele-Putkapel':{buurt:'Wilsele', tel:null, mail:'damiaanscouts@gmail.com', toonTel:false, toonMail:true},
- 'Jeugd Rode Kruis':{buurt:'Leuven centrum', tel:null, mail:'jeugd@rodekruisleuven.be', toonTel:false, toonMail:true},
- 'Sporty':{buurt:'Heverlee', tel:'016 40 50 60', mail:'verhuur@sporty.be', toonTel:true, toonMail:true},
- 'Chiro Vlierbeek':{buurt:'Kessel-Lo', tel:null, mail:'chiro@vlierbeek.be', toonTel:false, toonMail:true}
+ 'F.C. Tabor Heverlee':{net:'leuven', buurt:'Heverlee', tel:'0478 23 45 67', mail:'materiaal@fctabor.be', toonTel:true, toonMail:true, sinds:'2025'},
+ 'Chiro Hekeko':{net:'leuven', buurt:'Kessel-Lo', tel:'0476 12 34 56', mail:'materiaal@chirohekeko.be', toonTel:true, toonMail:true, sinds:'2025'},
+ 'Chiro Blauwput':{net:'leuven', buurt:'Kessel-Lo', tel:null, mail:'blauwput@chiro.be', toonTel:false, toonMail:true, sinds:'2025'},
+ 'Scouts Egenhoven':{net:'leuven', buurt:'Egenhoven', tel:'0499 88 77 66', mail:'scouts.egenhoven@gmail.com', toonTel:true, toonMail:true, sinds:'2026'},
+ 'Chiro Don Bosco Kessel-Lo':{net:'leuven', buurt:'Kessel-Lo', tel:null, mail:null, toonTel:false, toonMail:false, sinds:'2025'},
+ 'Wandelclub WSP':{net:'leuven', buurt:'Leuven centrum', tel:'016 22 11 00', mail:'info@wandelclubwsp.be', toonTel:true, toonMail:true, sinds:'2025'},
+ 'Bazart Leuven':{net:'leuven', buurt:'Leuven centrum', tel:null, mail:'hallo@bazartleuven.be', toonTel:false, toonMail:true, sinds:'2026'},
+ 'Scouts Boven-Lo':{net:'leuven', buurt:'Kessel-Lo', tel:null, mail:'info@scoutsbovenlo.be', toonTel:false, toonMail:true, sinds:'2026'},
+ 'FOS De Vlievleger':{net:'leuven', buurt:'Heverlee', tel:null, mail:'devlievleger@fos.be', toonTel:false, toonMail:true, sinds:'2025'},
+ 'Damiaanscouts Wilsele-Putkapel':{net:'leuven', buurt:'Wilsele', tel:null, mail:'damiaanscouts@gmail.com', toonTel:false, toonMail:true, sinds:'2026'},
+ 'Jeugd Rode Kruis':{net:'leuven', buurt:'Leuven centrum', tel:null, mail:'jeugd@rodekruisleuven.be', toonTel:false, toonMail:true, sinds:'2025'},
+ 'Sporty':{net:'leuven', buurt:'Heverlee', tel:'016 40 50 60', mail:'verhuur@sporty.be', toonTel:true, toonMail:true, sinds:'2025'},
+ 'Chiro Vlierbeek':{net:'leuven', buurt:'Kessel-Lo', tel:null, mail:'chiro@vlierbeek.be', toonTel:false, toonMail:true, sinds:'2026'},
+ 'Chiro Kuringen':{net:'hasselt', buurt:'Kuringen', tel:null, mail:'chiro.kuringen@gmail.com', toonTel:false, toonMail:true, sinds:'2026'},
+ 'Scouts Runkst':{net:'hasselt', buurt:'Runkst', tel:null, mail:'info@scoutsrunkst.be', toonTel:false, toonMail:true, sinds:'2026'},
+ 'KSA Oostende Noord':{net:'oostende', buurt:'Vuurtorenwijk', tel:null, mail:'ksa.oostendenoord@gmail.com', toonTel:false, toonMail:true, sinds:'2026'},
+ 'Chiro Koksijde':{net:'koksijde', buurt:'Koksijde-dorp', tel:null, mail:'chiro@koksijde.be', toonTel:false, toonMail:true, sinds:'2026'}
 };
 var ITEMS=[
- {id:1, naam:'Tafels en stoelen (plastic, opklapbaar)', ver:'F.C. Tabor Heverlee', cat:'Tafels & banken', st:'vrij', upd:'jul 2026'},
- {id:2, naam:'Tafels (8-10 pers.), banken en staantafels', ver:'Chiro Hekeko', cat:'Tafels & banken', st:'vrij', upd:'jul 2026', eigen:true},
- {id:3, naam:'Tafels en banken', ver:'Chiro Blauwput', cat:'Tafels & banken', st:'uit', upd:'jun 2026'},
- {id:4, naam:'Tafels en banken', ver:'Scouts Egenhoven', cat:'Tafels & banken', st:'vrij', upd:'mei 2026'},
- {id:5, naam:'Banken', ver:'Chiro Don Bosco Kessel-Lo', cat:'Tafels & banken', st:'vrij', upd:'jun 2026'},
- {id:6, naam:'Industriële friteuse en bakplaat', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'vrij', note:'Friteuse enkel met eigen olie.', upd:'jul 2026'},
- {id:7, naam:'Koffiemachine en au bain-marie', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'vrij', upd:'jul 2026'},
- {id:8, naam:'Croquemachine', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'uit', upd:'jun 2026'},
- {id:9, naam:'Kookpotten', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'jun 2026'},
- {id:10, naam:'Soepverwarmers en elektrische vuurtjes', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'jun 2026'},
- {id:11, naam:'Thermossen en koffiezetters (bravilor)', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'jun 2026'},
- {id:12, naam:'Tassen, soepkommen en theeglazen', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'mei 2026'},
- {id:13, naam:'Staafmixer (industrieel) en braadsleeën', ver:'Bazart Leuven', cat:'Keuken', st:'pauze', upd:'jun 2026'},
- {id:14, naam:'Paellapan', ver:'Scouts Boven-Lo', cat:'Keuken', st:'vrij', upd:'apr 2026'},
- {id:15, naam:'BBQ', ver:'Scouts Egenhoven', cat:'Keuken', st:'vrij', upd:'mei 2026'},
- {id:16, naam:'Slaaptenten', ver:'FOS De Vlievleger', cat:'Tenten & kamp', st:'uit', upd:'jun 2026'},
- {id:17, naam:'Slaaptenten', ver:'Damiaanscouts Wilsele-Putkapel', cat:'Tenten & kamp', st:'uit', upd:'mei 2026'},
- {id:18, naam:'Sjorbalken', ver:'Chiro Hekeko', cat:'Tenten & kamp', st:'uit', upd:'jul 2026', eigen:true},
- {id:19, naam:'Sjorbalken', ver:'Scouts Egenhoven', cat:'Tenten & kamp', st:'vrij', upd:'mei 2026'},
- {id:20, naam:'Sjorbalken', ver:'FOS De Vlievleger', cat:'Tenten & kamp', st:'vrij', upd:'jun 2026'},
- {id:21, naam:'Verwarmingstoestellen', ver:'Jeugd Rode Kruis', cat:'Tenten & kamp', st:'vrij', upd:'apr 2026'},
- {id:22, naam:'Parachutes', ver:'Chiro Don Bosco Kessel-Lo', cat:'Spel & sport', st:'vrij', upd:'jun 2026'},
- {id:23, naam:'Gezelschaps- en volksspelen', ver:'Chiro Don Bosco Kessel-Lo', cat:'Spel & sport', st:'vrij', upd:'jun 2026'},
- {id:24, naam:'Spelmateriaal', ver:'Damiaanscouts Wilsele-Putkapel', cat:'Spel & sport', st:'vrij', upd:'mei 2026'},
- {id:25, naam:'Aluminium voetbaldoelen', ver:'F.C. Tabor Heverlee', cat:'Spel & sport', st:'vrij', upd:'jun 2026'},
- {id:26, naam:'Kegels', ver:'Chiro Hekeko', cat:'Spel & sport', st:'vrij', upd:'jul 2026', eigen:true},
- {id:27, naam:'Sport- en spelmateriaal (verhuurdienst)', ver:'Sporty', cat:'Spel & sport', st:'vrij', note:'Sporty heeft een eigen verhuurwerking.', upd:'apr 2026'},
- {id:28, naam:'Rookmachine', ver:'Chiro Don Bosco Kessel-Lo', cat:'Varia', st:'vrij', upd:'jun 2026'},
- {id:29, naam:'Inkledingsmateriaal', ver:'Bazart Leuven', cat:'Varia', st:'vrij', upd:'mei 2026'},
- {id:30, naam:'EHBO-koffer', ver:'Wandelclub WSP', cat:'Varia', st:'vrij', upd:'jun 2026'}
+ {id:1, naam:'Tafels en stoelen (plastic, opklapbaar)', ver:'F.C. Tabor Heverlee', cat:'Tafels & banken', st:'vrij', upd:'deze week', updN:1},
+ {id:2, naam:'Tafels (8-10 pers.), banken en staantafels', ver:'Chiro Hekeko', cat:'Tafels & banken', st:'vrij', upd:'deze week', updN:2, eigen:true},
+ {id:3, naam:'Tafels en banken', ver:'Chiro Blauwput', cat:'Tafels & banken', st:'uit', upd:'vorige maand', updN:9},
+ {id:4, naam:'Tafels en banken', ver:'Scouts Egenhoven', cat:'Tafels & banken', st:'vrij', upd:'in mei', updN:12},
+ {id:5, naam:'Banken', ver:'Chiro Don Bosco Kessel-Lo', cat:'Tafels & banken', st:'vrij', upd:'vorige maand', updN:8},
+ {id:6, naam:'Industriële friteuse en bakplaat', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'vrij', note:'Friteuse enkel met eigen olie gebruiken. Handleiding zit in de koffer.', upd:'deze week', updN:1},
+ {id:7, naam:'Koffiemachine en au bain-marie', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'vrij', upd:'deze week', updN:3},
+ {id:8, naam:'Croquemachine', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'uit', upd:'vorige maand', updN:7},
+ {id:9, naam:'Kookpotten', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'vorige maand', updN:6},
+ {id:10, naam:'Soepverwarmers en elektrische vuurtjes', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'vorige maand', updN:6},
+ {id:11, naam:'Thermossen en koffiezetters (bravilor)', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'vorige maand', updN:5},
+ {id:12, naam:'Tassen, soepkommen en theeglazen', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'in mei', updN:11},
+ {id:13, naam:'Staafmixer (industrieel) en braadsleeën', ver:'Bazart Leuven', cat:'Keuken', st:'pauze', upd:'vorige maand', updN:7},
+ {id:14, naam:'Paellapan', ver:'Scouts Boven-Lo', cat:'Keuken', st:'vrij', upd:'in april', updN:14},
+ {id:15, naam:'BBQ', ver:'Scouts Egenhoven', cat:'Keuken', st:'vrij', upd:'in mei', updN:12},
+ {id:16, naam:'Slaaptenten', ver:'FOS De Vlievleger', cat:'Tenten & kamp', st:'uit', note:'Op kamp tot half augustus.', upd:'deze week', updN:2},
+ {id:17, naam:'Slaaptenten', ver:'Damiaanscouts Wilsele-Putkapel', cat:'Tenten & kamp', st:'uit', upd:'in mei', updN:13},
+ {id:18, naam:'Sjorbalken', ver:'Chiro Hekeko', cat:'Tenten & kamp', st:'uit', upd:'deze week', updN:2, eigen:true},
+ {id:19, naam:'Sjorbalken', ver:'Scouts Egenhoven', cat:'Tenten & kamp', st:'vrij', upd:'in mei', updN:12},
+ {id:20, naam:'Sjorbalken', ver:'FOS De Vlievleger', cat:'Tenten & kamp', st:'vrij', upd:'vorige maand', updN:6},
+ {id:21, naam:'Verwarmingstoestellen', ver:'Jeugd Rode Kruis', cat:'Tenten & kamp', st:'vrij', upd:'in april', updN:15},
+ {id:22, naam:'Parachutes', ver:'Chiro Don Bosco Kessel-Lo', cat:'Spel & sport', st:'vrij', upd:'vorige maand', updN:8},
+ {id:23, naam:'Gezelschaps- en volksspelen', ver:'Chiro Don Bosco Kessel-Lo', cat:'Spel & sport', st:'vrij', upd:'vorige maand', updN:8},
+ {id:24, naam:'Spelmateriaal', ver:'Damiaanscouts Wilsele-Putkapel', cat:'Spel & sport', st:'vrij', upd:'in mei', updN:13},
+ {id:25, naam:'Aluminium voetbaldoelen', ver:'F.C. Tabor Heverlee', cat:'Spel & sport', st:'vrij', upd:'vorige maand', updN:7},
+ {id:26, naam:'Kegels', ver:'Chiro Hekeko', cat:'Spel & sport', st:'vrij', upd:'deze week', updN:2, eigen:true},
+ {id:27, naam:'Sport- en spelmateriaal (verhuurdienst)', ver:'Sporty', cat:'Spel & sport', st:'vrij', note:'Sporty heeft een eigen verhuurwerking met vaste tarieven.', upd:'in april', updN:14},
+ {id:28, naam:'Rookmachine', ver:'Chiro Don Bosco Kessel-Lo', cat:'Varia', st:'vrij', upd:'vorige maand', updN:8},
+ {id:29, naam:'Inkledingsmateriaal', ver:'Bazart Leuven', cat:'Varia', st:'vrij', upd:'in mei', updN:11},
+ {id:30, naam:'EHBO-koffer', ver:'Wandelclub WSP', cat:'Varia', st:'vrij', upd:'vorige maand', updN:6},
+ {id:31, naam:'Partytenten 4x8', ver:'Chiro Kuringen', cat:'Tenten & kamp', st:'vrij', upd:'deze week', updN:2},
+ {id:32, naam:'Klaptafels en banken', ver:'Chiro Kuringen', cat:'Tafels & banken', st:'vrij', upd:'deze week', updN:3},
+ {id:33, naam:'Geluidsinstallatie met micro', ver:'Scouts Runkst', cat:'Varia', st:'vrij', upd:'vorige maand', updN:6},
+ {id:34, naam:'Volksspelen (groot pakket)', ver:'KSA Oostende Noord', cat:'Spel & sport', st:'vrij', upd:'deze week', updN:1},
+ {id:35, naam:'Beachvlaggen en partytent', ver:'KSA Oostende Noord', cat:'Tenten & kamp', st:'vrij', upd:'vorige maand', updN:5},
+ {id:36, naam:'Kookvuren en gasflessen', ver:'Chiro Koksijde', cat:'Keuken', st:'vrij', upd:'deze week', updN:4}
 ];
 var AANVRAGEN=[
  {van:'Lien (Chiro Heverlee)', wat:'Tafels, banken en staantafels', wanneer:'14 tot 16 augustus', msg:'Voor ons eetfestijn voor 80 personen.', status:'nieuw'},
@@ -429,12 +607,26 @@ var COACH=[
  {ver:'Chiro Vlierbeek', actief:'3 maanden geleden', scan:null, stil:true},
  {ver:'Jeugd Rode Kruis', actief:'4 maanden geleden', scan:'22 maart 2026', stil:true}
 ];
-var selCats=[], selStatus=[], curObj=null;
+var selCats=[], selStatus=[], curObj=null, curNet='leuven';
 
+function netItems(){
+  return ITEMS.filter(function(i){ return curNet==='alle' || VERENIGINGEN[i.ver].net===curNet; });
+}
+function setNet(n){
+  curNet=n;
+  document.getElementById('netLabel').textContent=NETTEN[n].label;
+  document.getElementById('netSelect').value=n;
+  var vers=Object.keys(VERENIGINGEN).filter(function(v){return curNet==='alle'||VERENIGINGEN[v].net===curNet;});
+  document.getElementById('heroTitle').textContent = n==='alle' ? 'Materiaal lenen in Vlaanderen' : 'Materiaal lenen in '+NETTEN[n].stad;
+  document.getElementById('heroSub').textContent = netItems().length+' materialen van '+vers.length+' verenigingen · vrij te bekijken, ook zonder account';
+  selCats=[]; selStatus=[];
+  renderFilters(); renderGrid();
+  setView('catalogus');
+}
 function setView(id){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   document.getElementById(id).classList.add('active');
-  var urls={catalogus:'outofstock.be/leuven', object:'outofstock.be/leuven/materiaal/…', login:'outofstock.be/login', achterkant:'outofstock.be/mijn-vereniging', coach:'outofstock.be/coach'};
+  var urls={catalogus:'outofstock.be/'+(curNet==='alle'?'':curNet), object:'outofstock.be/'+ (curObj?VERENIGINGEN[curObj.ver].net+'/materiaal/'+curObj.id:''), login:'outofstock.be/login', achterkant:'outofstock.be/mijn-vereniging', coach:'outofstock.be/coach/leuven'};
   document.getElementById('urlbar').textContent=urls[id]||'outofstock.be';
   updateNotes(id);
   window.scrollTo(0,0);
@@ -442,14 +634,15 @@ function setView(id){
 
 /* filters */
 function renderFilters(){
+  var pool=netItems();
   document.getElementById('fCats').innerHTML=CATS.map(function(c){
-    var n=ITEMS.filter(function(i){return i.cat===c;}).length;
-    return '<div class="fopt'+(selCats.indexOf(c)>=0?' on':'')+'" onclick="togCat(\''+c+'\')"><span class="box">✓</span> '+c+' <span class="cnt">'+n+'</span></div>';
+    var n=pool.filter(function(i){return i.cat===c;}).length;
+    return '<button class="fopt'+(selCats.indexOf(c)>=0?' on':'')+'" onclick="togCat(\''+c+'\')"><span class="box">✓</span> '+c+' <span class="cnt">'+n+'</span></button>';
   }).join('');
   document.getElementById('fStatus').innerHTML=Object.keys(STATUS_LABEL).map(function(s){
-    return '<div class="fopt'+(selStatus.indexOf(s)>=0?' on':'')+'" onclick="togStatus(\''+s+'\')"><span class="box">✓</span> '+STATUS_LABEL[s]+'</div>';
+    return '<button class="fopt'+(selStatus.indexOf(s)>=0?' on':'')+'" onclick="togStatus(\''+s+'\')"><span class="box">✓</span> '+STATUS_LABEL[s]+'</button>';
   }).join('');
-  var vers=Object.keys(VERENIGINGEN).sort();
+  var vers=Object.keys(VERENIGINGEN).filter(function(v){return curNet==='alle'||VERENIGINGEN[v].net===curNet;}).sort();
   document.getElementById('fVer').innerHTML='<option value="">Alle verenigingen</option>'+vers.map(function(v){return '<option>'+v+'</option>';}).join('');
   var buurten=[]; vers.forEach(function(v){ var b=VERENIGINGEN[v].buurt; if(buurten.indexOf(b)<0) buurten.push(b); });
   document.getElementById('fBuurt').innerHTML='<option value="">Alle buurten</option>'+buurten.sort().map(function(b){return '<option>'+b+'</option>';}).join('');
@@ -463,32 +656,67 @@ function statusLab(st){
   if(st==='uit') return '<span class="lab warn">nu uitgeleend</span>';
   return '<span class="lab">even niet beschikbaar</span>';
 }
+function renderActiveFilters(fv,fb,q){
+  var chips=[];
+  selCats.forEach(function(c){ chips.push('<span class="afchip">'+c+'<button onclick="togCat(\''+c+'\')">&times;</button></span>'); });
+  selStatus.forEach(function(s){ chips.push('<span class="afchip">'+STATUS_LABEL[s]+'<button onclick="togStatus(\''+s+'\')">&times;</button></span>'); });
+  if(fv) chips.push('<span class="afchip">'+fv+'<button onclick="document.getElementById(\'fVer\').value=\'\';renderGrid();">&times;</button></span>');
+  if(fb) chips.push('<span class="afchip">'+fb+'<button onclick="document.getElementById(\'fBuurt\').value=\'\';renderGrid();">&times;</button></span>');
+  document.getElementById('afRow').innerHTML=chips.join('');
+}
 function renderGrid(){
   var q=(document.getElementById('zoek').value||'').toLowerCase();
   var fv=document.getElementById('fVer').value, fb=document.getElementById('fBuurt').value;
-  var rows=ITEMS.filter(function(i){
+  var rows=netItems().filter(function(i){
     if(selCats.length && selCats.indexOf(i.cat)<0) return false;
     if(selStatus.length && selStatus.indexOf(i.st)<0) return false;
     if(fv && i.ver!==fv) return false;
     if(fb && VERENIGINGEN[i.ver].buurt!==fb) return false;
-    if(q && (i.naam+' '+i.ver).toLowerCase().indexOf(q)<0) return false;
+    if(q && (i.naam+' '+i.ver+' '+i.cat).toLowerCase().indexOf(q)<0) return false;
     return true;
   });
-  document.getElementById('resCount').textContent=rows.length+' materialen van '+Object.keys(VERENIGINGEN).length+' verenigingen · vrij te bekijken, ook zonder account';
+  var sort=document.getElementById('sort').value;
+  rows.sort(function(a,b){
+    if(sort==='naam') return a.naam.localeCompare(b.naam);
+    if(sort==='ver') return a.ver.localeCompare(b.ver);
+    return a.updN-b.updN;
+  });
+  renderActiveFilters(fv,fb,q);
+  document.getElementById('resCount').textContent=rows.length+' '+(rows.length===1?'materiaal':'materialen');
   document.getElementById('grid').innerHTML=rows.map(function(i){
-    return '<button class="tile" onclick="openObject('+i.id+')"><span class="ph"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg></span><b>'+i.naam+'</b><span class="m">'+i.ver+' · '+VERENIGINGEN[i.ver].buurt+'</span>'+statusLab(i.st)+'</button>';
-  }).join('') || '<div class="muted" style="grid-column:1/-1; padding:30px 0; text-align:center;">Niets gevonden met deze filters.</div>';
+    var plaats = curNet==='alle' ? NETTEN[VERENIGINGEN[i.ver].net].stad : VERENIGINGEN[i.ver].buurt;
+    return '<button class="tile" onclick="openObject('+i.id+')"><span class="ph"><span class="st">'+statusLab(i.st)+'</span>'+CAT_ICON[i.cat]+'</span><span class="tx"><b>'+i.naam+'</b><span class="m">'+i.ver+'</span><span class="m">'+plaats+' · '+i.upd+' bijgewerkt</span></span></button>';
+  }).join('') || '<div class="muted" style="grid-column:1/-1; padding:40px 0; text-align:center;">Niets gevonden met deze filters.<br><a href="#" onclick="resetFilters();return false;">Wis de filters</a> of stel je vraag in de WhatsApp-groep van je netwerk.</div>';
 }
 
 /* object */
 function openObject(id){
   curObj=ITEMS.find(function(i){return i.id===id;});
+  var v=VERENIGINGEN[curObj.ver];
+  document.getElementById('crumbCat').innerHTML=' / <a href="#" onclick="resetFilters();togCat(\''+curObj.cat+'\');setView(\'catalogus\');return false;">'+curObj.cat+'</a>';
+  document.getElementById('crumbNaam').textContent=curObj.naam;
+  document.getElementById('obIcon').innerHTML=CAT_ICON[curObj.cat];
   document.getElementById('obNaam').textContent=curObj.naam;
-  document.getElementById('obSub').textContent=curObj.ver+' · '+VERENIGINGEN[curObj.ver].buurt+' · laatst bijgewerkt '+curObj.upd;
-  document.getElementById('obStatus').innerHTML=statusLab(curObj.st);
+  document.getElementById('obMeta').textContent=curObj.ver+' · '+v.buurt+' ('+NETTEN[v.net].stad+')';
   document.getElementById('obNoteCard').classList.toggle('hidden',!curObj.note);
   if(curObj.note) document.getElementById('obNote').textContent=curObj.note;
-  document.getElementById('obLink').value='outofstock.be/leuven/materiaal/'+curObj.id;
+  document.getElementById('spCat').textContent=curObj.cat;
+  document.getElementById('spStatus').innerHTML=statusLab(curObj.st);
+  document.getElementById('spBuurt').textContent=v.buurt;
+  document.getElementById('spUpd').textContent=curObj.upd;
+  document.getElementById('obStatusBig').innerHTML=statusLab(curObj.st)+(curObj.st!=='vrij'?'<div class="muted mt8" style="font-size:13px;">Je kan wel al aanvragen voor later.</div>':'');
+  document.getElementById('obLink').value='outofstock.be/'+v.net+'/materiaal/'+curObj.id;
+  document.getElementById('verAvatar').textContent=curObj.ver.charAt(0);
+  document.getElementById('verNaam').textContent=curObj.ver;
+  var count=ITEMS.filter(function(i){return i.ver===curObj.ver;}).length;
+  document.getElementById('verInfo').textContent=count+' materialen in de catalogus · doet mee sinds '+v.sinds;
+  document.getElementById('moreVer').textContent=curObj.ver;
+  var more=ITEMS.filter(function(i){return i.ver===curObj.ver && i.id!==curObj.id;}).slice(0,4);
+  document.getElementById('moreFrom').innerHTML=more.map(function(i){
+    return '<button class="minitile" onclick="openObject('+i.id+')">'+i.naam+'</button>';
+  }).join('') || '<span class="muted" style="font-size:13.5px;">Dit is voorlopig hun enige materiaal.</span>';
+  document.getElementById('vraagBtn').classList.remove('hidden');
+  document.getElementById('formVeld').classList.add('hidden');
   document.getElementById('aanvraagForm').classList.remove('hidden');
   document.getElementById('aanvraagOk').classList.add('hidden');
   document.getElementById('contactBlok').classList.remove('hidden');
@@ -498,7 +726,7 @@ function openObject(id){
 function copyLink(btn){
   var inp=document.getElementById('obLink'); inp.select();
   try{ navigator.clipboard.writeText(inp.value); }catch(e){}
-  btn.textContent='Gekopieerd'; setTimeout(function(){btn.textContent='Kopieer link';},1500);
+  btn.textContent='Gekopieerd'; setTimeout(function(){btn.textContent='Kopieer';},1500);
 }
 function stuurAanvraag(){
   document.getElementById('aanvraagForm').classList.add('hidden');
@@ -509,8 +737,8 @@ function toonContact(){
   var v=VERENIGINGEN[curObj.ver];
   var parts=[];
   if(v.toonTel && v.tel) parts.push('<div class="row-between mt8"><span class="muted" style="font-size:13.5px;">Telefoon</span><b style="font-weight:600;">'+v.tel+'</b></div>');
-  if(v.toonMail && v.mail) parts.push('<div class="row-between mt8"><span class="muted" style="font-size:13.5px;">E-mail</span><b style="font-weight:600;">'+v.mail+'</b></div>');
-  var html=parts.length?parts.join(''):'<div class="sub mt8">'+curObj.ver+' kiest ervoor om enkel via het aanvraagformulier bereikbaar te zijn.</div>';
+  if(v.toonMail && v.mail) parts.push('<div class="row-between mt8"><span class="muted" style="font-size:13.5px;">E-mail</span><b style="font-weight:600; font-size:13.5px;">'+v.mail+'</b></div>');
+  var html=parts.length?parts.join(''):'<div class="muted mt8" style="font-size:13.5px;">'+curObj.ver+' kiest ervoor om enkel via het aanvraagformulier bereikbaar te zijn.</div>';
   document.getElementById('contactOpen').innerHTML=html;
   document.getElementById('contactOpen').classList.remove('hidden');
   document.getElementById('contactBlok').classList.add('hidden');
@@ -524,7 +752,9 @@ function setTab(t){
   });
 }
 function renderEigen(){
-  document.getElementById('eigenBody').innerHTML=ITEMS.filter(function(i){return i.eigen;}).map(function(i){
+  var eigen=ITEMS.filter(function(i){return i.eigen;});
+  document.getElementById('matBadge').textContent=eigen.length;
+  document.getElementById('eigenBody').innerHTML=eigen.map(function(i){
     var seg=['vrij','uit','pauze'].map(function(s){
       var cls={vrij:'st-vrij',uit:'st-uit',pauze:'st-pauze'}[s];
       return '<button class="'+(i.st===s?'on '+cls:'')+'" onclick="setStatus('+i.id+',\''+s+'\')">'+STATUS_LABEL[s]+'</button>';
@@ -536,7 +766,7 @@ function setStatus(id,s){ ITEMS.find(function(i){return i.id===id;}).st=s; rende
 function verwijder(id){ ITEMS=ITEMS.filter(function(i){return i.id!==id;}); renderEigen(); renderGrid(); renderFilters(); }
 function toggleAdd(){ document.getElementById('addForm').classList.toggle('hidden'); }
 function addItem(){
-  ITEMS.unshift({id:Date.now(), naam:document.getElementById('addNaam').value.trim(), ver:'Chiro Hekeko', cat:document.getElementById('addCat').value, st:'vrij', note:document.getElementById('addNote').value.trim()||null, upd:'vandaag', eigen:true});
+  ITEMS.unshift({id:Date.now(), naam:document.getElementById('addNaam').value.trim(), ver:'Chiro Hekeko', cat:document.getElementById('addCat').value, st:'vrij', note:document.getElementById('addNote').value.trim()||null, upd:'vandaag', updN:0, eigen:true});
   document.getElementById('addNaam').value=''; document.getElementById('addNote').value='';
   document.getElementById('addForm').classList.add('hidden');
   renderEigen(); renderGrid(); renderFilters();
@@ -545,7 +775,7 @@ function renderAanvragen(){
   document.getElementById('aanLijst').innerHTML=AANVRAGEN.map(function(a,ix){
     var lab=a.status==='nieuw'?'<span class="lab acc">nieuw</span>':'<span class="lab ok">behandeld</span>';
     var actie=a.status==='nieuw'?'<button class="btn sec sm" onclick="markeer('+ix+')">Markeer als behandeld</button>':'';
-    return '<div class="card"><div class="row-between"><span><b style="font-weight:600;">'+a.wat+'</b> &middot; '+a.van+'<br><span class="sub">'+a.wanneer+(a.msg?' · "'+a.msg+'"':'')+'</span></span><span style="display:flex; gap:10px; align-items:center;">'+lab+actie+'</span></div></div>';
+    return '<div class="card"><div class="row-between"><span><b style="font-weight:600;">'+a.wat+'</b> &middot; '+a.van+'<br><span class="muted" style="font-size:13.5px;">'+a.wanneer+(a.msg?' · "'+a.msg+'"':'')+'</span></span><span style="display:flex; gap:10px; align-items:center;">'+lab+actie+'</span></div></div>';
   }).join('');
   var n=AANVRAGEN.filter(function(a){return a.status==='nieuw';}).length;
   var b=document.getElementById('aanBadge');
@@ -564,7 +794,7 @@ function renderCoach(filter){
     var mats=ITEMS.filter(function(i){return i.ver===c.ver;}).length;
     var scan=c.scan?'<span class="lab ok">'+c.scan+'</span>':'<button class="btn sec sm" onclick="alert(\'Hier plan je de deelscan: het kennismakingsgesprek met de vereniging.\')">Plan deelscan</button>';
     var actief=c.stil?'<span class="lab warn">'+c.actief+'</span>':c.actief;
-    return '<tr><td><b style="font-weight:600;">'+c.ver+'</b></td><td>'+mats+'</td><td>'+actief+'</td><td>'+scan+'</td><td><button class="btn sec sm" onclick="alert(\'Hier beheer je het account: leden toevoegen, uitnodiging opnieuw sturen, wachtwoord resetten.\')">Beheer</button></td></tr>';
+    return '<tr><td><b style="font-weight:600;">'+c.ver+'</b></td><td>'+mats+'</td><td>'+actief+'</td><td>'+scan+'</td><td style="text-align:right;"><button class="btn sec sm" onclick="alert(\'Hier beheer je het account: leden toevoegen, uitnodiging opnieuw sturen, wachtwoord resetten.\')">Beheer</button></td></tr>';
   }).join('');
 }
 function coachFilter(f,el){
@@ -574,19 +804,20 @@ function coachFilter(f,el){
 
 /* notes */
 var NOTES={
-  catalogus:{t:'Alles zichtbaar, voor iedereen',b:'De volledige catalogus van alle verenigingen, zonder login. De uitgebreide filters (categorie, beschikbaarheid, vereniging, buurt) maken de lijst bruikbaar zodra ze groeit. De leenstatus staat er meteen bij, zodat je niet belt voor iets dat toch uitgeleend is.'},
-  object:{t:'Objectpagina met deelbare link',b:'Elk materiaal heeft een eigen link die je in WhatsApp of een mail kan plakken. Het aanvraagformulier is de standaardweg (en komt als mail bij de vereniging toe). Rechtstreekse contactgegevens staan achter een klik, en enkel als de vereniging dat wil: geen gsm-nummers van vrijwilligers zomaar op het open web.'},
+  catalogus:{t:'Eén platform, lokale etalages',b:'Heel Vlaanderen draait op hetzelfde platform, maar je landt altijd in je eigen deelnetwerk: lokaal is de primaire logica, want ophalen en terugbrengen blijven fysiek. De netwerk-kiezer bovenaan toont de vier pilootgemeenten, en wie wil kan over de grenzen kijken met "Heel Vlaanderen".'},
+  object:{t:'Objectpagina zoals een echte marktplaats',b:'Breadcrumb, detailblok, vaste actiekaart rechts, de vereniging als afzender met haar andere materialen eronder. De aanvraagknop is de standaardweg; contactgegevens staan achter een klik en enkel als de vereniging dat wil. De deelbare link is gemaakt om in WhatsApp geplakt te worden.'},
   login:{t:'Account per vereniging',b:'Kijken kan zonder account, beheren niet. Persoonlijke accounts gekoppeld aan de vereniging; bij een ploegwissel nodigt de vorige materiaalmeester of de deelcoach de nieuwe uit.'},
   achterkant:{t:'De achterkant is bewust klein',b:'Drie dingen: je materialen met een leenstatus-knop (beschikbaar, uitgeleend, even niet), de aanvragen die via het formulier binnenkomen (met een mailtje bij elke nieuwe), en je contact-instellingen. De leenstatus is meteen ook de "nu even niet"-knop die eigenaars controle geeft.'},
-  coach:{t:'De coach ziet het netwerk',b:'Wie is aangesloten, wie is actief, wie heeft al een deelscan gehad. Drie belvragen in plaats van grafieken. Accountbeheer zit ook hier: de coach helpt verenigingen op weg en houdt het netwerk levend.'}
+  coach:{t:'De coach ziet het netwerk',b:'Wie is aangesloten, wie is actief, wie heeft al een deelscan gehad. Drie belvragen in plaats van grafieken. Elke coach werkt in zijn eigen netwerk; het platform eronder is voor heel Vlaanderen hetzelfde.'}
 };
 function updateNotes(id){ var n=NOTES[id]; if(!n)return; document.getElementById('nTitle').textContent=n.t; document.getElementById('nBody').textContent=n.b; }
 function toggleNotes(){ var on=document.getElementById('notes').classList.toggle('show'); document.getElementById('notesToggle').classList.toggle('on',on); }
 
 /* init */
+document.getElementById('netSelect').innerHTML=Object.keys(NETTEN).map(function(n){return '<option value="'+n+'">'+NETTEN[n].label+'</option>';}).join('');
 document.getElementById('addCat').innerHTML=CATS.map(function(c){return '<option>'+c+'</option>';}).join('');
-renderFilters(); renderGrid(); renderEigen(); renderAanvragen(); renderCoach('alle');
-setView('catalogus');
+renderEigen(); renderAanvragen(); renderCoach('alle');
+setNet('leuven');
 </script>
 <script>
 window.CM_CONFIG = {
