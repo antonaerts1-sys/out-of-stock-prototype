@@ -15,7 +15,14 @@ organiseert een eetfestijn voor 80 mensen.
 | Materiaalmeester | Inventarisbeheer van de eigen vereniging | [inventaris.html](inventaris.html) |
 | Coach en gemeente | Netwerk-dashboard en continuïteit | [beheer.html](beheer.html) |
 
-Daarnaast zijn er twee MVP-stukken:
+Daarnaast zijn er drie MVP-stukken:
+
+- **De basis-MVP (klikbaar)**: [basis-mvp.html](basis-mvp.html). De heel basic versie volgens de
+  featurelijst van Anton: publieke catalogus van alle materialen zonder login (uitgebreide filters,
+  deelbare link en aanvraagformulier per object, contactgegevens achter een klik en per vereniging
+  instelbaar), een achterkant per vereniging (leenstatus beschikbaar/uitgeleend/even niet,
+  aanvragen met mailmelding, materiaal toevoegen, sessie boeken met de deelcoach) en een
+  deelcoach-overzicht (aangesloten verenigingen, activiteit, deelscan-status, accountbeheer).
 
 - **De minimale versie (klikbaar)**: [mvp.html](mvp.html). Alleen de Excel wordt vervangen door
   een levende "Wie heeft wat"-catalogus (gevuld met de echte data uit piloot Leuven 1.0), met
