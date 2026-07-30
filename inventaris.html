@@ -145,13 +145,6 @@ td .sub{color:var(--muted); font-size:12.5px;}
       <section class="view on" id="inventaris">
         <div class="phead"><h2>Inventaris</h2><p>Al het materiaal van Chiro Heverlee op één plek</p></div>
         <div class="note">Hier zit de echte meerwaarde van een groot scherm: het volledige materiaal in één overzicht beheren. Op de telefoon doe je snelle acties, hier houd je de inventaris actueel, wat in 1.0 net niet lukte met de Excel. Klik een rij voor de details, of voeg materiaal toe.</div>
-        <div class="kpis">
-          <div class="kpi"><div class="l">Soorten materiaal</div><div class="n" id="kpiSoorten">14</div><div class="d" id="kpiStuks">94 stuks totaal</div></div>
-          <div class="kpi"><div class="l">Open voor delen</div><div class="n" id="kpiOpen">11</div><div class="d">zichtbaar in de etalage</div></div>
-          <div class="kpi"><div class="l">Weinig gebruikt</div><div class="n" id="kpiWeinig">4</div><div class="d">kandidaat om te delen</div></div>
-          <div class="kpi"><div class="l">Aan vervanging toe</div><div class="n" id="kpiVerv">2</div><div class="d">opgemerkt bij teruggave</div></div>
-          <div class="kpi"><div class="l">Geschatte waarde</div><div class="n">€8.400</div><div class="d">vervangingswaarde</div></div>
-        </div>
         <div class="toolbar">
           <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><input id="invSearch" placeholder="Zoek in je materiaal..." oninput="filterInv()"></div>
           <div class="filters" id="invFilters"></div>
@@ -202,7 +195,10 @@ td .sub{color:var(--muted); font-size:12.5px;}
       <!-- RESTSTROMEN -->
       <section class="view" id="reststromen">
         <div class="phead"><h2>Reststromen</h2><p>Materiaal dat weg mag, maar elders waarde heeft</p></div>
-        <div class="note">Een aparte stroom met eigen dynamiek: inspiratie en urgentie in plaats van zoeken. Te koppelen aan jullie opruimdagen.</div>
+        <div class="note" style="display:flex; align-items:center; gap:16px; justify-content:space-between;">
+          <span><b style="font-weight:600;">Niet zeker wat weg kan?</b> Plan een afspraak met je deelcoach om samen te bekijken wat relevant is: wat je houdt, wat je deelt en wat als reststroom weg mag.</span>
+          <button class="tbtn" style="flex:0 0 auto;" onclick="alert('Hier plan je een moment met Sara, jullie deelcoach. Zij komt langs of belt in, en jullie overlopen samen de kast.')">Plan een afspraak met je deelcoach</button>
+        </div>
         <div class="toolbar"><div class="spacer"></div><button class="tbtn primary" onclick="alert('Reststroom toevoegen: foto, omschrijving en een datum waarvoor het weg moet.')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Reststroom toevoegen</button></div>
         <div class="tablecard">
           <table><thead><tr><th>Reststroom</th><th>Mogelijke bestemming</th><th>Weg voor</th><th>Status</th></tr></thead><tbody>
@@ -276,11 +272,6 @@ function filterInv(){
   document.getElementById('invBody').innerHTML = html || '<tr><td colspan="7" class="muted" style="padding:24px 16px; text-align:center;">Niets gevonden.</td></tr>';
 }
 function updateKpis(){
-  document.getElementById('kpiSoorten').textContent=INV.length;
-  document.getElementById('kpiStuks').textContent=INV.reduce(function(s,r){return s+r.a;},0)+' stuks totaal';
-  document.getElementById('kpiOpen').textContent=INV.filter(function(r){return r.open;}).length;
-  document.getElementById('kpiWeinig').textContent=INV.filter(function(r){return r.lent<=1;}).length;
-  document.getElementById('kpiVerv').textContent=INV.filter(function(r){return r.staat==='vervangen';}).length;
   document.getElementById('swCount').textContent=INV.length+' soorten in beheer';
 }
 function openDrawer(id){ document.getElementById('overlay').classList.add('on'); document.getElementById(id).classList.add('on'); }
