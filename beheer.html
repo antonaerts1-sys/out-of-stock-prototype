@@ -126,33 +126,72 @@ td .sub{color:var(--muted); font-size:12.5px;}
 .report-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
 .narr{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-top:16px; font-size:14.5px; line-height:1.7;}
 
+/* rol: coach vs gemeente */
+.roleswitch{display:inline-flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; background:var(--bg);}
+.roleswitch button{border:none; background:none; padding:8px 14px; font-size:13.5px; font-weight:500; color:var(--muted);}
+.roleswitch button.on{background:var(--accent-soft); color:var(--accent); font-weight:600;}
+body.rol-gemeente .coach-only{display:none !important;}
+body.rol-coach .gemeente-only{display:none !important;}
+body.rol-gemeente #ovRows{grid-template-columns:1fr !important;}
+body.notes-on.rol-coach .note.gemeente-only{display:none !important;}
+body.notes-on.rol-gemeente .note.coach-only{display:none !important;}
+
+/* drawer */
+.overlay{position:fixed; inset:0; background:rgba(26,26,26,0.22); opacity:0; pointer-events:none; transition:opacity .2s; z-index:20;}
+.overlay.on{opacity:1; pointer-events:auto;}
+.drawer{position:fixed; top:0; right:0; height:100vh; width:430px; max-width:92vw; background:var(--bg); border-left:1px solid var(--border); transform:translateX(100%); transition:transform .22s ease; z-index:21; display:flex; flex-direction:column;}
+.drawer.on{transform:none;}
+.dhead{display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border);}
+.dhead h3{margin:0; font-size:17px; font-weight:600;}
+.dbody{padding:22px; overflow-y:auto; flex:1;}
+.dfoot{padding:16px 22px; border-top:1px solid var(--border); display:flex; gap:8px;}
+.iconx{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--ink);}
+.field-label{font-size:13px; font-weight:600; margin:16px 0 6px; display:block;}
+.input,select.input{width:100%; border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:14px; font-family:inherit; color:var(--ink); outline:none; background:var(--bg);}
+.input:focus{border-color:var(--accent);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;}
+.btn.sec{background:var(--bg);color:var(--ink);border:1px solid var(--border);font-weight:500;}
+.hint{font-size:13px; color:var(--muted); margin-top:14px;}
+
+/* deelbare link */
+.linkbox{display:flex; align-items:center; gap:10px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-top:12px; font-size:13.5px;}
+.linkbox code{flex:1; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.hidden{display:none;}
+
 @media(max-width:1080px){ .kpis{grid-template-columns:repeat(2,1fr);} .grid2{grid-template-columns:1fr;} .report-grid{grid-template-columns:repeat(2,1fr);} }
 @media(max-width:720px){ .sidebar{display:none;} }
 </style>
 </head>
-<body>
+<body class="rol-coach">
 <div class="app">
 
   <aside class="sidebar">
     <div class="brand">
       <div class="mark">O</div>
-      <div><b>Out of Stock</b><span>Beheer</span></div>
+      <div><b>Out of Stock</b><span id="brandRol">Beheer</span></div>
     </div>
     <div class="switch">
       <div><b>Deelnetwerk Leuven</b><small>14 verenigingen</small></div>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="muted"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>
     </div>
+    <div style="margin:0 12px 14px;">
+      <div style="font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Ik kijk als</div>
+      <div class="roleswitch" style="width:100%;" title="Coach en gemeente kijken naar hetzelfde netwerk, maar met een andere vraag">
+        <button id="rolCoachBtn" class="on" style="flex:1;" onclick="setRol('coach')">Coach</button>
+        <button id="rolGemBtn" style="flex:1;" onclick="setRol('gemeente')">Gemeente</button>
+      </div>
+    </div>
     <nav class="nav">
       <a class="on" data-view="overzicht" onclick="show('overzicht',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Overzicht</a>
-      <a data-view="verenigingen" onclick="show('verenigingen',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3 3-4.5 6-4.5s6 1.5 6 4.5"/><path d="M16 5.2A3 3 0 0 1 16 11M21 19c0-2.4-1.8-3.9-4-4.3"/></svg></span>Verenigingen</a>
+      <a class="coach-only" data-view="verenigingen" onclick="show('verenigingen',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3 3-4.5 6-4.5s6 1.5 6 4.5"/><path d="M16 5.2A3 3 0 0 1 16 11M21 19c0-2.4-1.8-3.9-4-4.3"/></svg></span>Verenigingen</a>
       <a data-view="materiaal" onclick="show('materiaal',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/></svg></span>Materiaal</a>
-      <a data-view="transacties" onclick="show('transacties',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span>Transacties</a>
-      <a data-view="reststromen" onclick="show('reststromen',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 19a4 4 0 0 1-3.5-6l2-3.5M12 4.5 14 8M17 5a4 4 0 0 1 3.5 6l-2 3.5M20 16l-3.5.5M9 20l2.5-2.5M4 9l.5 3.5"/></svg></span>Reststromen</a>
+      <a class="coach-only" data-view="transacties" onclick="show('transacties',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span>Transacties</a>
+      <a class="coach-only" data-view="reststromen" onclick="show('reststromen',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 19a4 4 0 0 1-3.5-6l2-3.5M12 4.5 14 8M17 5a4 4 0 0 1 3.5 6l-2 3.5M20 16l-3.5.5M9 20l2.5-2.5M4 9l.5 3.5"/></svg></span>Reststromen</a>
       <a data-view="rapport" onclick="show('rapport',this)"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>Rapport gemeente</a>
     </nav>
     <div class="coach">
       <div class="av"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
-      <div><b>Sara Joris</b><span>Deel-coach</span></div>
+      <div><b id="userName">Sara Joris</b><span id="userRol">Deel-coach</span></div>
     </div>
   </aside>
 
@@ -160,7 +199,14 @@ td .sub{color:var(--muted); font-size:12.5px;}
     <div class="topbar">
       <h1 id="pageTitle">Overzicht</h1>
       <div class="actions">
-        <span class="tbtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg> 2e kwartaal 2026</span>
+        <span class="tbtn" style="padding:4px 6px 4px 12px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+          <select id="periode" onchange="setPeriode()" style="border:none; background:none; font:inherit; color:inherit; font-weight:500; outline:none; padding:4px 6px;">
+            <option value="kwartaal">2e kwartaal 2026</option>
+            <option value="maand">Juni 2026</option>
+            <option value="jaar">Heel 2026</option>
+            <option value="vorig">2025</option>
+          </select>
+        </span>
         <button class="tbtn" id="notesBtn" onclick="toggleNotes()"><span class="dot"></span> Ontwerpnotities</button>
         <a class="tbtn" href="app.html">App (desktop)</a>
         <a class="tbtn" href="inventaris.html">Inventaris</a>
@@ -172,35 +218,17 @@ td .sub{color:var(--muted); font-size:12.5px;}
 
       <!-- OVERZICHT -->
       <section class="view on" id="overzicht">
-        <div class="phead"><h2>Overzicht</h2><p>Deelnetwerk Leuven · stand van zaken voor de coach</p></div>
-        <div class="note">Deze KPI's zijn bewust de <b>te testen</b> key metrics uit de Lean Canvas. Of het model na de subsidie zelfdragend wordt, hangt af van precies deze cijfers: activatie, transacties en de coach-hefboom.</div>
+        <div class="phead"><h2>Overzicht</h2><p id="ovSub">Deelnetwerk Leuven · stand van zaken voor de coach</p></div>
+        <div class="note coach-only">Deze KPI's zijn bewust de <b>te testen</b> key metrics uit de Lean Canvas: activatie en transacties. <b>Transacties per coach-uur</b> stond hier eerst ook, maar is op vraag van Ecolife van het scherm gehaald. De verhouding blijft intern bruikbaar om de coach-inzet te wegen, ze hoort alleen niet in het dagelijkse beeld van de coach.</div>
+        <div class="note gemeente-only">De gemeente kijkt naar hetzelfde netwerk, maar met een andere vraag: <b>levert onze inleg iets op?</b> Daarom staan hier alleen geaggregeerde cijfers. Wat operationeel is (welke vereniging hangt achter, welke lening loopt te laat) blijft bij de coach.</div>
 
-        <div class="kpis">
-          <div class="kpi"><div class="l">Actieve verenigingen</div><div class="n">9<span class="muted" style="font-size:18px;"> / 14</span></div><div class="d">aangemeld: 14</div></div>
-          <div class="kpi"><div class="l">Transacties dit kwartaal</div><div class="n">23</div><div class="d up">+8 t.o.v. vorig</div></div>
-          <div class="kpi"><div class="l">Materiaal in de etalage</div><div class="n">140</div><div class="d">stuks gedeeld</div></div>
-          <div class="kpi"><div class="l">Geschat bespaard</div><div class="n">€4.200</div><div class="d">vermeden huur/aankoop</div></div>
-          <div class="kpi"><div class="l">Transacties per coach-uur</div><div class="n">1,8</div><div class="d up">stijgend</div></div>
-        </div>
+        <div class="kpis" id="kpis"></div>
 
         <div class="grid2">
           <div class="card">
-            <h3>Transacties per maand</h3>
-            <p class="csub">De vraag piekt rond de zomer (kampen en evenementen). De rest van het jaar ligt het lager.</p>
-            <div class="chart">
-              <div class="col"><div class="bar" style="height:18%"></div><small>jan</small></div>
-              <div class="col"><div class="bar" style="height:14%"></div><small>feb</small></div>
-              <div class="col"><div class="bar" style="height:30%"></div><small>mrt</small></div>
-              <div class="col"><div class="bar" style="height:42%"></div><small>apr</small></div>
-              <div class="col peak"><div class="bar" style="height:64%"></div><small>mei</small></div>
-              <div class="col peak"><div class="bar" style="height:92%"></div><small>jun</small></div>
-              <div class="col peak"><div class="bar" style="height:100%"></div><small>jul</small></div>
-              <div class="col peak"><div class="bar" style="height:80%"></div><small>aug</small></div>
-              <div class="col"><div class="bar" style="height:46%"></div><small>sep</small></div>
-              <div class="col"><div class="bar" style="height:34%"></div><small>okt</small></div>
-              <div class="col"><div class="bar" style="height:22%"></div><small>nov</small></div>
-              <div class="col"><div class="bar" style="height:16%"></div><small>dec</small></div>
-            </div>
+            <h3 id="chartTitle">Transacties per maand</h3>
+            <p class="csub" id="chartSub">De vraag piekt rond de zomer (kampen en evenementen). De rest van het jaar ligt het lager.</p>
+            <div class="chart" id="chart"></div>
           </div>
           <div class="card">
             <h3>Activatie</h3>
@@ -214,8 +242,8 @@ td .sub{color:var(--muted); font-size:12.5px;}
           </div>
         </div>
 
-        <div class="grid2" style="grid-template-columns:1fr 1fr;">
-          <div class="card">
+        <div class="grid2" id="ovRows" style="grid-template-columns:1fr 1fr;">
+          <div class="card coach-only">
             <h3>Aandacht nodig</h3>
             <p class="csub">Operationeel beheer: waar de coach deze week op moet inzetten.</p>
             <div class="alist">
@@ -240,13 +268,18 @@ td .sub{color:var(--muted); font-size:12.5px;}
 
       <!-- VERENIGINGEN -->
       <section class="view" id="verenigingen">
-        <div class="phead"><h2>Verenigingen</h2><p>14 aangemeld in Deelnetwerk Leuven</p></div>
+        <div class="phead"><h2>Verenigingen</h2><p><span id="verCount">14</span> in Deelnetwerk Leuven</p></div>
         <div class="note">Net als in 1.0 is maar een deel echt actief. De kolom <b>status</b> maakt zichtbaar wie de coach moet activeren, en wie het zelf al draait.</div>
-        <div class="chips"><button class="chip on" onclick="pickChip(this)">Alle (14)</button><button class="chip" onclick="pickChip(this)">Actief (9)</button><button class="chip" onclick="pickChip(this)">Sluimerend (3)</button><button class="chip" onclick="pickChip(this)">Nieuw (2)</button></div>
+        <div class="note">Ecolife vroeg om <b>self-serviced</b> aanmelden. Hier maakt de coach het profiel aan en stuurt een uitnodiging. Reden: een deelnetwerk draait op vertrouwen, en de coach die weet wie er in het netwerk zit is precies de controle die in 1.0 ontbrak. De vereniging houdt wel zelf de regie: zij zet haar eigen wachtwoord en vult haar profiel verder aan. De coach beheert dus geen wachtwoorden.</div>
+        <div class="toolbar" style="display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+          <div class="chips" style="margin:0;"><button class="chip on" onclick="pickChip(this)">Alle (<span id="chipAlle">14</span>)</button><button class="chip" onclick="pickChip(this)">Actief (9)</button><button class="chip" onclick="pickChip(this)">Sluimerend (3)</button><button class="chip" onclick="pickChip(this)">Nieuw (2)</button><button class="chip" onclick="pickChip(this)">Uitgenodigd (<span id="chipUit">0</span>)</button></div>
+          <div style="flex:1;"></div>
+          <button class="tbtn primary" onclick="openAddVer()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Vereniging toevoegen</button>
+        </div>
         <div class="tablecard">
           <table>
             <thead><tr><th>Vereniging</th><th>Type</th><th>Status</th><th class="num">Materiaal open</th><th class="num">Transacties</th><th>Laatst actief</th></tr></thead>
-            <tbody>
+            <tbody id="verBody">
               <tr><td><b>Chiro Heverlee</b></td><td>Jeugd</td><td><span class="pill ok"><span class="d" style="background:#0F7A3D"></span>actief</span></td><td class="num">22</td><td class="num">7</td><td>vandaag</td></tr>
               <tr><td><b>KSA Wijgmaal</b></td><td>Jeugd</td><td><span class="pill ok"><span class="d" style="background:#0F7A3D"></span>actief</span></td><td class="num">18</td><td class="num">6</td><td>2 dagen</td></tr>
               <tr><td><b>Scouts Heverlee</b></td><td>Jeugd</td><td><span class="pill ok"><span class="d" style="background:#0F7A3D"></span>actief</span></td><td class="num">15</td><td class="num">5</td><td>gisteren</td></tr>
@@ -324,23 +357,51 @@ td .sub{color:var(--muted); font-size:12.5px;}
 
       <!-- RAPPORT -->
       <section class="view" id="rapport">
-        <div class="phead"><h2>Rapport voor de gemeente</h2><p>Wat Deelnetwerk Leuven opleverde dit kwartaal</p></div>
+        <div class="phead"><h2>Rapport voor de gemeente</h2><p id="rapTitel">Wat Deelnetwerk Leuven opleverde: 2e kwartaal 2026</p></div>
         <div class="note">Dit scherm is voor de <b>betaler</b>. De gemeente legt 2.000 euro in en wil zien wat dat oplevert. Dit voedt rechtstreeks het gesprek over continuïteit na de subsidie.</div>
-        <div class="report-grid">
-          <div class="kpi"><div class="l">Vermeden aankopen</div><div class="n">31</div><div class="d">stuks niet nieuw gekocht</div></div>
-          <div class="kpi"><div class="l">Bespaard voor verenigingen</div><div class="n">€4.200</div><div class="d">huur en aankoop</div></div>
-          <div class="kpi"><div class="l">Deelnemende verenigingen</div><div class="n">9</div><div class="d">van 14 aangemeld</div></div>
-          <div class="kpi"><div class="l">Materiaal in circulatie</div><div class="n">140</div><div class="d">stuks gedeeld</div></div>
-        </div>
+        <div class="note">Ecolife merkte op dat deze data ook dient om het project te <b>verkopen</b>. Daarom is het rapport niet alleen een scherm: het kan als PDF mee naar een college of gemeenteraad, of als link gedeeld worden met de eigen communicatiedienst. Met de schakelaar hieronder blijven de namen van de verenigingen eruit, zodat een publieke versie geen individuele club in de kijker zet.</div>
+        <div class="report-grid" id="rapGrid"></div>
         <div class="narr">
-          <b style="font-weight:600;">In het kort.</b> In het tweede kwartaal van 2026 deelden 9 Leuvense verenigingen 140 stuks materiaal en kwamen er 23 uitleningen tot stand. Daarmee vermeden ze 31 nieuwe aankopen en bespaarden ze samen ongeveer 4.200 euro. De vraag piekt rond de zomer, wat past bij de kampen en evenementen. De grootste hefboom voor meer impact ligt bij het activeren van de 5 sluimerende of nieuwe verenigingen.
-          <div class="mt16"><button class="tbtn primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg> Exporteer rapport (PDF)</button></div>
+          <span id="rapNarr"></span>
+          <div class="mt16" style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="tbtn primary" onclick="alert('Het rapport wordt als PDF gedownload: de vier cijfers, de grafiek en deze samenvatting op één pagina, klaar om mee te nemen naar het college of de gemeenteraad.')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg> Exporteer rapport (PDF)</button>
+            <button class="tbtn" id="shareBtn" onclick="toggleShare()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg> Deel als link</button>
+          </div>
+          <div id="shareBox" class="hidden" style="margin-top:14px; border-top:1px solid var(--border); padding-top:14px;">
+            <b style="font-weight:600; font-size:14px;">Deelbare link naar dit rapport</b>
+            <div class="muted" style="font-size:13px; margin-top:2px;">Wie de link heeft, ziet alleen dit rapport. Geen login, geen toegang tot het netwerk.</div>
+            <div class="linkbox"><code id="shareUrl">outofstock.be/rapport/leuven/2026-q2</code><button class="tbtn" style="padding:5px 11px; font-size:12.5px;" onclick="alert('Link gekopieerd.')">Kopieer</button></div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px;">
+              <div><b style="font-weight:600; font-size:14px;">Namen van verenigingen tonen</b><div class="muted" style="font-size:13px;" id="anonSub">uit: het rapport toont alleen totalen</div></div>
+              <button class="sw" id="anonSw" onclick="toggleAnon()" style="width:42px; height:25px; border-radius:999px; background:var(--border); position:relative; border:none; flex:0 0 auto;"><span class="k" style="position:absolute; top:3px; left:3px; width:19px; height:19px; border-radius:999px; background:#fff; transition:left .15s;"></span></button>
+            </div>
+          </div>
         </div>
       </section>
 
     </div>
   </main>
 </div>
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="addVerDrawer">
+  <div class="dhead"><h3>Vereniging toevoegen</h3><button class="iconx" onclick="closeDrawer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="dbody">
+    <p class="muted" style="margin:0; font-size:13.5px;">Jij maakt het profiel aan, de vereniging krijgt een uitnodiging per mail en zet daarin haar eigen wachtwoord.</p>
+    <label class="field-label">Naam van de vereniging</label>
+    <input class="input" id="vNaam" placeholder="bv. Chiro Wijgmaal">
+    <label class="field-label">Type</label>
+    <select class="input" id="vType"><option>Jeugd</option><option>Sport</option><option>Cultuur</option><option>Buurt</option><option>Andere</option></select>
+    <label class="field-label">Contactpersoon</label>
+    <input class="input" id="vContact" placeholder="voornaam en naam">
+    <label class="field-label">E-mail</label>
+    <input class="input" id="vMail" type="email" placeholder="materiaal@vereniging.be">
+    <label class="field-label">Gemeente of deelgemeente</label>
+    <input class="input" id="vPlaats" placeholder="bv. Wijgmaal" value="Leuven">
+    <p class="hint">Het adres van het lokaal vraag je hier niet. Dat vult de vereniging zelf in, en het wordt pas getoond aan wie een bevestigde afspraak heeft.</p>
+  </div>
+  <div class="dfoot"><button class="btn sec" style="flex:1" onclick="closeDrawer()">Annuleer</button><button class="btn" style="flex:1.4" onclick="submitVer()">Maak aan en nodig uit</button></div>
+</aside>
 
 <script>
 function show(id, el){
@@ -353,6 +414,111 @@ function show(id, el){
 }
 function pickChip(el){ el.parentElement.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');}); el.classList.add('on'); }
 function toggleNotes(){ var on=document.body.classList.toggle('notes-on'); document.getElementById('notesBtn').classList.toggle('on',on); }
+
+/* --- periodefilter (opmerking 10: filter zelf kiezen) --- */
+var PERIODES={
+  kwartaal:{kort:'dit kwartaal', trans:23, delta:'+8 t.o.v. vorig kwartaal', bespaard:'€4.200', mat:140, actief:9, vermeden:31, zin:'In het tweede kwartaal van 2026',
+    ctitle:'Transacties per maand', csub:'April tot juni 2026. De vraag loopt op richting de zomer.',
+    bars:[['apr',42],['mei',64],['jun',92]]},
+  maand:{kort:'in juni', trans:11, delta:'+3 t.o.v. mei', bespaard:'€1.950', mat:140, actief:8, vermeden:14, zin:'In juni 2026',
+    ctitle:'Transacties per week', csub:'Juni 2026. De piek valt samen met de eerste kampvoorbereidingen.',
+    bars:[['week 1',30],['week 2',52],['week 3',100],['week 4',68]]},
+  jaar:{kort:'in 2026', trans:58, delta:'+21 t.o.v. 2025', bespaard:'€9.800', mat:140, actief:9, vermeden:76, zin:'In 2026',
+    ctitle:'Transacties per maand', csub:'De vraag piekt rond de zomer (kampen en evenementen). De rest van het jaar ligt het lager.',
+    bars:[['jan',18],['feb',14],['mrt',30],['apr',42],['mei',64],['jun',92],['jul',100],['aug',80],['sep',46],['okt',34],['nov',22],['dec',16]]},
+  vorig:{kort:'in 2025', trans:37, delta:'eerste volledige jaar', bespaard:'€6.100', mat:96, actief:7, vermeden:49, zin:'In 2025',
+    ctitle:'Transacties per maand', csub:'2025, het jaar van de opstart. Zelfde zomerpatroon, op een lager niveau.',
+    bars:[['jan',10],['feb',8],['mrt',18],['apr',26],['mei',40],['jun',58],['jul',66],['aug',52],['sep',30],['okt',20],['nov',14],['dec',10]]}
+};
+function huidigePeriode(){ return PERIODES[document.getElementById('periode').value]; }
+function renderOverzicht(){
+  var p=huidigePeriode();
+  document.getElementById('kpis').innerHTML=
+    '<div class="kpi"><div class="l">Actieve verenigingen</div><div class="n">'+p.actief+'<span class="muted" style="font-size:18px;"> / 14</span></div><div class="d">aangemeld: 14</div></div>'+
+    '<div class="kpi"><div class="l">Transacties '+p.kort+'</div><div class="n">'+p.trans+'</div><div class="d up">'+p.delta+'</div></div>'+
+    '<div class="kpi"><div class="l">Materiaal in de etalage</div><div class="n">'+p.mat+'</div><div class="d">stuks gedeeld</div></div>'+
+    '<div class="kpi"><div class="l">Geschat bespaard</div><div class="n">'+p.bespaard+'</div><div class="d">vermeden huur/aankoop</div></div>';
+  document.getElementById('kpis').style.gridTemplateColumns='repeat('+(window.innerWidth<1080?2:4)+',1fr)';
+  document.getElementById('chartTitle').textContent=p.ctitle;
+  document.getElementById('chartSub').textContent=p.csub;
+  document.getElementById('chart').innerHTML=p.bars.map(function(b){
+    return '<div class="col'+(b[1]>=60?' peak':'')+'"><div class="bar" style="height:'+b[1]+'%"></div><small>'+b[0]+'</small></div>';
+  }).join('');
+}
+function renderRapport(){
+  var p=huidigePeriode(); var sel=document.getElementById('periode');
+  document.getElementById('rapTitel').textContent='Wat Deelnetwerk Leuven opleverde: '+sel.options[sel.selectedIndex].text.toLowerCase();
+  document.getElementById('rapGrid').innerHTML=
+    '<div class="kpi"><div class="l">Vermeden aankopen</div><div class="n">'+p.vermeden+'</div><div class="d">stuks niet nieuw gekocht</div></div>'+
+    '<div class="kpi"><div class="l">Bespaard voor verenigingen</div><div class="n">'+p.bespaard+'</div><div class="d">huur en aankoop</div></div>'+
+    '<div class="kpi"><div class="l">Deelnemende verenigingen</div><div class="n">'+p.actief+'</div><div class="d">van 14 aangemeld</div></div>'+
+    '<div class="kpi"><div class="l">Materiaal in circulatie</div><div class="n">'+p.mat+'</div><div class="d">stuks gedeeld</div></div>';
+  document.getElementById('rapNarr').innerHTML='<b style="font-weight:600;">In het kort.</b> '+p.zin+' deelden '+p.actief+
+    ' Leuvense verenigingen '+p.mat+' stuks materiaal en kwamen er '+p.trans+' uitleningen tot stand. Daarmee vermeden ze '+p.vermeden+
+    ' nieuwe aankopen en bespaarden ze samen ongeveer '+p.bespaard.replace('€','')+' euro. De vraag piekt rond de zomer, wat past bij de kampen en evenementen. De grootste hefboom voor meer impact ligt bij het activeren van de verenigingen die nog niet aan hun eerste transactie toe zijn.';
+}
+function setPeriode(){ renderOverzicht(); renderRapport(); }
+
+/* --- rolwissel coach vs gemeente (opmerking 11) --- */
+function setRol(rol){
+  document.body.classList.toggle('rol-coach',rol==='coach');
+  document.body.classList.toggle('rol-gemeente',rol==='gemeente');
+  document.getElementById('rolCoachBtn').classList.toggle('on',rol==='coach');
+  document.getElementById('rolGemBtn').classList.toggle('on',rol==='gemeente');
+  document.getElementById('brandRol').textContent=rol==='coach'?'Beheer':'Meelezen';
+  document.getElementById('userName').textContent=rol==='coach'?'Sara Joris':'Gemeente Leuven';
+  document.getElementById('userRol').textContent=rol==='coach'?'Deel-coach':'Leest mee, stuurt niet';
+  document.getElementById('ovSub').textContent=rol==='coach'
+    ? 'Deelnetwerk Leuven · stand van zaken voor de coach'
+    : 'Deelnetwerk Leuven · wat de inleg van de gemeente opbrengt';
+  var actief=document.querySelector('.nav a.on');
+  if(rol==='gemeente' && actief && actief.classList.contains('coach-only')) show('overzicht');
+}
+
+/* --- vereniging aanmaken door de coach (opmerking 1) --- */
+var UITGENODIGD=0;
+function openDrawer(id){ document.getElementById('overlay').classList.add('on'); document.getElementById(id).classList.add('on'); }
+function closeDrawer(){ document.getElementById('overlay').classList.remove('on'); document.querySelectorAll('.drawer').forEach(function(d){d.classList.remove('on');}); }
+function openAddVer(){ openDrawer('addVerDrawer'); document.getElementById('vNaam').focus(); }
+function submitVer(){
+  var naam=document.getElementById('vNaam').value.trim();
+  var mail=document.getElementById('vMail').value.trim();
+  if(!naam){ alert('Geef de naam van de vereniging in.'); return; }
+  if(!mail){ alert('Zonder e-mailadres kan de uitnodiging niet vertrekken.'); return; }
+  var type=document.getElementById('vType').value;
+  var contact=document.getElementById('vContact').value.trim()||'contactpersoon nog in te vullen';
+  var plaats=document.getElementById('vPlaats').value.trim()||'Leuven';
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td><b>'+naam+'</b><div class="sub">'+contact+' · '+plaats+'</div></td><td>'+type+'</td>'+
+    '<td><span class="pill acc">uitgenodigd</span></td><td class="num">0</td><td class="num">0</td><td class="muted">wacht op eerste aanmelding</td>';
+  document.getElementById('verBody').insertBefore(tr,document.getElementById('verBody').firstChild);
+  UITGENODIGD++;
+  document.getElementById('chipUit').textContent=UITGENODIGD;
+  document.getElementById('chipAlle').textContent=14+UITGENODIGD;
+  document.getElementById('verCount').textContent=14+UITGENODIGD;
+  document.getElementById('vNaam').value=''; document.getElementById('vContact').value=''; document.getElementById('vMail').value='';
+  closeDrawer();
+  alert('Profiel aangemaakt. '+naam+' krijgt een uitnodiging op '+mail+' en zet daarin een eigen wachtwoord. Tot dan staat de vereniging op "uitgenodigd" en is ze nog niet zichtbaar in de etalage.');
+}
+
+/* --- rapport delen (opmerking 12) --- */
+function toggleShare(){
+  var box=document.getElementById('shareBox');
+  var open=box.classList.toggle('hidden')===false;
+  document.getElementById('shareBtn').classList.toggle('on',open);
+}
+function toggleAnon(){
+  var sw=document.getElementById('anonSw');
+  var on=sw.getAttribute('data-on')!=='1';
+  sw.setAttribute('data-on',on?'1':'0');
+  sw.style.background=on?'var(--accent)':'var(--border)';
+  sw.querySelector('.k').style.left=on?'20px':'3px';
+  document.getElementById('anonSub').textContent=on?'aan: namen van de deelnemende verenigingen staan in het rapport':'uit: het rapport toont alleen totalen';
+  document.getElementById('shareUrl').textContent=on?'outofstock.be/rapport/leuven/2026-q2?namen=aan':'outofstock.be/rapport/leuven/2026-q2';
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeDrawer(); });
+window.addEventListener('resize',function(){ renderOverzicht(); });
+renderOverzicht(); renderRapport();
 </script>
 <script>
 window.CM_CONFIG = {
@@ -361,9 +527,9 @@ window.CM_CONFIG = {
   apiEndpoint: null,
   pageNames: { 'index.html':'Mobiele app','app.html':'Desktop-app','inventaris.html':'Inventaris-dashboard','beheer.html':'Coach-dashboard' },
   screenNames: {
-    'home':'Start (feed)','zoeken':'Zoeken','nood':'Noden-ingang','suggesties':'Suggesties','etalage':'Etalage','ruimer':'Ruimer aanbod','fiche':'Materiaalfiche','vraag':'Vraag','aanvraag':'Leningaanvraag','aanvraagverzonden':'Aanvraag verstuurd','ophalen':'Ophalen','bevestiging':'Bevestiging','meldingen':'Meldingen','aanvraaginbox':'Inkomende aanvraag','terugbrengen':'Terugbrengen','reststroomdetail':'Reststroom detail','aanbieden':'Aanbieden','reststromen':'Reststromen','kast':'Onze kast','mijnactiviteit':'Mijn activiteit','mijnitem':'Eigen materiaal','lening':'Jouw lening','profiel':'Profiel',
+    'home':'Start (feed)','zoeken':'Zoeken','nood':'Noden-ingang','suggesties':'Suggesties','etalage':'Etalage','ruimer':'Ruimer aanbod','fiche':'Materiaalfiche','vraag':'Vraag','aanvraag':'Leningaanvraag','aanvraagverzonden':'Aanvraag verstuurd','ophalen':'Ophalen','bevestiging':'Bevestiging','meldingen':'Meldingen','aanvraaginbox':'Inkomende aanvraag','terugbrengen':'Terugbrengen','reststroomdetail':'Reststroom detail','aanbieden':'Aanbieden','reststromen':'Reststromen','kast':'Ons materiaalkot','mijnactiviteit':'Mijn activiteit','mijnitem':'Eigen materiaal','lening':'Jouw lening','profiel':'Profiel',
     'start':'Start (feed)','ontdek':'Ontdek',
-    'inventaris':'Inventaris','uitgeleend':'Uitgeleend','aanvragen':'Aanvragen',
+    'inventaris':'Inventaris','uitgeleend':'Stand van zaken','aanvragen':'Aanvragen',
     'overzicht':'Overzicht','verenigingen':'Verenigingen','materiaal':'Materiaal','transacties':'Transacties','rapport':'Rapport gemeente'
   }
 };

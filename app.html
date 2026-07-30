@@ -190,10 +190,11 @@ a{color:var(--accent); text-decoration:none;}
               </div>
             </div>
             <div class="card">
-              <h3>Onze kast</h3>
+              <h3>Ons materiaalkot</h3>
               <div class="muted" style="font-size:13.5px;">34 stuks · 22 open voor delen · 2 aan vervanging toe</div>
               <a href="inventaris.html" class="btn ghost" style="display:inline-block; margin-top:6px;">Beheer de inventaris →</a>
             </div>
+            <div class="note" style="margin-top:14px;">"Onze kast" is vervangen door <b>materiaalkot</b>, het woord dat de verenigingen zelf gebruiken. Doorgevoerd op alle schermen, ook mobiel.</div>
           </div>
         </div>
       </section>
@@ -202,30 +203,56 @@ a{color:var(--accent); text-decoration:none;}
       <section class="view" id="ontdek">
         <div class="phead"><h2>Ontdek</h2><p>Beschikbaar materiaal in je buurt</p></div>
         <div class="note">Op desktop tonen we het aanbod als een ruim raster met foto's, makkelijker te overzien dan een lijst op de telefoon. Lokaal eerst, ruimer aanbod als fallback. Zoeken en de noden-ingang bestaan naast elkaar.</div>
+        <div class="note">Ecolife merkte op dat <b>afstand</b> telt bij het zoeken en de exacte locatie eigenlijk niet. Daarom staat het aanbod nu standaard op dichtstbij eerst, met een afstandsfilter, en zie je op de fiche wel de deelgemeente maar geen adres. Het adres komt pas als de uitlener de aanvraag bevestigt.</div>
         <div class="searchrow">
           <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><input id="ontdekSearch" placeholder="Zoek naar materiaal..." oninput="renderGrid()"></div>
+          <select class="input" id="maxAfstand" style="width:auto; padding:9px 12px;" onchange="renderGrid()">
+            <option value="99">Elke afstand</option>
+            <option value="1.5">Tot 1,5 km</option>
+            <option value="3">Tot 3 km</option>
+          </select>
           <button class="tbtn" onclick="alert('Noden-ingang: beschrijf je activiteit (bv. eetfestijn voor 80), dan stellen we het materiaal voor.')">Of beschrijf je activiteit</button>
         </div>
+        <p class="muted" style="font-size:13px; margin:-6px 0 12px;">Dichtstbij eerst. Je ziet de deelgemeente en de afstand, het adres krijg je bij een bevestigde afspraak.</p>
         <div class="chips" id="ontdekCats"></div>
         <div class="grid" id="grid"></div>
       </section>
 
       <!-- AANBIEDEN -->
       <section class="view" id="aanbieden">
-        <div class="phead"><h2>Aanbieden</h2><p>Deel materiaal met je netwerk</p></div>
+        <div class="phead"><h2>Aanbieden</h2><p>Deel materiaal met je netwerk, of geef weg wat weg mag</p></div>
         <div class="note">Simpel zelf toevoegen, AI schaaft optioneel je tekstje bij. De lijst "wat kan je zoal uitlenen" geeft inspiratie, want vaak denken verenigingen er niet aan wat ze allemaal kunnen delen.</div>
+        <div class="note">Delen en weggeven zaten hier eerst in twee aparte flows, terwijl het op mobiel één handeling was. Ecolife koos voor de mobiele oplossing. Bovenaan kies je nu wat je wil doen; de <b>weergave</b> in het materiaalkot blijft wel gescheiden, want een reststroom heeft een einddatum en gewoon materiaal niet.</div>
         <div class="cols" style="align-items:flex-start;">
           <div style="flex:1; max-width:520px;">
             <div class="card">
-              <span class="field-label" style="margin-top:0;">Naam</span>
+              <span class="field-label" style="margin-top:0;">Wat wil je ermee doen?</span>
+              <div class="chips" style="margin-bottom:2px;">
+                <button class="chip on" id="modeDelen" onclick="setAddMode('delen')">Delen of uitlenen</button>
+                <button class="chip" id="modeWeg" onclick="setAddMode('weg')">Weggeven (reststroom)</button>
+              </div>
+              <span class="field-label">Naam</span>
               <input class="input" id="addName" placeholder="bv. partytent, frietketel, aanhangwagen" oninput="checkAdd()">
               <span class="field-label">Categorie</span>
               <select class="input" id="addCat"><option>Tenten</option><option>Tafels &amp; stoelen</option><option>Keuken</option><option>Geluid</option><option>Spel</option><option>Gereedschap</option><option>Vervoer</option></select>
               <span class="field-label">Beschrijving (optioneel)</span>
               <textarea class="textarea" id="addDesc" placeholder="Korte omschrijving. Hoeft niet perfect."></textarea>
               <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;"><button class="btn ghost" onclick="aiPolish()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="margin-right:3px;"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3Z"/></svg>Verbeter de tekst</button><span id="aiTag" class="lab acc" style="display:none;">bijgeschaafd</span></div>
-              <div class="drow" style="display:flex; align-items:center; justify-content:space-between; padding:14px 0 4px; margin-top:6px;"><div><b style="font-weight:600;">Open voor delen</b></div><button class="sw on" id="addOpen" onclick="this.classList.toggle('on')"><span class="k"></span></button></div>
-              <button class="btn" id="addBtn" style="width:100%; margin-top:14px;" disabled onclick="alert('In de kast gezet en zichtbaar voor je deelnetwerk.'); document.getElementById('addName').value=''; checkAdd();">Zet in de kast</button>
+              <span class="field-label">Foto</span>
+              <button class="btn sec" id="addFoto" style="width:100%; justify-content:flex-start; gap:11px;" onclick="pakFoto()">
+                <span id="addFotoIc"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.5-2.5h5L16 7"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+                <span id="addFotoTx">Neem of kies een foto</span>
+              </button>
+              <div id="veldDelen">
+                <div class="drow" style="display:flex; align-items:center; justify-content:space-between; padding:14px 0 4px; margin-top:6px;"><div><b style="font-weight:600;">Open voor delen</b></div><button class="sw on" id="addOpen" onclick="this.classList.toggle('on')"><span class="k"></span></button></div>
+              </div>
+              <div id="veldWeg" style="display:none;">
+                <span class="field-label">Weg voor</span>
+                <input class="input" id="addWegVoor" placeholder="bv. 30 juni">
+                <span class="field-label">Mogelijke bestemming (optioneel)</span>
+                <input class="input" id="addBestemming" placeholder="bv. tuinmeubels, klimrek">
+              </div>
+              <button class="btn" id="addBtn" style="width:100%; margin-top:14px;" disabled onclick="submitAanbod()">Zet in het materiaalkot</button>
             </div>
           </div>
           <div style="flex:0 0 320px;">
@@ -269,12 +296,12 @@ function ic(name,sz){
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
 }
 var ITEMS={
-  frietketel:{name:'Frietketel (dubbel)',cat:'Keuken',ver:'KSA Wijgmaal',dist:'1,2 km',icon:'fryer',lent:7,status:'vrij',st:'ok',desc:'Dubbele elektrische friteuse, 2 × 8 liter. Aansluiting 400V nodig.',care:['Zet de thermostaat niet hoger dan 180°C. Een verkeerd gezette knop lijkt op een defect, maar is het meestal niet.','Controleer of je locatie een krachtstroomaansluiting (400V) heeft.'],trust:'Geleend door 3 verenigingen · altijd op tijd terug'},
-  partytent:{name:'Partytent 3×6 m',cat:'Tenten',ver:'Scouts Heverlee',dist:'0,8 km',icon:'tent',lent:12,status:'vrij',st:'ok',desc:'Partytent 3 op 6 meter met stalen frame. Inclusief haringen en spanbanden.',care:['Maak de tent droog op voor je ze terugbrengt, anders schimmelt het doek.'],trust:'Geleend door 7 verenigingen'},
-  tafels:{name:'10 klaptafels',cat:'Tafels & stoelen',ver:'KLJ Korbeek-Lo',dist:'2,1 km',icon:'table',lent:9,status:'vanaf 14 jun',st:'warn',desc:'Tien stevige klaptafels van 180 × 70 cm. Inklapbaar.',care:['Klap ze volledig dicht voor transport.'],trust:'Geleend door 5 verenigingen'},
-  stoelen:{name:'80 stoelen',cat:'Tafels & stoelen',ver:'KLJ Korbeek-Lo',dist:'2,1 km',icon:'chair',lent:6,status:'vrij',st:'ok',desc:'Tachtig stapelbare stoelen op rolwagens per 20.',care:['Vervoer met de rolwagens, niet los.'],trust:'Geleend door 5 verenigingen'},
-  geluid:{name:'Geluidsset',cat:'Geluid',ver:'Sportkring Heverlee',dist:'1,5 km',icon:'speaker',lent:5,status:'vrij',st:'ok',desc:'Twee speakers van 300W met statieven, mengpaneel en twee microfoons.',care:['Draai het volume op nul voor je aan- of uitschakelt.'],trust:'Geleend door 4 verenigingen'},
-  koelkast:{name:'Koelkast',cat:'Keuken',ver:'Chiro Kessel-Lo',dist:'3,4 km',icon:'fridge',lent:2,status:'vrij',st:'ok',desc:'Horeca-koelkast van 300 liter, op wieltjes.',care:['Laat na transport een uur staan voor je inschakelt.'],trust:'Geleend door 2 verenigingen'}
+  frietketel:{name:'Frietketel (dubbel)',cat:'Keuken',ver:'KSA Wijgmaal',dist:'1,2 km',km:1.2,plaats:'Wijgmaal',icon:'fryer',lent:7,status:'vrij',st:'ok',desc:'Dubbele elektrische friteuse, 2 × 8 liter. Aansluiting 400V nodig.',care:['Zet de thermostaat niet hoger dan 180°C. Een verkeerd gezette knop lijkt op een defect, maar is het meestal niet.','Controleer of je locatie een krachtstroomaansluiting (400V) heeft.'],trust:'Geleend door 3 verenigingen · altijd op tijd terug'},
+  partytent:{name:'Partytent 3×6 m',cat:'Tenten',ver:'Scouts Heverlee',dist:'0,8 km',km:0.8,plaats:'Heverlee',icon:'tent',lent:12,status:'vrij',st:'ok',desc:'Partytent 3 op 6 meter met stalen frame. Inclusief haringen en spanbanden.',care:['Maak de tent droog op voor je ze terugbrengt, anders schimmelt het doek.'],trust:'Geleend door 7 verenigingen'},
+  tafels:{name:'10 klaptafels',cat:'Tafels & stoelen',ver:'KLJ Korbeek-Lo',dist:'2,1 km',km:2.1,plaats:'Korbeek-Lo',icon:'table',lent:9,status:'vanaf 14 jun',st:'warn',desc:'Tien stevige klaptafels van 180 × 70 cm. Inklapbaar.',care:['Klap ze volledig dicht voor transport.'],trust:'Geleend door 5 verenigingen'},
+  stoelen:{name:'80 stoelen',cat:'Tafels & stoelen',ver:'KLJ Korbeek-Lo',dist:'2,1 km',km:2.1,plaats:'Korbeek-Lo',icon:'chair',lent:6,status:'vrij',st:'ok',desc:'Tachtig stapelbare stoelen op rolwagens per 20.',care:['Vervoer met de rolwagens, niet los.'],trust:'Geleend door 5 verenigingen'},
+  geluid:{name:'Geluidsset',cat:'Geluid',ver:'Sportkring Heverlee',dist:'1,5 km',km:1.5,plaats:'Heverlee',icon:'speaker',lent:5,status:'vrij',st:'ok',desc:'Twee speakers van 300W met statieven, mengpaneel en twee microfoons.',care:['Draai het volume op nul voor je aan- of uitschakelt.'],trust:'Geleend door 4 verenigingen'},
+  koelkast:{name:'Koelkast',cat:'Keuken',ver:'Chiro Kessel-Lo',dist:'3,4 km',km:3.4,plaats:'Kessel-Lo',icon:'fridge',lent:2,status:'vrij',st:'ok',desc:'Horeca-koelkast van 300 liter, op wieltjes.',care:['Laat na transport een uur staan voor je inschakelt.'],trust:'Geleend door 2 verenigingen'}
 };
 var GRIDIDS=['frietketel','partytent','tafels','stoelen','geluid','koelkast'];
 var CATS=['Alles','Tenten','Tafels & stoelen','Keuken','Geluid'];
@@ -304,18 +331,48 @@ function renderCats(){ document.getElementById('ontdekCats').innerHTML=CATS.map(
 function setCat(c){ catFilter=c; renderCats(); renderGrid(); }
 function renderGrid(){
   var q=(document.getElementById('ontdekSearch').value||'').toLowerCase();
+  var max=parseFloat(document.getElementById('maxAfstand').value);
   var html='';
-  GRIDIDS.forEach(function(id){
+  GRIDIDS.slice().sort(function(a,b){ return ITEMS[a].km-ITEMS[b].km; }).forEach(function(id){
     var it=ITEMS[id];
     if(catFilter!=='Alles' && it.cat!==catFilter) return;
-    if(q && (it.name+' '+it.cat+' '+it.ver).toLowerCase().indexOf(q)<0) return;
-    html+='<div class="mcard" onclick="openItem(\''+id+'\')"><div class="thumb">'+ic(it.icon,40)+'</div><div class="body"><b>'+it.name+'</b><div class="sub">'+it.ver+' · '+it.dist+'</div><div class="row"><span class="pill '+(it.st==='ok'?'ok':'warn')+'">'+it.status+'</span><span class="muted" style="font-size:12px;">'+it.lent+'× geleend</span></div></div></div>';
+    if(it.km>max) return;
+    if(q && (it.name+' '+it.cat+' '+it.ver+' '+it.plaats).toLowerCase().indexOf(q)<0) return;
+    html+='<div class="mcard" onclick="openItem(\''+id+'\')"><div class="thumb">'+ic(it.icon,40)+'</div><div class="body"><b>'+it.name+'</b><div class="sub">'+it.ver+' · '+it.plaats+'</div><div class="row"><span class="pill acc">'+it.dist+'</span><span class="muted" style="font-size:12px;">'+it.status+'</span></div></div></div>';
   });
-  document.getElementById('grid').innerHTML=html||'<div class="muted" style="padding:20px;">Niets gevonden in de buurt. <a onclick="alert(\'Ruimer aanbod: buiten je gemeente, uitleendiensten en de deelkaart van WijDelen.\')">Toon ruimer aanbod</a></div>';
+  document.getElementById('grid').innerHTML=html||'<div class="muted" style="padding:20px;">Niets gevonden binnen die afstand. <a onclick="alert(\'Ruimer aanbod: buiten je gemeente, uitleendiensten en de deelkaart van WijDelen.\')">Toon ruimer aanbod</a></div>';
 }
 function renderTriggers(){ document.getElementById('triggerList').innerHTML=TRIGGERS.map(function(t){ return '<div class="row" onclick="prefillAdd(\''+t[0]+'\',\''+t[1]+'\')"><span class="meta"><b>'+t[0]+'</b><span>'+t[1]+'</span></span><span class="lab acc">+ toevoegen</span></div>'; }).join(''); }
 function prefillAdd(name,cat){ show('aanbieden'); document.getElementById('addName').value=name; var sel=document.getElementById('addCat'); for(var i=0;i<sel.options.length;i++){ if(sel.options[i].text.replace('&amp;','&')===cat) sel.selectedIndex=i; } checkAdd(); document.getElementById('addName').focus(); }
 function checkAdd(){ document.getElementById('addBtn').disabled=!document.getElementById('addName').value.trim(); }
+var addMode='delen', addHeeftFoto=false;
+function setAddMode(m){
+  addMode=m;
+  document.getElementById('modeDelen').classList.toggle('on',m==='delen');
+  document.getElementById('modeWeg').classList.toggle('on',m==='weg');
+  document.getElementById('veldDelen').style.display=(m==='delen')?'':'none';
+  document.getElementById('veldWeg').style.display=(m==='weg')?'':'none';
+  document.getElementById('addBtn').textContent=(m==='delen')?'Zet in het materiaalkot':'Zet bij de reststromen';
+}
+function pakFoto(){
+  addHeeftFoto=!addHeeftFoto;
+  document.getElementById('addFotoTx').textContent=addHeeftFoto?'Foto toegevoegd':'Neem of kies een foto';
+  document.getElementById('addFoto').style.borderColor=addHeeftFoto?'var(--accent)':'var(--border)';
+  document.getElementById('addFotoIc').style.color=addHeeftFoto?'var(--accent)':'';
+}
+function submitAanbod(){
+  var naam=document.getElementById('addName').value.trim();
+  if(addMode==='weg'){
+    var weg=document.getElementById('addWegVoor').value.trim();
+    alert(naam+' staat bij de reststromen'+(weg?', weg voor '+weg:'')+'. Verenigingen die zoiets zoeken krijgen een seintje. Het komt niet in jullie inventaris terecht.');
+    document.getElementById('addWegVoor').value=''; document.getElementById('addBestemming').value='';
+  } else {
+    alert(naam+' staat in het materiaalkot en is zichtbaar voor je deelnetwerk.');
+  }
+  document.getElementById('addName').value=''; document.getElementById('addDesc').value='';
+  if(addHeeftFoto) pakFoto();
+  checkAdd();
+}
 function aiPolish(){ var ta=document.getElementById('addDesc'); var t=ta.value.trim(); var name=document.getElementById('addName').value.trim()||'Dit materiaal'; ta.value = t ? (t.charAt(0).toUpperCase()+t.slice(1)+(/[.!?]$/.test(t)?'':'.')+' In goede staat. Ophalen en terugbrengen in onderling overleg.') : (name+' in goede staat, met de nodige toebehoren. Ophalen en terugbrengen in onderling overleg.'); document.getElementById('aiTag').style.display='inline-flex'; }
 
 function openItem(id){
@@ -324,7 +381,8 @@ function openItem(id){
   var care=it.care.map(function(c){return '<p style="margin:6px 0 0;">'+c+'</p>';}).join('');
   document.getElementById('idBody').innerHTML=
     '<div class="bigtile">'+ic(it.icon,40)+'<span class="muted" style="font-size:12px;">foto van het materiaal</span></div>'+
-    '<div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px;"><div><div style="font-size:18px; font-weight:600;">'+it.name+'</div><div class="muted" style="font-size:13.5px;">'+it.ver+' · '+it.dist+'</div></div><span class="pill '+(it.st==='ok'?'ok':'warn')+'">'+it.status+'</span></div>'+
+    '<div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px;"><div><div style="font-size:18px; font-weight:600;">'+it.name+'</div><div class="muted" style="font-size:13.5px;">'+it.ver+' · '+it.plaats+'</div></div><span class="pill '+(it.st==='ok'?'ok':'warn')+'">'+it.status+'</span></div>'+
+    '<span class="field-label">Waar staat het</span><div class="card" style="background:var(--surface); padding:13px 14px;"><b style="font-weight:600;">'+it.plaats+' · '+it.dist+' van jullie lokaal</b><div class="muted" style="font-size:13px; margin-top:4px;">Het precieze adres krijg je van '+it.ver+' zodra de aanvraag bevestigd is.</div></div>'+
     '<span class="field-label">Beschikbaarheid</span><div class="card" style="background:var(--surface); padding:13px 14px;"><b style="font-weight:600;">Meestal vrij</b><div class="muted" style="font-size:13px; margin-top:4px;">Geen vaste kalender. Je vraagt de periode aan die je nodig hebt, '+it.ver+' bevestigt.</div></div>'+
     '<span class="field-label">Beschrijving</span><p style="margin:0;">'+it.desc+'</p>'+
     '<div class="card" style="background:var(--surface); margin-top:14px; padding:13px 14px;"><b style="font-weight:600; display:flex; gap:8px; align-items:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>Goed om te weten</b>'+care+'</div>'+
@@ -339,7 +397,7 @@ function borrowStep(id){
     '<div style="display:flex; gap:11px; align-items:center;"><span class="tile">'+ic(it.icon)+'</span><div><b style="font-weight:600;">'+it.name+'</b><div class="muted" style="font-size:13px;">'+it.ver+' · contact: Tom</div></div></div>'+
     '<span class="field-label">Welke periode heb je het nodig?</span><div class="card" style="padding:4px 14px;"><div class="drow" style="display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--border);"><b style="font-weight:600;">Van</b><span class="pill">za 14 juni</span></div><div class="drow" style="display:flex; justify-content:space-between; align-items:center; padding:11px 0;"><b style="font-weight:600;">Tot</b><span class="pill">ma 16 juni</span></div></div>'+
     '<span class="field-label">Ophalen en terugbrengen</span><div class="chips"><span class="chip on">\'s avonds</span><span class="chip">overdag</span><span class="chip">in overleg</span></div>'+
-    '<p class="muted" style="font-size:13px; margin-top:14px;">'+it.ver+' krijgt je aanvraag en bevestigt. Niets is meteen definitief.</p>';
+    '<p class="muted" style="font-size:13px; margin-top:14px;">'+it.ver+' krijgt je aanvraag en bevestigt. Niets is meteen definitief. Bij de bevestiging krijg je het ophaaladres in '+it.plaats+'.</p>';
   document.getElementById('idFoot').innerHTML='<button class="btn sec" style="flex:1" onclick="openItem(\''+id+'\')">Terug</button><button class="btn" style="flex:2" onclick="borrowSent(\''+id+'\')">Stuur aanvraag</button>';
 }
 function borrowSent(id){
@@ -368,9 +426,9 @@ window.CM_CONFIG = {
   apiEndpoint: null,
   pageNames: { 'index.html':'Mobiele app','app.html':'Desktop-app','inventaris.html':'Inventaris-dashboard','beheer.html':'Coach-dashboard' },
   screenNames: {
-    'home':'Start (feed)','zoeken':'Zoeken','nood':'Noden-ingang','suggesties':'Suggesties','etalage':'Etalage','ruimer':'Ruimer aanbod','fiche':'Materiaalfiche','vraag':'Vraag','aanvraag':'Leningaanvraag','aanvraagverzonden':'Aanvraag verstuurd','ophalen':'Ophalen','bevestiging':'Bevestiging','meldingen':'Meldingen','aanvraaginbox':'Inkomende aanvraag','terugbrengen':'Terugbrengen','reststroomdetail':'Reststroom detail','aanbieden':'Aanbieden','reststromen':'Reststromen','kast':'Onze kast','mijnactiviteit':'Mijn activiteit','mijnitem':'Eigen materiaal','lening':'Jouw lening','profiel':'Profiel',
+    'home':'Start (feed)','zoeken':'Zoeken','nood':'Noden-ingang','suggesties':'Suggesties','etalage':'Etalage','ruimer':'Ruimer aanbod','fiche':'Materiaalfiche','vraag':'Vraag','aanvraag':'Leningaanvraag','aanvraagverzonden':'Aanvraag verstuurd','ophalen':'Ophalen','bevestiging':'Bevestiging','meldingen':'Meldingen','aanvraaginbox':'Inkomende aanvraag','terugbrengen':'Terugbrengen','reststroomdetail':'Reststroom detail','aanbieden':'Aanbieden','reststromen':'Reststromen','kast':'Ons materiaalkot','mijnactiviteit':'Mijn activiteit','mijnitem':'Eigen materiaal','lening':'Jouw lening','profiel':'Profiel',
     'start':'Start (feed)','ontdek':'Ontdek',
-    'inventaris':'Inventaris','uitgeleend':'Uitgeleend','aanvragen':'Aanvragen',
+    'inventaris':'Inventaris','uitgeleend':'Stand van zaken','aanvragen':'Aanvragen',
     'overzicht':'Overzicht','verenigingen':'Verenigingen','materiaal':'Materiaal','transacties':'Transacties','rapport':'Rapport gemeente'
   }
 };

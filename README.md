@@ -35,6 +35,28 @@ Daarnaast zijn er drie MVP-stukken:
 
 De vier prototypes bovenaan zijn de droomversie en dienen als roadmap.
 
+## Verwerkte opmerkingen van Ecolife (27 juli 2026)
+
+De droomversie is bijgewerkt na de opmerkingennota van Ecolife. Wat waar veranderde:
+
+| # | Opmerking | Wat er gebeurde |
+|---|---|---|
+| 1 | Profiel aanmaken, self-serviced | Coach maakt het profiel aan en nodigt uit, vereniging zet eigen wachtwoord ([beheer.html](beheer.html) > Verenigingen) |
+| 2 | Meerdere personen en rollen | Niet gebouwd, staat als nice-to-have met motivatie in [mvp-journey.html](mvp-journey.html) |
+| 3 | Foto bij materiaal toevoegen | Cameraknop in de toevoeg-flow (geen fotoherkenning) |
+| 4 | "Uitgeleend" dekt de lading niet | Heet nu **Stand van zaken**, met de twee kanten uit elkaar en een filter |
+| 5 | Afstand tonen, locatie minder | Dichtstbij eerst, afstandsfilter, deelgemeente op de fiche; adres pas na bevestiging |
+| 6 | "Onze kast" | Overal **materiaalkot** |
+| 7 | Reststromen in dezelfde flow als materiaal | Eén toevoeg-flow met keuze delen of weggeven, weergave blijft gescheiden |
+| 8 | Bespaard bedrag ook voor verenigingen | Toegevoegd bij Stand van zaken, met de voorwaarde erbij dat alleen geregistreerde leningen tellen |
+| 9 | Transacties per coach-uur | Van het scherm gehaald |
+| 10 | Periode zelf kiezen | Werkende periodefilter (maand, kwartaal, jaar, vorig jaar); dashboard zelf samenstellen is niet gebouwd |
+| 11 | "Aandacht nodig" is voor de coach | Rolwissel coach/gemeente in de zijbalk, met eigen navigatie per rol |
+| 12 | Data om het project te verkopen | Rapport als PDF of deelbare link, met schakelaar voor namen van verenigingen |
+
+Zet **Ontwerpnotities** aan om per scherm de motivatie te lezen, ook bij de punten die bewust anders
+zijn ingevuld dan gevraagd (1 en 2).
+
 Bovenaan (of via de dev-knoppen op de mobiele versie) spring je tussen de schermen.
 De knop **Ontwerpnotities** toont per scherm waarom het zo ontworpen is.
 
