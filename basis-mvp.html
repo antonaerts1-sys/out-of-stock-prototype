@@ -348,22 +348,17 @@ tr:last-child td{border-bottom:none;}
           <div class="card">
             <div id="obStatusBig"></div>
             <div id="aanvraagForm" class="mt12">
-              <button class="btn lg" id="vraagBtn" onclick="document.getElementById('formVeld').classList.remove('hidden'); this.classList.add('hidden');">Vraag het te leen</button>
-              <div class="hidden" id="formVeld">
-                <label class="field-label" style="margin-top:0;">Jouw naam</label>
-                <input class="input" id="afNaam" placeholder="bv. Lien Vermeulen">
-                <label class="field-label">Jouw vereniging</label>
-                <input class="input" id="afVer" placeholder="bv. Chiro Heverlee">
-                <label class="field-label">Wanneer heb je het nodig?</label>
-                <input class="input" id="afWanneer" placeholder="bv. 14 tot 16 augustus">
-                <label class="field-label">Bericht (niet verplicht)</label>
-                <textarea class="textarea" id="afMsg" placeholder="bv. Voor ons eetfestijn voor 80 personen."></textarea>
-                <button class="btn lg mt12" onclick="stuurAanvraag()">Verstuur aanvraag</button>
-              </div>
+              <label class="field-label" style="margin-top:0;">Je e-mailadres</label>
+              <input class="input" id="afMail" type="email" placeholder="naam@vereniging.be" oninput="checkAanvraag()">
+              <label class="field-label">Je telefoonnummer</label>
+              <input class="input" id="afTel" type="tel" placeholder="04xx xx xx xx">
+              <label class="field-label">Bericht (niet verplicht)</label>
+              <textarea class="textarea" id="afMsg" placeholder="bv. Voor ons eetfestijn, 14 tot 16 augustus."></textarea>
+              <button class="btn lg mt12" id="afBtn" disabled onclick="stuurAanvraag()">Verstuur aanvraag</button>
             </div>
             <div class="hidden mt12" id="aanvraagOk">
               <span class="lab ok">Aanvraag verstuurd</span>
-              <div class="muted mt8" style="font-size:13.5px;"><span id="aoVer"></span> krijgt meteen een mailtje en neemt contact met je op.</div>
+              <div class="muted mt8" style="font-size:13.5px;"><span id="aoVer"></span> krijgt meteen een mailtje en contacteert je via mail of telefoon.</div>
             </div>
             <div class="hr"></div>
             <div id="contactBlok"><button class="btn sec" style="width:100%;" onclick="toonContact()">Liever rechtstreeks? Toon contact</button></div>
@@ -715,10 +710,10 @@ function openObject(id){
   document.getElementById('moreFrom').innerHTML=more.map(function(i){
     return '<button class="minitile" onclick="openObject('+i.id+')">'+i.naam+'</button>';
   }).join('') || '<span class="muted" style="font-size:13.5px;">Dit is voorlopig hun enige materiaal.</span>';
-  document.getElementById('vraagBtn').classList.remove('hidden');
-  document.getElementById('formVeld').classList.add('hidden');
   document.getElementById('aanvraagForm').classList.remove('hidden');
   document.getElementById('aanvraagOk').classList.add('hidden');
+  document.getElementById('afMail').value=''; document.getElementById('afTel').value=''; document.getElementById('afMsg').value='';
+  checkAanvraag();
   document.getElementById('contactBlok').classList.remove('hidden');
   document.getElementById('contactOpen').classList.add('hidden');
   setView('object');
@@ -727,6 +722,9 @@ function copyLink(btn){
   var inp=document.getElementById('obLink'); inp.select();
   try{ navigator.clipboard.writeText(inp.value); }catch(e){}
   btn.textContent='Gekopieerd'; setTimeout(function(){btn.textContent='Kopieer';},1500);
+}
+function checkAanvraag(){
+  document.getElementById('afBtn').disabled=!document.getElementById('afMail').value.trim();
 }
 function stuurAanvraag(){
   document.getElementById('aanvraagForm').classList.add('hidden');
@@ -805,7 +803,7 @@ function coachFilter(f,el){
 /* notes */
 var NOTES={
   catalogus:{t:'Eén platform, lokale etalages',b:'Heel Vlaanderen draait op hetzelfde platform, maar je landt altijd in je eigen deelnetwerk: lokaal is de primaire logica, want ophalen en terugbrengen blijven fysiek. De netwerk-kiezer bovenaan toont de vier pilootgemeenten, en wie wil kan over de grenzen kijken met "Heel Vlaanderen".'},
-  object:{t:'Objectpagina zoals een echte marktplaats',b:'Breadcrumb, detailblok, vaste actiekaart rechts, de vereniging als afzender met haar andere materialen eronder. De aanvraagknop is de standaardweg; contactgegevens staan achter een klik en enkel als de vereniging dat wil. De deelbare link is gemaakt om in WhatsApp geplakt te worden.'},
+  object:{t:'Objectpagina zoals een echte marktplaats',b:'Breadcrumb, detailblok, vaste actiekaart rechts, de vereniging als afzender met haar andere materialen eronder. Aanvragen is bewust licht: je laat je e-mailadres en telefoonnummer achter, de vereniging krijgt een mailtje en neemt zelf contact op. De contactgegevens van de vereniging staan achter een klik en enkel als ze dat wil.'},
   login:{t:'Account per vereniging',b:'Kijken kan zonder account, beheren niet. Persoonlijke accounts gekoppeld aan de vereniging; bij een ploegwissel nodigt de vorige materiaalmeester of de deelcoach de nieuwe uit.'},
   achterkant:{t:'De achterkant is bewust klein',b:'Drie dingen: je materialen met een leenstatus-knop (beschikbaar, uitgeleend, even niet), de aanvragen die via het formulier binnenkomen (met een mailtje bij elke nieuwe), en je contact-instellingen. De leenstatus is meteen ook de "nu even niet"-knop die eigenaars controle geeft.'},
   coach:{t:'De coach ziet het netwerk',b:'Wie is aangesloten, wie is actief, wie heeft al een deelscan gehad. Drie belvragen in plaats van grafieken. Elke coach werkt in zijn eigen netwerk; het platform eronder is voor heel Vlaanderen hetzelfde.'}
