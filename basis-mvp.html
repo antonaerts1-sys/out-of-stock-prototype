@@ -78,6 +78,7 @@ a{color:var(--accent); text-decoration:none;}
 .fopt .cnt{margin-left:auto; color:var(--muted); font-size:12.5px;}
 .select{width:100%; border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:14px; font-family:inherit; color:var(--ink); background:var(--bg); outline:none;}
 
+.filterbtn{display:none;}
 .results{flex:1; min-width:0;}
 .reshead{display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:4px;}
 .reshead .n{font-size:14px; color:var(--muted);}
@@ -182,7 +183,9 @@ tr:last-child td{border-bottom:none;}
 
 @media(max-width:960px){
   .cat-layout{flex-direction:column;}
-  .filters{flex:none; width:100%;}
+  .filters{flex:none; width:100%; display:none;}
+  .filters.open{display:block;}
+  .filterbtn{display:inline-flex;}
   .obcols{flex-direction:column;}
   .obside{position:static; flex:none; width:100%;}
   .notes,.intro{display:none !important;}
@@ -222,8 +225,8 @@ tr:last-child td{border-bottom:none;}
       </span>
       <nav class="topnav">
         <button class="on">Alle materialen</button>
-        <button onclick="alert('In de echte versie: de deelregels en FAQ uit Leuven 1.0 als vaste pagina.')">Spelregels</button>
-        <button onclick="alert('In de echte versie: uitleg over het project, de deelcoaches en hoe je gemeente kan aansluiten.')">Over</button>
+        <button onclick="setView('spelregels')">Spelregels</button>
+        <button onclick="setView('over')">Over</button>
       </nav>
       <span class="spacer"></span>
       <button class="ghostlink" onclick="setView('login')">Log in</button>
@@ -240,6 +243,7 @@ tr:last-child td{border-bottom:none;}
     </div>
 
     <div class="cat-layout">
+      <button class="btn sec filterbtn" onclick="document.querySelector('.filters').classList.toggle('open')">Filters tonen of verbergen</button>
       <aside class="filters">
         <div class="fgroup">
           <div class="fl">Categorie</div>
@@ -337,7 +341,7 @@ tr:last-child td{border-bottom:none;}
           </div>
           <div class="card mt12">
             <h3>Zo werkt lenen</h3>
-            <div class="muted" style="font-size:14px;">Je vraagt aan, de vereniging bevestigt en jullie spreken samen ophalen en terugbrengen af. Breng alles proper en in dezelfde staat terug. Lees de <a href="#" onclick="return false;">deelregels</a>.</div>
+            <div class="muted" style="font-size:14px;">Je vraagt aan, de vereniging bevestigt en jullie spreken samen ophalen en terugbrengen af. Breng alles proper en in dezelfde staat terug. Lees de <a href="#" onclick="setView('spelregels');return false;">spelregels</a>.</div>
           </div>
           <div class="mt16">
             <h3 style="font-size:15px; font-weight:600; margin:0 0 2px;">Meer van <span id="moreVer"></span></h3>
@@ -380,6 +384,66 @@ tr:last-child td{border-bottom:none;}
           </div>
         </aside>
       </div>
+    </div>
+  </section>
+
+  <!-- ===================== SPELREGELS ===================== -->
+  <section class="view" id="spelregels">
+    <header class="topbar">
+      <button class="brand" onclick="setView('catalogus')"><span class="logo">O</span><b>Out of Stock</b></button>
+      <nav class="topnav">
+        <button onclick="setView('catalogus')">Alle materialen</button>
+        <button class="on">Spelregels</button>
+        <button onclick="setView('over')">Over</button>
+      </nav>
+      <span class="spacer"></span>
+      <button class="ghostlink" onclick="setView('login')">Log in</button>
+      <button class="btn sm" onclick="setView('login')">Deel jullie materiaal</button>
+    </header>
+    <div class="obwrap" style="max-width:720px;">
+      <h1 style="font-size:27px; font-weight:600; letter-spacing:-0.02em; margin:6px 0 4px;">Zo delen we</h1>
+      <p class="muted">Dezelfde afspraken als in de deelnetwerken vandaag, op een vaste plek. Kort en zonder kleine lettertjes.</p>
+      <div class="card mt16">
+        <div class="spec"><span style="font-weight:600;">Durf te vragen</span><span class="k" style="text-align:right;">Staat het er niet tussen? Stel je vraag toch, ook in je WhatsApp-groep.</span></div>
+        <div class="spec"><span style="font-weight:600;">Geef vertrouwen</span><span class="k" style="text-align:right;">Maak duidelijke afspraken over termijn, ophalen en terugbrengen.</span></div>
+        <div class="spec"><span style="font-weight:600;">Check bij het ophalen</span><span class="k" style="text-align:right;">Kijk het materiaal samen na en overloop het correcte gebruik.</span></div>
+        <div class="spec"><span style="font-weight:600;">Gebruik het als je eigen spullen</span><span class="k" style="text-align:right;">Schade of breuk? Stop meteen en verwittig de uitlener.</span></div>
+        <div class="spec"><span style="font-weight:600;">Breng proper terug</span><span class="k" style="text-align:right;">In dezelfde staat als je het kreeg, op normale slijtage na.</span></div>
+        <div class="spec"><span style="font-weight:600;">Waardevolle items</span><span class="k" style="text-align:right;">Een waarborg afspreken kan, als beide verenigingen dat willen.</span></div>
+      </div>
+      <div class="card mt12">
+        <h3>Wat als er iets misloopt?</h3>
+        <div class="muted" style="font-size:14px;">Kapot, gestolen of onenigheid? Verwittig de uitlenende vereniging en je deelcoach. Bij diefstal van iets waardevols doe je aangifte bij de politie. De volledige FAQ legt stap voor stap uit wie wat doet.</div>
+      </div>
+      <button class="btn sec mt16" onclick="setView('catalogus')">Terug naar de materialen</button>
+    </div>
+  </section>
+
+  <!-- ===================== OVER ===================== -->
+  <section class="view" id="over">
+    <header class="topbar">
+      <button class="brand" onclick="setView('catalogus')"><span class="logo">O</span><b>Out of Stock</b></button>
+      <nav class="topnav">
+        <button onclick="setView('catalogus')">Alle materialen</button>
+        <button onclick="setView('spelregels')">Spelregels</button>
+        <button class="on">Over</button>
+      </nav>
+      <span class="spacer"></span>
+      <button class="ghostlink" onclick="setView('login')">Log in</button>
+      <button class="btn sm" onclick="setView('login')">Deel jullie materiaal</button>
+    </header>
+    <div class="obwrap" style="max-width:720px;">
+      <h1 style="font-size:27px; font-weight:600; letter-spacing:-0.02em; margin:6px 0 4px;">Verenigingen delen in plaats van te kopen</h1>
+      <p class="muted">Elke vereniging heeft materiaal dat er meestal gewoon staat: partytenten, frietketels, sjorbalken, geluidsinstallaties. Out of Stock maakt zichtbaar wat er in je buurt ligt, zodat je het kan lenen in plaats van het te kopen of te huren.</p>
+      <div class="card mt16">
+        <h3>Hoe het werkt</h3>
+        <div class="muted" style="font-size:14px;">Elk deelnetwerk hoort bij een gemeente en heeft een deelcoach: iemand die verenigingen op weg helpt, de kennismakingsgesprekken doet en het netwerk levend houdt. Kijken kan iedereen, delen doe je met een account van je vereniging.</div>
+      </div>
+      <div class="card mt12">
+        <h3>Ook in jouw gemeente?</h3>
+        <div class="muted" style="font-size:14px;">Out of Stock groeit netwerk per netwerk. Werkt jouw gemeente nog niet mee? Laat het je jeugddienst of duurzaamheidsambtenaar weten, of neem contact op via Ecolife.</div>
+      </div>
+      <div class="muted mt16" style="font-size:13px;">Een initiatief van Ecolife en WijDelen, met steun van Vlaanderen Circulair.</div>
     </div>
   </section>
 
@@ -428,7 +492,7 @@ tr:last-child td{border-bottom:none;}
 
       <div id="paneMat">
         <div class="note row-between">
-          <span><b style="font-weight:600;">Leenstatus</b>: zet iets op uitgeleend of even niet, en andere verenigingen zien dat meteen in de catalogus.</span>
+          <span><b style="font-weight:600;">Leenstatus</b>: zet iets op uitgeleend en dat is meteen zichtbaar in de catalogus. Zet je iets op even niet, dan verdwijnt het stil uit de catalogus tot je het terugzet; niemand ziet dat je pauzeert.</span>
           <button class="btn sm" onclick="toggleAdd()">+ Materiaal toevoegen</button>
         </div>
         <div class="card mt12 hidden" id="addForm" style="max-width:520px;">
@@ -485,9 +549,9 @@ tr:last-child td{border-bottom:none;}
       <div class="pagetitle">Verenigingen</div>
       <div class="muted" style="font-size:14px;">Wie is aangesloten, wie is actief, en wie heeft al een deelscan gehad.</div>
       <div class="tabs">
-        <button class="tab on" onclick="coachFilter('alle',this)">Alle (8)</button>
-        <button class="tab" onclick="coachFilter('geenscan',this)">Nog geen deelscan (3)</button>
-        <button class="tab" onclick="coachFilter('stil',this)">Lang niet actief (2)</button>
+        <button class="tab on" onclick="coachFilter('alle',this)">Alle <span class="lab" id="cAlle"></span></button>
+        <button class="tab" onclick="coachFilter('geenscan',this)">Nog geen deelscan <span class="lab" id="cScan"></span></button>
+        <button class="tab" onclick="coachFilter('stil',this)">Lang niet actief <span class="lab warn" id="cStil"></span></button>
       </div>
       <div class="tablecard">
         <table>
@@ -607,13 +671,16 @@ var selCats=[], selStatus=[], curObj=null, curNet='leuven';
 function netItems(){
   return ITEMS.filter(function(i){ return curNet==='alle' || VERENIGINGEN[i.ver].net===curNet; });
 }
+function pubItems(){
+  return netItems().filter(function(i){ return i.st!=='pauze'; });
+}
 function setNet(n){
   curNet=n;
   document.getElementById('netLabel').textContent=NETTEN[n].label;
   document.getElementById('netSelect').value=n;
   var vers=Object.keys(VERENIGINGEN).filter(function(v){return curNet==='alle'||VERENIGINGEN[v].net===curNet;});
   document.getElementById('heroTitle').textContent = n==='alle' ? 'Materiaal lenen in Vlaanderen' : 'Materiaal lenen in '+NETTEN[n].stad;
-  document.getElementById('heroSub').textContent = netItems().length+' materialen van '+vers.length+' verenigingen · vrij te bekijken, ook zonder account';
+  document.getElementById('heroSub').textContent = pubItems().length+' materialen van '+vers.length+' verenigingen · vrij te bekijken, ook zonder account';
   selCats=[]; selStatus=[];
   renderFilters(); renderGrid();
   setView('catalogus');
@@ -621,7 +688,7 @@ function setNet(n){
 function setView(id){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   document.getElementById(id).classList.add('active');
-  var urls={catalogus:'outofstock.be/'+(curNet==='alle'?'':curNet), object:'outofstock.be/'+ (curObj?VERENIGINGEN[curObj.ver].net+'/materiaal/'+curObj.id:''), login:'outofstock.be/login', achterkant:'outofstock.be/mijn-vereniging', coach:'outofstock.be/coach/leuven'};
+  var urls={catalogus:'outofstock.be'+(curNet==='alle'?'':'/'+curNet), spelregels:'outofstock.be/spelregels', over:'outofstock.be/over', object:'outofstock.be/'+ (curObj?VERENIGINGEN[curObj.ver].net+'/materiaal/'+curObj.id:''), login:'outofstock.be/login', achterkant:'outofstock.be/mijn-vereniging', coach:'outofstock.be/coach/leuven'};
   document.getElementById('urlbar').textContent=urls[id]||'outofstock.be';
   updateNotes(id);
   window.scrollTo(0,0);
@@ -629,12 +696,12 @@ function setView(id){
 
 /* filters */
 function renderFilters(){
-  var pool=netItems();
+  var pool=pubItems();
   document.getElementById('fCats').innerHTML=CATS.map(function(c){
     var n=pool.filter(function(i){return i.cat===c;}).length;
     return '<button class="fopt'+(selCats.indexOf(c)>=0?' on':'')+'" onclick="togCat(\''+c+'\')"><span class="box">✓</span> '+c+' <span class="cnt">'+n+'</span></button>';
   }).join('');
-  document.getElementById('fStatus').innerHTML=Object.keys(STATUS_LABEL).map(function(s){
+  document.getElementById('fStatus').innerHTML=['vrij','uit'].map(function(s){
     return '<button class="fopt'+(selStatus.indexOf(s)>=0?' on':'')+'" onclick="togStatus(\''+s+'\')"><span class="box">✓</span> '+STATUS_LABEL[s]+'</button>';
   }).join('');
   var vers=Object.keys(VERENIGINGEN).filter(function(v){return curNet==='alle'||VERENIGINGEN[v].net===curNet;}).sort();
@@ -662,7 +729,7 @@ function renderActiveFilters(fv,fb,q){
 function renderGrid(){
   var q=(document.getElementById('zoek').value||'').toLowerCase();
   var fv=document.getElementById('fVer').value, fb=document.getElementById('fBuurt').value;
-  var rows=netItems().filter(function(i){
+  var rows=pubItems().filter(function(i){
     if(selCats.length && selCats.indexOf(i.cat)<0) return false;
     if(selStatus.length && selStatus.indexOf(i.st)<0) return false;
     if(fv && i.ver!==fv) return false;
@@ -703,10 +770,10 @@ function openObject(id){
   document.getElementById('obLink').value='outofstock.be/'+v.net+'/materiaal/'+curObj.id;
   document.getElementById('verAvatar').textContent=curObj.ver.charAt(0);
   document.getElementById('verNaam').textContent=curObj.ver;
-  var count=ITEMS.filter(function(i){return i.ver===curObj.ver;}).length;
+  var count=ITEMS.filter(function(i){return i.ver===curObj.ver && i.st!=='pauze';}).length;
   document.getElementById('verInfo').textContent=count+' materialen in de catalogus · doet mee sinds '+v.sinds;
   document.getElementById('moreVer').textContent=curObj.ver;
-  var more=ITEMS.filter(function(i){return i.ver===curObj.ver && i.id!==curObj.id;}).slice(0,4);
+  var more=ITEMS.filter(function(i){return i.ver===curObj.ver && i.id!==curObj.id && i.st!=='pauze';}).slice(0,4);
   document.getElementById('moreFrom').innerHTML=more.map(function(i){
     return '<button class="minitile" onclick="openObject('+i.id+')">'+i.naam+'</button>';
   }).join('') || '<span class="muted" style="font-size:13.5px;">Dit is voorlopig hun enige materiaal.</span>';
@@ -761,7 +828,7 @@ function renderEigen(){
   }).join('');
 }
 function setStatus(id,s){ ITEMS.find(function(i){return i.id===id;}).st=s; renderEigen(); renderGrid(); }
-function verwijder(id){ ITEMS=ITEMS.filter(function(i){return i.id!==id;}); renderEigen(); renderGrid(); renderFilters(); }
+function verwijder(id){ if(!confirm('Dit materiaal uit de catalogus halen?')) return; ITEMS=ITEMS.filter(function(i){return i.id!==id;}); renderEigen(); renderGrid(); renderFilters(); }
 function toggleAdd(){ document.getElementById('addForm').classList.toggle('hidden'); }
 function addItem(){
   ITEMS.unshift({id:Date.now(), naam:document.getElementById('addNaam').value.trim(), ver:'Chiro Hekeko', cat:document.getElementById('addCat').value, st:'vrij', note:document.getElementById('addNote').value.trim()||null, upd:'vandaag', updN:0, eigen:true});
@@ -806,6 +873,8 @@ var NOTES={
   object:{t:'Objectpagina zoals een echte marktplaats',b:'Breadcrumb, detailblok, vaste actiekaart rechts, de vereniging als afzender met haar andere materialen eronder. Aanvragen is bewust licht: je laat je e-mailadres en telefoonnummer achter, de vereniging krijgt een mailtje en neemt zelf contact op. De contactgegevens van de vereniging staan achter een klik en enkel als ze dat wil.'},
   login:{t:'Account per vereniging',b:'Kijken kan zonder account, beheren niet. Persoonlijke accounts gekoppeld aan de vereniging; bij een ploegwissel nodigt de vorige materiaalmeester of de deelcoach de nieuwe uit.'},
   achterkant:{t:'De achterkant is bewust klein',b:'Drie dingen: je materialen met een leenstatus-knop (beschikbaar, uitgeleend, even niet), de aanvragen die via het formulier binnenkomen (met een mailtje bij elke nieuwe), en je contact-instellingen. De leenstatus is meteen ook de "nu even niet"-knop die eigenaars controle geeft.'},
+  spelregels:{t:'De regels van 1.0, op een vaste plek',b:'De deelregels en FAQ bestaan al sinds Leuven 1.0 als losse documenten. Hier krijgen ze een publieke plek waar elke objectpagina naar linkt. Nul nieuwe inhoud, wel altijd vindbaar.'},
+  over:{t:'De voordeur voor nieuwe gemeenten',b:'Wie hier toevallig landt, snapt in drie alinea\'s wat dit is en hoe zijn gemeente kan aansluiten. De opstap naar de deelscan en de deelcoach, zonder pitch-taal.'},
   coach:{t:'De coach ziet het netwerk',b:'Wie is aangesloten, wie is actief, wie heeft al een deelscan gehad. Drie belvragen in plaats van grafieken. Elke coach werkt in zijn eigen netwerk; het platform eronder is voor heel Vlaanderen hetzelfde.'}
 };
 function updateNotes(id){ var n=NOTES[id]; if(!n)return; document.getElementById('nTitle').textContent=n.t; document.getElementById('nBody').textContent=n.b; }
@@ -815,6 +884,9 @@ function toggleNotes(){ var on=document.getElementById('notes').classList.toggle
 document.getElementById('netSelect').innerHTML=Object.keys(NETTEN).map(function(n){return '<option value="'+n+'">'+NETTEN[n].label+'</option>';}).join('');
 document.getElementById('addCat').innerHTML=CATS.map(function(c){return '<option>'+c+'</option>';}).join('');
 renderEigen(); renderAanvragen(); renderCoach('alle');
+document.getElementById('cAlle').textContent=COACH.length;
+document.getElementById('cScan').textContent=COACH.filter(function(c){return !c.scan;}).length;
+document.getElementById('cStil').textContent=COACH.filter(function(c){return c.stil;}).length;
 setNet('leuven');
 </script>
 <script>
