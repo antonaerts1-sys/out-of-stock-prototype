@@ -124,6 +124,13 @@ a{color:var(--accent); text-decoration:none;}
 .obside{flex:0 0 330px; position:sticky; top:16px;}
 .obphoto{height:250px; border:1px solid var(--border); border-radius:14px; background:var(--surface); display:flex; flex-direction:column; gap:10px; align-items:center; justify-content:center; color:var(--muted);}
 .obphoto span{font-size:12.5px;}
+.thumbs{display:flex; gap:10px; margin-top:10px;}
+.thumbs .t{flex:1; height:64px; border:1px solid var(--border); border-radius:10px; background:var(--surface); display:flex; align-items:center; justify-content:center; color:var(--muted);}
+.obdesc{font-size:15px; margin-top:14px; max-width:60ch;}
+.tips{margin:8px 0 0; padding:0 0 0 18px;}
+.tips li{font-size:14px; color:var(--muted); margin-bottom:5px;}
+.toeb{display:flex; gap:7px; flex-wrap:wrap; justify-content:flex-end;}
+.toeb span{border:1px solid var(--border); background:var(--surface); border-radius:6px; padding:2px 9px; font-size:12.5px; color:var(--muted);}
 .obtitle{font-size:25px; font-weight:600; letter-spacing:-0.02em; margin:18px 0 2px;}
 .obmeta{color:var(--muted); font-size:14px;}
 .card{background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:18px;}
@@ -314,8 +321,10 @@ tr:last-child td{border-bottom:none;}
       <div class="obcols">
         <div class="obmain">
           <div class="obphoto"><span id="obIcon"></span><span>Foto volgt van de vereniging</span></div>
+          <div class="thumbs"><span class="t" id="th1"></span><span class="t" id="th2"></span><span class="t" id="th3"></span></div>
           <div class="obtitle" id="obNaam"></div>
           <div class="obmeta" id="obMeta"></div>
+          <p class="obdesc" id="obDesc"></p>
           <div class="card mt16" id="obNoteCard">
             <h3>Goed om te weten</h3>
             <div class="muted" style="font-size:14px;" id="obNote"></div>
@@ -323,11 +332,18 @@ tr:last-child td{border-bottom:none;}
           <div class="card mt12">
             <h3>Details</h3>
             <div class="speclist">
+              <div class="spec" id="rowAantal"><span class="k">Aantal</span><span id="spAantal"></span></div>
+              <div class="spec"><span class="k">Staat</span><span id="spStaat"></span></div>
+              <div class="spec" id="rowToeb"><span class="k">Wat zit erbij</span><span class="toeb" id="spToeb"></span></div>
               <div class="spec"><span class="k">Categorie</span><span id="spCat"></span></div>
               <div class="spec"><span class="k">Beschikbaarheid</span><span id="spStatus"></span></div>
               <div class="spec"><span class="k">Buurt</span><span id="spBuurt"></span></div>
               <div class="spec"><span class="k">Laatst bijgewerkt</span><span id="spUpd"></span></div>
             </div>
+          </div>
+          <div class="card mt12" id="obTipsCard">
+            <h3>Zo hou je het heel</h3>
+            <ul class="tips" id="obTips"></ul>
           </div>
           <div class="card mt12">
             <h3>Zo werkt lenen</h3>
@@ -616,27 +632,27 @@ var VERENIGINGEN={
 };
 var ITEMS=[
  {id:1, naam:'Tafels en stoelen (plastic, opklapbaar)', ver:'F.C. Tabor Heverlee', cat:'Tafels & banken', st:'vrij', upd:'deze week', updN:1},
- {id:2, naam:'Tafels (8-10 pers.), banken en staantafels', ver:'Chiro Hekeko', cat:'Tafels & banken', st:'vrij', upd:'deze week', updN:2, eigen:true},
+ {id:2, naam:'Tafels (8-10 pers.), banken en staantafels', ver:'Chiro Hekeko', cat:'Tafels & banken', st:'vrij', upd:'deze week', updN:2, eigen:true, desc:'Stevige houten tafels voor 8 tot 10 personen, met bijhorende banken. De staantafels zijn ideaal voor een receptie of de wachtrij aan de togen.', aantal:'6 tafels, 10 banken, 4 staantafels', staat:'goede staat, gebruikssporen', tips:['Droog stapelen, anders trekt het hout','Vervoer de tafels met twee personen']},
  {id:3, naam:'Tafels en banken', ver:'Chiro Blauwput', cat:'Tafels & banken', st:'uit', upd:'vorige maand', updN:9},
  {id:4, naam:'Tafels en banken', ver:'Scouts Egenhoven', cat:'Tafels & banken', st:'vrij', upd:'in mei', updN:12},
  {id:5, naam:'Banken', ver:'Chiro Don Bosco Kessel-Lo', cat:'Tafels & banken', st:'vrij', upd:'vorige maand', updN:8},
- {id:6, naam:'Industriële friteuse en bakplaat', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'vrij', note:'Friteuse enkel met eigen olie gebruiken. Handleiding zit in de koffer.', upd:'deze week', updN:1},
+ {id:6, naam:'Industriële friteuse en bakplaat', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'vrij', note:'Friteuse enkel met eigen olie gebruiken. Handleiding zit in de koffer.', upd:'deze week', updN:1, desc:'Dubbele gasfriteuse (2x8 liter) en een grote bakplaat, samen goed voor een eetfestijn van 100 personen. Al jaren de vaste keuken van onze mosselfeesten.', aantal:'1 friteuse (2 bakken) + 1 bakplaat', staat:'goede staat, jaarlijks onderhouden', toeb:['Gasslang en ontspanner','Deksels','Handleiding'], tips:['Enkel met eigen, verse olie gebruiken','Olie laten afkoelen voor je ze vervoert','Binnenkant uitwassen voor teruggave']},
  {id:7, naam:'Koffiemachine en au bain-marie', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'vrij', upd:'deze week', updN:3},
  {id:8, naam:'Croquemachine', ver:'F.C. Tabor Heverlee', cat:'Keuken', st:'uit', upd:'vorige maand', updN:7},
- {id:9, naam:'Kookpotten', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'vorige maand', updN:6},
+ {id:9, naam:'Kookpotten', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'vorige maand', updN:6, desc:'Grote soep- en kookpotten van 20 tot 50 liter, voor soep, mosselen of spaghettisaus in het groot.', aantal:'8 potten (20-50 l)', staat:'goede staat', tips:['Proper en droog terugbezorgen']},
  {id:10, naam:'Soepverwarmers en elektrische vuurtjes', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'vorige maand', updN:6},
  {id:11, naam:'Thermossen en koffiezetters (bravilor)', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'vorige maand', updN:5},
  {id:12, naam:'Tassen, soepkommen en theeglazen', ver:'Wandelclub WSP', cat:'Keuken', st:'vrij', upd:'in mei', updN:11},
  {id:13, naam:'Staafmixer (industrieel) en braadsleeën', ver:'Bazart Leuven', cat:'Keuken', st:'pauze', upd:'vorige maand', updN:7},
  {id:14, naam:'Paellapan', ver:'Scouts Boven-Lo', cat:'Keuken', st:'vrij', upd:'in april', updN:14},
  {id:15, naam:'BBQ', ver:'Scouts Egenhoven', cat:'Keuken', st:'vrij', upd:'in mei', updN:12},
- {id:16, naam:'Slaaptenten', ver:'FOS De Vlievleger', cat:'Tenten & kamp', st:'uit', note:'Op kamp tot half augustus.', upd:'deze week', updN:2},
+ {id:16, naam:'Slaaptenten', ver:'FOS De Vlievleger', cat:'Tenten & kamp', st:'uit', note:'Op kamp tot half augustus.', upd:'deze week', updN:2, desc:'Vier patrouilletenten voor telkens 6 personen. Degelijk katoen, geen festivaltentjes.', aantal:'4 patrouilletenten (6 pers.)', staat:'goede staat', toeb:['Haringen en scheerlijnen','Grondzeilen','Opbergzakken'], tips:['Altijd droog opbergen, anders schimmelt het doek','Tel de haringen bij ophalen en teruggave']},
  {id:17, naam:'Slaaptenten', ver:'Damiaanscouts Wilsele-Putkapel', cat:'Tenten & kamp', st:'uit', upd:'in mei', updN:13},
  {id:18, naam:'Sjorbalken', ver:'Chiro Hekeko', cat:'Tenten & kamp', st:'uit', upd:'deze week', updN:2, eigen:true},
  {id:19, naam:'Sjorbalken', ver:'Scouts Egenhoven', cat:'Tenten & kamp', st:'vrij', upd:'in mei', updN:12},
  {id:20, naam:'Sjorbalken', ver:'FOS De Vlievleger', cat:'Tenten & kamp', st:'vrij', upd:'vorige maand', updN:6},
  {id:21, naam:'Verwarmingstoestellen', ver:'Jeugd Rode Kruis', cat:'Tenten & kamp', st:'vrij', upd:'in april', updN:15},
- {id:22, naam:'Parachutes', ver:'Chiro Don Bosco Kessel-Lo', cat:'Spel & sport', st:'vrij', upd:'vorige maand', updN:8},
+ {id:22, naam:'Parachutes', ver:'Chiro Don Bosco Kessel-Lo', cat:'Spel & sport', st:'vrij', upd:'vorige maand', updN:8, desc:'Twee grote speelparachutes, de klassieker voor groepsspelen met jonge kinderen.', aantal:'2 parachutes (6 m)', staat:'goede staat', tips:['Niet over scherpe ondergrond slepen']},
  {id:23, naam:'Gezelschaps- en volksspelen', ver:'Chiro Don Bosco Kessel-Lo', cat:'Spel & sport', st:'vrij', upd:'vorige maand', updN:8},
  {id:24, naam:'Spelmateriaal', ver:'Damiaanscouts Wilsele-Putkapel', cat:'Spel & sport', st:'vrij', upd:'in mei', updN:13},
  {id:25, naam:'Aluminium voetbaldoelen', ver:'F.C. Tabor Heverlee', cat:'Spel & sport', st:'vrij', upd:'vorige maand', updN:7},
@@ -645,9 +661,9 @@ var ITEMS=[
  {id:28, naam:'Rookmachine', ver:'Chiro Don Bosco Kessel-Lo', cat:'Geluid & licht', st:'vrij', upd:'vorige maand', updN:8},
  {id:29, naam:'Inkledingsmateriaal', ver:'Bazart Leuven', cat:'Varia', st:'vrij', upd:'in mei', updN:11},
  {id:30, naam:'EHBO-koffer', ver:'Wandelclub WSP', cat:'Varia', st:'vrij', upd:'vorige maand', updN:6},
- {id:31, naam:'Partytenten 4x8', ver:'Chiro Kuringen', cat:'Tenten & kamp', st:'vrij', upd:'deze week', updN:2},
+ {id:31, naam:'Partytenten 4x8', ver:'Chiro Kuringen', cat:'Tenten & kamp', st:'vrij', upd:'deze week', updN:2, desc:'Twee witte partytenten van 4 op 8 meter, koppelbaar tot één grote tent van 8 op 8.', aantal:'2 tenten (4x8 m)', staat:'goede staat', toeb:['Zijwanden met raampjes','Verzwaringsvoeten','Opbergzakken'], tips:['Opzetten met vier personen','Niet laten staan bij rukwinden','Droog oprollen']},
  {id:32, naam:'Klaptafels en banken', ver:'Chiro Kuringen', cat:'Tafels & banken', st:'vrij', upd:'deze week', updN:3},
- {id:33, naam:'Geluidsinstallatie met micro', ver:'Scouts Runkst', cat:'Geluid & licht', st:'vrij', upd:'vorige maand', updN:6},
+ {id:33, naam:'Geluidsinstallatie met micro', ver:'Scouts Runkst', cat:'Geluid & licht', st:'vrij', upd:'vorige maand', updN:6, desc:'Compacte actieve luidsprekerset met mengpaneeltje, luid genoeg voor een fuif tot 150 man of een spreker op een familiedag.', aantal:'2 boxen + mengpaneel', staat:'goede staat', toeb:['2 micro\'s','Kabels','2 statieven'], tips:['Eerst het mengpaneel uit, dan pas de boxen','Kabels oprollen zonder knopen']},
  {id:34, naam:'Volksspelen (groot pakket)', ver:'KSA Oostende Noord', cat:'Spel & sport', st:'vrij', upd:'deze week', updN:1},
  {id:35, naam:'Beachvlaggen en partytent', ver:'KSA Oostende Noord', cat:'Tenten & kamp', st:'vrij', upd:'vorige maand', updN:5},
  {id:36, naam:'Kookvuren en gasflessen', ver:'Chiro Koksijde', cat:'Keuken', st:'vrij', upd:'deze week', updN:4}
@@ -755,6 +771,15 @@ function openObject(id){
   document.getElementById('obMeta').textContent=curObj.ver+' · '+v.buurt+' ('+STEDEN[v.net]+') · '+kmLabel(curObj.ver);
   document.getElementById('obNoteCard').classList.toggle('hidden',!curObj.note);
   if(curObj.note) document.getElementById('obNote').textContent=curObj.note;
+  document.getElementById('obDesc').textContent = curObj.desc || (curObj.naam+' van '+curObj.ver+'. De vereniging vertelt je bij het ophalen graag wat erbij zit en hoe alles werkt.');
+  document.getElementById('rowAantal').classList.toggle('hidden',!curObj.aantal);
+  if(curObj.aantal) document.getElementById('spAantal').textContent=curObj.aantal;
+  document.getElementById('spStaat').textContent=curObj.staat||'goede staat';
+  document.getElementById('rowToeb').classList.toggle('hidden',!(curObj.toeb&&curObj.toeb.length));
+  if(curObj.toeb) document.getElementById('spToeb').innerHTML=curObj.toeb.map(function(t){return '<span>'+t+'</span>';}).join('');
+  document.getElementById('obTipsCard').classList.toggle('hidden',!(curObj.tips&&curObj.tips.length));
+  if(curObj.tips) document.getElementById('obTips').innerHTML=curObj.tips.map(function(t){return '<li>'+t+'</li>';}).join('');
+  ['th1','th2','th3'].forEach(function(id){ document.getElementById(id).innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L6 21"/></svg>'; });
   document.getElementById('spCat').textContent=curObj.cat;
   document.getElementById('spStatus').innerHTML=statusLab(curObj.st);
   document.getElementById('spBuurt').textContent=v.buurt+' ('+STEDEN[v.net]+'), '+kmLabel(curObj.ver);
