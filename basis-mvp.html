@@ -219,9 +219,14 @@ tr:last-child td{border-bottom:none;}
       <button class="brand" onclick="setView('catalogus')"><span class="logo">O</span><b>Out of Stock</b></button>
       <span class="netpick">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span id="netLabel">Deelnetwerk Leuven</span>
+        <span id="plaatsLabel">Leuven</span>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        <select id="netSelect" onchange="setNet(this.value)"></select>
+        <select id="plaatsSelect" onchange="setPlaats(this.value)"></select>
+      </span>
+      <span class="netpick">
+        <span id="straalLabel">binnen 25 km</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        <select id="straalSelect" onchange="setStraal(this.value)"></select>
       </span>
       <nav class="topnav">
         <button class="on">Alle materialen</button>
@@ -257,10 +262,6 @@ tr:last-child td{border-bottom:none;}
           <div class="fl">Vereniging</div>
           <select class="select" id="fVer" onchange="renderGrid()"></select>
         </div>
-        <div class="fgroup">
-          <div class="fl">Buurt</div>
-          <select class="select" id="fBuurt" onchange="renderGrid()"></select>
-        </div>
         <button class="btn sec" style="width:100%;" onclick="resetFilters()">Wis alle filters</button>
       </aside>
       <div class="results">
@@ -268,6 +269,7 @@ tr:last-child td{border-bottom:none;}
           <span class="n" id="resCount"></span>
           <span class="sortwrap">Sorteer op
             <select id="sort" onchange="renderGrid()">
+              <option value="afstand">dichtstbij</option>
               <option value="recent">recent bijgewerkt</option>
               <option value="naam">naam (A-Z)</option>
               <option value="ver">vereniging</option>
@@ -297,11 +299,11 @@ tr:last-child td{border-bottom:none;}
           <a href="#" onclick="return false;">De deelcoach</a>
         </div>
         <div class="col">
-          <b>Deelnetwerken</b>
-          <a href="#" onclick="setNet('leuven');return false;">Leuven</a>
-          <a href="#" onclick="setNet('hasselt');return false;">Hasselt</a>
-          <a href="#" onclick="setNet('oostende');return false;">Oostende</a>
-          <a href="#" onclick="setNet('koksijde');return false;">Koksijde</a>
+          <b>In de buurt van</b>
+          <a href="#" onclick="setPlaats('leuven');return false;">Leuven</a>
+          <a href="#" onclick="setPlaats('hasselt');return false;">Hasselt</a>
+          <a href="#" onclick="setPlaats('oostende');return false;">Oostende</a>
+          <a href="#" onclick="setPlaats('koksijde');return false;">Koksijde</a>
         </div>
       </div>
       <div class="base">
@@ -587,13 +589,22 @@ var CAT_ICON={
  'Varia':'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>'
 };
 var STATUS_LABEL={vrij:'beschikbaar', uit:'uitgeleend', pauze:'even niet'};
-var NETTEN={
- leuven:{label:'Deelnetwerk Leuven', stad:'Leuven'},
- hasselt:{label:'Deelnetwerk Hasselt', stad:'Hasselt'},
- oostende:{label:'Deelnetwerk Oostende', stad:'Oostende'},
- koksijde:{label:'Deelnetwerk Koksijde', stad:'Koksijde'},
- alle:{label:'Heel Vlaanderen', stad:null}
+var STEDEN={
+ leuven:'Leuven', hasselt:'Hasselt', oostende:'Oostende', koksijde:'Koksijde'
 };
+var TUSSEN={ // afstand in km tussen de steden
+ leuven:{leuven:0, hasselt:42, oostende:120, koksijde:140},
+ hasselt:{leuven:42, hasselt:0, oostende:160, koksijde:180},
+ oostende:{leuven:120, hasselt:160, oostende:0, koksijde:25},
+ koksijde:{leuven:140, hasselt:180, oostende:25, koksijde:0}
+};
+var AFSTAND={ // km van de vereniging tot het centrum van haar eigen stad
+ 'F.C. Tabor Heverlee':2.8,'Chiro Hekeko':3.1,'Chiro Blauwput':2.6,'Scouts Egenhoven':3.4,
+ 'Chiro Don Bosco Kessel-Lo':3.0,'Wandelclub WSP':0.6,'Bazart Leuven':0.9,'Scouts Boven-Lo':3.7,
+ 'FOS De Vlievleger':2.5,'Damiaanscouts Wilsele-Putkapel':4.6,'Jeugd Rode Kruis':1.1,'Sporty':2.2,
+ 'Chiro Vlierbeek':2.9,'Chiro Kuringen':3.3,'Scouts Runkst':1.8,'KSA Oostende Noord':2.4,'Chiro Koksijde':1.2
+};
+var STRALEN=[{v:10,label:'binnen 10 km'},{v:25,label:'binnen 25 km'},{v:50,label:'binnen 50 km'},{v:999,label:'heel Vlaanderen'}];
 var VERENIGINGEN={
  'F.C. Tabor Heverlee':{net:'leuven', buurt:'Heverlee', tel:'0478 23 45 67', mail:'materiaal@fctabor.be', toonTel:true, toonMail:true, sinds:'2025'},
  'Chiro Hekeko':{net:'leuven', buurt:'Kessel-Lo', tel:'0476 12 34 56', mail:'materiaal@chirohekeko.be', toonTel:true, toonMail:true, sinds:'2025'},
@@ -666,29 +677,37 @@ var COACH=[
  {ver:'Chiro Vlierbeek', actief:'3 maanden geleden', scan:null, stil:true},
  {ver:'Jeugd Rode Kruis', actief:'4 maanden geleden', scan:'22 maart 2026', stil:true}
 ];
-var selCats=[], selStatus=[], curObj=null, curNet='leuven';
+var selCats=[], selStatus=[], curObj=null, curStad='leuven', curStraal=25;
 
-function netItems(){
-  return ITEMS.filter(function(i){ return curNet==='alle' || VERENIGINGEN[i.ver].net===curNet; });
+function distFor(ver){
+  return TUSSEN[VERENIGINGEN[ver].net][curStad] + AFSTAND[ver];
+}
+function kmLabel(ver){
+  var d=distFor(ver);
+  return 'op '+(d<10 ? d.toFixed(1).replace('.',',') : Math.round(d))+' km';
 }
 function pubItems(){
-  return netItems().filter(function(i){ return i.st!=='pauze'; });
+  return ITEMS.filter(function(i){ return i.st!=='pauze' && distFor(i.ver)<=curStraal; });
 }
-function setNet(n){
-  curNet=n;
-  document.getElementById('netLabel').textContent=NETTEN[n].label;
-  document.getElementById('netSelect').value=n;
-  var vers=Object.keys(VERENIGINGEN).filter(function(v){return curNet==='alle'||VERENIGINGEN[v].net===curNet;});
-  document.getElementById('heroTitle').textContent = n==='alle' ? 'Materiaal lenen in Vlaanderen' : 'Materiaal lenen in '+NETTEN[n].stad;
-  document.getElementById('heroSub').textContent = pubItems().length+' materialen van '+vers.length+' verenigingen · vrij te bekijken, ook zonder account';
+function applyGeo(){
+  document.getElementById('plaatsLabel').textContent=STEDEN[curStad];
+  document.getElementById('plaatsSelect').value=curStad;
+  var st=STRALEN.find(function(x){return x.v===curStraal;});
+  document.getElementById('straalLabel').textContent=st.label;
+  document.getElementById('straalSelect').value=curStraal;
+  document.getElementById('heroTitle').textContent = curStraal>=999 ? 'Materiaal lenen in Vlaanderen' : 'Materiaal lenen rond '+STEDEN[curStad];
+  var vers={}; pubItems().forEach(function(i){vers[i.ver]=1;});
+  document.getElementById('heroSub').textContent = pubItems().length+' materialen van '+Object.keys(vers).length+' verenigingen · vrij te bekijken, ook zonder account';
   selCats=[]; selStatus=[];
   renderFilters(); renderGrid();
   setView('catalogus');
 }
+function setPlaats(p){ curStad=p; applyGeo(); }
+function setStraal(v){ curStraal=parseInt(v,10); applyGeo(); }
 function setView(id){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   document.getElementById(id).classList.add('active');
-  var urls={catalogus:'outofstock.be'+(curNet==='alle'?'':'/'+curNet), spelregels:'outofstock.be/spelregels', over:'outofstock.be/over', object:'outofstock.be/'+ (curObj?VERENIGINGEN[curObj.ver].net+'/materiaal/'+curObj.id:''), login:'outofstock.be/login', achterkant:'outofstock.be/mijn-vereniging', coach:'outofstock.be/coach/leuven'};
+  var urls={catalogus:'outofstock.be/zoeken?rond='+curStad+'&straal='+(curStraal>=999?'vlaanderen':curStraal), spelregels:'outofstock.be/spelregels', over:'outofstock.be/over', object:'outofstock.be/'+ (curObj?VERENIGINGEN[curObj.ver].net+'/materiaal/'+curObj.id:''), login:'outofstock.be/login', achterkant:'outofstock.be/mijn-vereniging', coach:'outofstock.be/coach/leuven'};
   document.getElementById('urlbar').textContent=urls[id]||'outofstock.be';
   updateNotes(id);
   window.scrollTo(0,0);
@@ -704,36 +723,32 @@ function renderFilters(){
   document.getElementById('fStatus').innerHTML=['vrij','uit'].map(function(s){
     return '<button class="fopt'+(selStatus.indexOf(s)>=0?' on':'')+'" onclick="togStatus(\''+s+'\')"><span class="box">✓</span> '+STATUS_LABEL[s]+'</button>';
   }).join('');
-  var vers=Object.keys(VERENIGINGEN).filter(function(v){return curNet==='alle'||VERENIGINGEN[v].net===curNet;}).sort();
+  var vers={}; pubItems().forEach(function(i){vers[i.ver]=1;}); vers=Object.keys(vers).sort();
   document.getElementById('fVer').innerHTML='<option value="">Alle verenigingen</option>'+vers.map(function(v){return '<option>'+v+'</option>';}).join('');
-  var buurten=[]; vers.forEach(function(v){ var b=VERENIGINGEN[v].buurt; if(buurten.indexOf(b)<0) buurten.push(b); });
-  document.getElementById('fBuurt').innerHTML='<option value="">Alle buurten</option>'+buurten.sort().map(function(b){return '<option>'+b+'</option>';}).join('');
 }
 function togCat(c){ var i=selCats.indexOf(c); if(i<0)selCats.push(c); else selCats.splice(i,1); renderFilters(); renderGrid(); }
 function togStatus(s){ var i=selStatus.indexOf(s); if(i<0)selStatus.push(s); else selStatus.splice(i,1); renderFilters(); renderGrid(); }
-function resetFilters(){ selCats=[]; selStatus=[]; document.getElementById('fVer').value=''; document.getElementById('fBuurt').value=''; document.getElementById('zoek').value=''; renderFilters(); renderGrid(); }
+function resetFilters(){ selCats=[]; selStatus=[]; document.getElementById('fVer').value=''; document.getElementById('zoek').value=''; renderFilters(); renderGrid(); }
 
 function statusLab(st){
   if(st==='vrij') return '<span class="lab ok">beschikbaar</span>';
   if(st==='uit') return '<span class="lab warn">nu uitgeleend</span>';
   return '<span class="lab">even niet beschikbaar</span>';
 }
-function renderActiveFilters(fv,fb,q){
+function renderActiveFilters(fv,q){
   var chips=[];
   selCats.forEach(function(c){ chips.push('<span class="afchip">'+c+'<button onclick="togCat(\''+c+'\')">&times;</button></span>'); });
   selStatus.forEach(function(s){ chips.push('<span class="afchip">'+STATUS_LABEL[s]+'<button onclick="togStatus(\''+s+'\')">&times;</button></span>'); });
   if(fv) chips.push('<span class="afchip">'+fv+'<button onclick="document.getElementById(\'fVer\').value=\'\';renderGrid();">&times;</button></span>');
-  if(fb) chips.push('<span class="afchip">'+fb+'<button onclick="document.getElementById(\'fBuurt\').value=\'\';renderGrid();">&times;</button></span>');
   document.getElementById('afRow').innerHTML=chips.join('');
 }
 function renderGrid(){
   var q=(document.getElementById('zoek').value||'').toLowerCase();
-  var fv=document.getElementById('fVer').value, fb=document.getElementById('fBuurt').value;
+  var fv=document.getElementById('fVer').value;
   var rows=pubItems().filter(function(i){
     if(selCats.length && selCats.indexOf(i.cat)<0) return false;
     if(selStatus.length && selStatus.indexOf(i.st)<0) return false;
     if(fv && i.ver!==fv) return false;
-    if(fb && VERENIGINGEN[i.ver].buurt!==fb) return false;
     if(q && (i.naam+' '+i.ver+' '+i.cat).toLowerCase().indexOf(q)<0) return false;
     return true;
   });
@@ -741,13 +756,14 @@ function renderGrid(){
   rows.sort(function(a,b){
     if(sort==='naam') return a.naam.localeCompare(b.naam);
     if(sort==='ver') return a.ver.localeCompare(b.ver);
-    return a.updN-b.updN;
+    if(sort==='recent') return a.updN-b.updN;
+    return distFor(a.ver)-distFor(b.ver);
   });
-  renderActiveFilters(fv,fb,q);
+  renderActiveFilters(fv,q);
   document.getElementById('resCount').textContent=rows.length+' '+(rows.length===1?'materiaal':'materialen');
   document.getElementById('grid').innerHTML=rows.map(function(i){
-    var plaats = curNet==='alle' ? NETTEN[VERENIGINGEN[i.ver].net].stad : VERENIGINGEN[i.ver].buurt;
-    return '<button class="tile" onclick="openObject('+i.id+')"><span class="ph"><span class="st">'+statusLab(i.st)+'</span>'+CAT_ICON[i.cat]+'</span><span class="tx"><b>'+i.naam+'</b><span class="m">'+i.ver+'</span><span class="m">'+plaats+' · '+i.upd+' bijgewerkt</span></span></button>';
+    var plaats = VERENIGINGEN[i.ver].buurt+' · '+kmLabel(i.ver);
+    return '<button class="tile" onclick="openObject('+i.id+')"><span class="ph"><span class="st">'+statusLab(i.st)+'</span>'+CAT_ICON[i.cat]+'</span><span class="tx"><b>'+i.naam+'</b><span class="m">'+i.ver+'</span><span class="m">'+plaats+'</span></span></button>';
   }).join('') || '<div class="muted" style="grid-column:1/-1; padding:40px 0; text-align:center;">Niets gevonden met deze filters.<br><a href="#" onclick="resetFilters();return false;">Wis de filters</a> of stel je vraag in de WhatsApp-groep van je netwerk.</div>';
 }
 
@@ -759,12 +775,12 @@ function openObject(id){
   document.getElementById('crumbNaam').textContent=curObj.naam;
   document.getElementById('obIcon').innerHTML=CAT_ICON[curObj.cat];
   document.getElementById('obNaam').textContent=curObj.naam;
-  document.getElementById('obMeta').textContent=curObj.ver+' · '+v.buurt+' ('+NETTEN[v.net].stad+')';
+  document.getElementById('obMeta').textContent=curObj.ver+' · '+v.buurt+' ('+STEDEN[v.net]+') · '+kmLabel(curObj.ver);
   document.getElementById('obNoteCard').classList.toggle('hidden',!curObj.note);
   if(curObj.note) document.getElementById('obNote').textContent=curObj.note;
   document.getElementById('spCat').textContent=curObj.cat;
   document.getElementById('spStatus').innerHTML=statusLab(curObj.st);
-  document.getElementById('spBuurt').textContent=v.buurt;
+  document.getElementById('spBuurt').textContent=v.buurt+' ('+STEDEN[v.net]+'), '+kmLabel(curObj.ver);
   document.getElementById('spUpd').textContent=curObj.upd;
   document.getElementById('obStatusBig').innerHTML=statusLab(curObj.st)+(curObj.st!=='vrij'?'<div class="muted mt8" style="font-size:13px;">Je kan wel al aanvragen voor later.</div>':'');
   document.getElementById('obLink').value='outofstock.be/'+v.net+'/materiaal/'+curObj.id;
@@ -869,7 +885,7 @@ function coachFilter(f,el){
 
 /* notes */
 var NOTES={
-  catalogus:{t:'Eén platform, lokale etalages',b:'Heel Vlaanderen draait op hetzelfde platform, maar je landt altijd in je eigen deelnetwerk: lokaal is de primaire logica, want ophalen en terugbrengen blijven fysiek. De netwerk-kiezer bovenaan toont de vier pilootgemeenten, en wie wil kan over de grenzen kijken met "Heel Vlaanderen".'},
+  catalogus:{t:'Zoeken op afstand, niet op netwerk',b:'E\u00e9n catalogus voor heel Vlaanderen. Je kiest een plaats en een straal, en je ziet gewoon wat dichtbij ligt, gesorteerd op afstand. Geen silo\'s per gemeente: het verslag zei het al, mensen aan de rand kijken vanzelf over de grens. Het deelnetwerk blijft bestaan, maar als organisatielaag voor de coach, niet als muur in de zoeker.'},
   object:{t:'Objectpagina zoals een echte marktplaats',b:'Breadcrumb, detailblok, vaste actiekaart rechts, de vereniging als afzender met haar andere materialen eronder. Aanvragen is bewust licht: je laat je e-mailadres en telefoonnummer achter, de vereniging krijgt een mailtje en neemt zelf contact op. De contactgegevens van de vereniging staan achter een klik en enkel als ze dat wil.'},
   login:{t:'Account per vereniging',b:'Kijken kan zonder account, beheren niet. Persoonlijke accounts gekoppeld aan de vereniging; bij een ploegwissel nodigt de vorige materiaalmeester of de deelcoach de nieuwe uit.'},
   achterkant:{t:'De achterkant is bewust klein',b:'Drie dingen: je materialen met een leenstatus-knop (beschikbaar, uitgeleend, even niet), de aanvragen die via het formulier binnenkomen (met een mailtje bij elke nieuwe), en je contact-instellingen. De leenstatus is meteen ook de "nu even niet"-knop die eigenaars controle geeft.'},
@@ -881,13 +897,14 @@ function updateNotes(id){ var n=NOTES[id]; if(!n)return; document.getElementById
 function toggleNotes(){ var on=document.getElementById('notes').classList.toggle('show'); document.getElementById('notesToggle').classList.toggle('on',on); }
 
 /* init */
-document.getElementById('netSelect').innerHTML=Object.keys(NETTEN).map(function(n){return '<option value="'+n+'">'+NETTEN[n].label+'</option>';}).join('');
+document.getElementById('plaatsSelect').innerHTML=Object.keys(STEDEN).map(function(n){return '<option value="'+n+'">'+STEDEN[n]+'</option>';}).join('');
+document.getElementById('straalSelect').innerHTML=STRALEN.map(function(x){return '<option value="'+x.v+'">'+x.label+'</option>';}).join('');
 document.getElementById('addCat').innerHTML=CATS.map(function(c){return '<option>'+c+'</option>';}).join('');
 renderEigen(); renderAanvragen(); renderCoach('alle');
 document.getElementById('cAlle').textContent=COACH.length;
 document.getElementById('cScan').textContent=COACH.filter(function(c){return !c.scan;}).length;
 document.getElementById('cStil').textContent=COACH.filter(function(c){return c.stil;}).length;
-setNet('leuven');
+applyGeo();
 </script>
 <script>
 window.CM_CONFIG = {
