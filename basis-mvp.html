@@ -908,6 +908,10 @@ document.getElementById('cAlle').textContent=COACH.length;
 document.getElementById('cScan').textContent=COACH.filter(function(c){return !c.scan;}).length;
 document.getElementById('cStil').textContent=COACH.filter(function(c){return c.stil;}).length;
 applyGeo();
+// deep-link per scherm: ?scherm=object|login|achterkant|coach|spelregels|over
+var schermParam=new URLSearchParams(location.search).get('scherm');
+if(schermParam==='object'){ openObject(6); }
+else if(schermParam && document.getElementById(schermParam)){ setView(schermParam); }
 </script>
 <script>
 window.CM_CONFIG = {
